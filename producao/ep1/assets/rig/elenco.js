@@ -330,5 +330,28 @@
     m.pol.rotation.set(-0.6 + 0.3 * pol, 0, -m.side * pol);
   }
 
-  window.Elenco = { FICHAS, EXPR, CABECA_Y, mao, build, expressao, cabeca, alcancar };
+  // Lágrimas: gota escorrendo pela bochecha abaixo de cada olho + rastro molhado. u = intensidade (0..1),
+  // t = tempo da timeline (determinístico). Ficam longe da boca (x ±0,17) e acima da barba.
+  function lagrimas(g, u, t) {
+    const rig = g.userData.rig; let L = rig.lagrimas;
+    if (!L) {
+      L = rig.lagrimas = [];
+      const mg = new THREE.MeshBasicMaterial({ color: 0xc9ecff }), ml = new THREE.MeshBasicMaterial({ color: 0x8fc4ea });
+      for (const side of [-1, 1]) {
+        const gota = new THREE.Mesh(new THREE.SphereGeometry(0.026, 10, 8), mg);
+        const trilha = new THREE.Mesh(new THREE.CapsuleGeometry(0.008, 0.1, 3, 6), ml);
+        rig.head.add(gota); rig.head.add(trilha); L.push({ side, gota, trilha });
+      }
+    }
+    const R = 0.404, sobre = (x, y) => Math.sqrt(Math.max(0, R * R - x * x - y * y));
+    for (const l of L) {
+      const vis = u > 0.03; l.gota.visible = l.trilha.visible = vis; if (!vis) continue;
+      const x = l.side * 0.165, fase = (t * 0.75 + (l.side > 0 ? 0.45 : 0)) % 1, y = -0.135 - 0.11 * fase;
+      const k = u * Math.min(1, (1 - fase) * 6);
+      l.gota.position.set(x, y, sobre(x, y) + 0.004); l.gota.scale.set(0.8 * k, 1.35 * k, 0.6 * k);
+      const ym = -0.18; l.trilha.position.set(x, ym, sobre(x, ym) + 0.002); l.trilha.rotation.set(0.5, 0, 0); l.trilha.scale.setScalar(u);
+    }
+  }
+
+  window.Elenco = { FICHAS, EXPR, CABECA_Y, mao, lagrimas, build, expressao, cabeca, alcancar };
 })();

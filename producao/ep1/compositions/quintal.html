@@ -1,0 +1,187 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #0d1018; }
+    #qt-stage { position: absolute; inset: 0; z-index: 0; }
+    #qt-stage canvas { display: block; }
+    #qt-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #qt-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="quintal" data-width="1920" data-height="1080">
+    <div id="qt-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+    <div id="qt-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">CENÁRIO 7 — QUINTAL<small>fim da tarde do dia 1 · o pai chora escondido · planos 49–51</small></div>
+  </div>
+  <script>
+    (function () {
+      const DUR = 8, CORTE = 3.4;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
+
+      const raiz = new THREE.Group();
+      const k = Cena.kit(raiz, 49051);
+      const { box, cil, bolha, rnd, M } = k;
+      const luz = (c) => new THREE.MeshBasicMaterial({ color: c });
+
+      // ---------- fundos da casa (parede em z=0, quintal em z>0) ----------
+      const PAREDE = 0xc9b48f, MURO = 0xa9a294;
+      box(13, 3.3, 0.2, PAREDE, 0, 1.65, -0.1, { contorno: false });
+      box(13.4, 0.12, 1.0, 0x8e4b3c, 0, 3.45, 0.3, { r: [0.25, 0, 0] });                          // beiral do telhado
+      box(13.4, 0.04, 0.12, 0x6a3a30, 0, 3.33, 0.78, { contorno: false });
+      // porta da cozinha (x -1,45..-0,55), aberta para fora; dentro, a luz da cozinha
+      const DX0 = -1.45, DX1 = -0.5, DY = 2.85;   // mesma altura das portas da sala (o elenco é alto)
+      box(DX1 - DX0, DY, 0.05, 0xf4c98a, (DX0 + DX1) / 2, DY / 2, 0.005, { mat: luz(0xf2c98e), contorno: false });
+      for (const x of [DX0, DX1]) box(0.07, DY, 0.12, 0xf1ede4, x, DY / 2, 0.04);
+      box(DX1 - DX0 + 0.14, 0.07, 0.12, 0xf1ede4, (DX0 + DX1) / 2, DY, 0.04);
+      const porta = new THREE.Group(); porta.position.set(DX0, 0, 0.06); raiz.add(porta);
+      box(DX1 - DX0 - 0.04, DY - 0.04, 0.05, 0x7a5a3e, (DX1 - DX0) / 2, DY / 2, 0, { pai: porta });
+      for (let i = 0; i < 5; i++) box(0.6, 0.03, 0.02, 0x5e4430, (DX1 - DX0) / 2, 0.5 + i * 0.48, 0.035, { pai: porta, contorno: false });
+      box(1.0, 0.03, 0.6, 0x8a6a4a, (DX0 + DX1) / 2, 0.015, 0.4, { contorno: false, sombra: false });   // tapete da porta
+      // janela da cozinha acesa e o vitrô do banheiro
+      box(1.3, 1.0, 0.04, 0, 1.7, 1.75, 0.005, { mat: luz(0xf0c48a), contorno: false });
+      box(1.42, 0.07, 0.14, 0xf1ede4, 1.7, 1.22, 0.05); for (const x of [1.05, 1.7, 2.35]) box(0.06, 1.0, 0.1, 0xf1ede4, x, 1.75, 0.04, { contorno: false });
+      box(0.6, 0.45, 0.04, 0x3a4250, 4.2, 2.4, 0.005, { contorno: false });
+      for (let i = 0; i < 4; i++) box(0.6, 0.03, 0.06, 0xd9d4c8, 4.2, 2.22 + i * 0.12, 0.03, { contorno: false });
+      // marcas do tempo na parede: mancha de umidade embaixo, cano do tanque
+      bolha(0.5, 0xc4b08c, 3.2, 0.25, 0.0, [1.6, 0.5, 0.05], { contorno: false });
+      cil(0.03, 0.03, 2.6, 0x8a8a84, 5.3, 1.3, 0.05, { seg: 8 });
+      // chão cimentado em placas, ralo, uma faixa de grama no canto
+      for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) box(2.15, 0.05, 1.95, ((i + j) % 2) ? 0xa8a296 : 0xa19b8f, -5.4 + i * 2.16, -0.025, 1.0 + j * 1.96, { contorno: false, sombra: false });
+      box(0.2, 0.01, 0.2, 0x55534e, 1.0, 0.005, 3.2, { contorno: false, sombra: false });
+      box(12, 0.06, 0.6, 0x5c7a42, 0, 0.0, 8.2, { contorno: false, sombra: false });
+      // muros altos (chapisco) e os telhados dos vizinhos aparecendo
+      box(0.2, 2.4, 9, MURO, -6.1, 1.2, 4.4, { contorno: false }); box(0.2, 2.4, 9, MURO, 6.1, 1.2, 4.4, { contorno: false });
+      box(12.4, 2.4, 0.2, MURO, 0, 1.2, 8.9, { contorno: false });
+      for (const [x, z, w, d] of [[-6.1, 4.4, 0.24, 9], [6.1, 4.4, 0.24, 9], [0, 8.9, 12.4, 0.24]]) box(w, 0.08, d, 0xcfc8ba, x, 2.44, z, { contorno: false });
+      for (let i = 0; i < 4; i++) { const x = -5 + i * 3.4, h = 1.2 + rnd() * 0.8; box(3, h, 2.4, [0xe0b9a0, 0xa9c2b5, 0xe2d6b8, 0xb8b9c9][i], x, 2.4 + h / 2 - 0.6, 10.6); box(3.3, 0.14, 1.6, [0x8e4b3c, 0x5d4a44, 0x7b5d4a][i % 3], x, 2.4 + h - 0.4, 10.0, { r: [0.35, 0, 0] }); }
+
+      // ---------- varal com a roupa da casa (o moletom do Gabi no meio) ----------
+      // varal ao longo do muro esquerdo (de z=1,6 a 8): a roupa fica de lado e não tapa a porta
+      const VX = -3.4, VY = 2.25;
+      for (const z of [1.6, 8.0]) cil(0.05, 0.06, VY + 0.1, 0x8a8a84, VX, (VY + 0.1) / 2, z, { seg: 8 });
+      cil(0.008, 0.008, 6.4, 0xd9d4c8, VX, VY, 4.8, { r: [Math.PI / 2, 0, 0], seg: 4, contorno: false });
+      const roupas = [];
+      const pendura = (x, w, h, cor, extra) => {
+        const r = new THREE.Group(); r.position.set(VX, VY, 5.2 + x * 0.85); r.rotation.y = Math.PI / 2; raiz.add(r); roupas.push(r);
+        box(w, h, 0.03, cor, 0, -h / 2, 0, { pai: r });
+        if (extra) extra(r);
+        for (const s of [-1, 1]) box(0.03, 0.08, 0.05, [0xd94a3e, 0x3f6d8c, 0xe8b923][Math.floor(rnd() * 3)], s * (w / 2 - 0.06), 0, 0, { pai: r, contorno: false });   // pregadores
+        return r;
+      };
+      pendura(-3.6, 0.9, 1.3, 0xe9e4d8);                                                     // lençol
+      pendura(-2.4, 0.7, 0.8, 0x6f7f5a);                                                      // camisa do pai
+      pendura(-1.0, 0.85, 0.75, 0xaed0ec, (r) => {                                            // o moletom do Gabi (mangas caídas)
+        for (const s of [-1, 1]) box(0.2, 0.75, 0.03, 0xaed0ec, s * 0.5, -0.45, 0, { pai: r, r: [0, 0, s * 0.12] });
+        box(0.36, 0.14, 0.035, 0xaed0ec, 0, -0.55, 0.01, { pai: r });
+      });
+      pendura(0.4, 0.55, 0.5, 0xc9835b);                                                     // blusa da mãe
+      pendura(1.5, 0.7, 1.0, 0xd94a3e);                                                       // toalha
+      pendura(2.6, 0.35, 0.3, 0xf2f2ee); pendura(3.2, 0.35, 0.3, 0x3a3a44);                  // meias
+
+      // ---------- tanque, balde, vasos, a bicicleta do Gabi, cadeira de plástico ----------
+      box(0.9, 0.85, 0.6, 0xc9c5bb, 4.9, 0.43, 0.4); box(0.75, 0.1, 0.45, 0x9fa3a6, 4.9, 0.83, 0.4, { contorno: false });
+      cil(0.025, 0.025, 0.2, 0xb0b0aa, 4.9, 1.05, 0.12, { r: [Math.PI / 2, 0, 0], seg: 8 });
+      cil(0.2, 0.16, 0.32, 0x3f6d8c, 4.1, 0.16, 0.6); cil(0.21, 0.21, 0.02, 0x2e5470, 4.1, 0.32, 0.6, { contorno: false });
+      for (let i = 0; i < 4; i++) {                                                           // vasos com espada-de-são-jorge e samambaia
+        const x = -5.5 + i * 0.6, z = 0.4 + (i % 2) * 0.3;
+        cil(0.2, 0.15, 0.35, [0xb5653f, 0x9a5a3a][i % 2], x, 0.18, z);
+        for (let f = 0; f < 5; f++) box(0.06, 0.6 + rnd() * 0.3, 0.015, 0x3f6a3a, x + (f - 2) * 0.04, 0.6, z, { r: [0.1 * (f - 2), f, 0.12 * (f - 2)] });
+      }
+      const bici = new THREE.Group(); bici.position.set(-3.2, 0, 0.35); bici.rotation.set(0, 0, 0.0); raiz.add(bici);
+      for (const x of [-0.55, 0.55]) { const r = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.035, 8, 24), M(0x22242a)); r.position.set(x, 0.36, 0); bici.add(r); }
+      for (const [x, y, l, rz] of [[0, 0.55, 0.9, 0.0], [-0.25, 0.45, 0.55, 1.0], [0.3, 0.45, 0.55, -0.9], [-0.55, 0.55, 0.4, 0.3]]) cil(0.025, 0.025, l, 0x2f6f9a, x, y, 0, { r: [0, 0, Math.PI / 2 + rz], seg: 6, contorno: false, pai: bici });
+      box(0.25, 0.06, 0.1, 0x1b1b20, -0.2, 0.82, 0, { pai: bici, contorno: false });
+      cil(0.02, 0.02, 0.5, 0x8a8a84, 0.5, 0.85, 0, { r: [Math.PI / 2, 0, 0], seg: 6, contorno: false, pai: bici });
+      const cad = new THREE.Group(); cad.position.set(2.6, 0, 2.2); cad.rotation.y = -0.6; raiz.add(cad);
+      box(0.5, 0.05, 0.5, 0xf2f2ee, 0, 0.45, 0, { pai: cad }); box(0.5, 0.5, 0.05, 0xf2f2ee, 0, 0.72, -0.24, { pai: cad, r: [-0.15, 0, 0] });
+      for (const [x, z] of [[-0.22, -0.22], [0.22, -0.22], [-0.22, 0.22], [0.22, 0.22]]) cil(0.025, 0.03, 0.45, 0xf2f2ee, x, 0.22, z, { pai: cad, seg: 6, contorno: false });
+
+      // ---------- o pai ----------
+      const pai = Elenco.build("pai", { expr: "triste" });
+      raiz.add(pai);
+      const rp = pai.userData.rig;
+      const PX = 0.35, PZ = 0.52;                                                             // encostado ao lado da porta
+      // pose da mão enxugando o olho: calculada uma vez já na pose encostada
+      pai.position.set(PX, 0, PZ); pai.rotation.set(-0.07, 0, 0); Elenco.cabeca(pai, 0.1, 0.15, 0); raiz.updateMatrixWorld(true);
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      Elenco.alcancar(pai, "esq", rp.head.localToWorld(new THREE.Vector3(0.3, -0.22, 0.5))); const enxuga = guarda(rp.aR);
+      Elenco.alcancar(pai, "dir", pai.localToWorld(new THREE.Vector3(-0.12, 1.55, 0.35))); const treme = guarda(rp.aL);   // mão no peito, tremendo
+      const solto = [new THREE.Euler(-0.05, 0, -0.08), new THREE.Euler(-0.2, 0, 0)];
+      const soltoE = [new THREE.Euler(-0.05, 0, 0.1), new THREE.Euler(-0.25, 0, 0)];
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+
+      // ---------- luz: sol baixo de fim de tarde rasgando o quintal; cozinha acesa ----------
+      const scene = new THREE.Scene();
+      const cc = document.createElement("canvas"); cc.width = 4; cc.height = 256; const gc = cc.getContext("2d");
+      const gr = gc.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, "#4a6590"); gr.addColorStop(0.6, "#a88a76"); gr.addColorStop(1, "#d9a272");
+      gc.fillStyle = gr; gc.fillRect(0, 0, 4, 256);
+      const ceuTex = new THREE.CanvasTexture(cc); ceuTex.colorSpace = THREE.SRGBColorSpace; scene.background = ceuTex;
+      scene.fog = new THREE.Fog(0x9a8a7a, 14, 34);
+      scene.add(raiz);
+      scene.add(new THREE.HemisphereLight(0xaab8d4, 0x6a5444, 1.0));
+      const sol = new THREE.DirectionalLight(0xffc58a, 2.3);
+      sol.position.set(11, 6.5, 9); sol.target.position.set(0, 0.5, 1.5);
+      sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); sol.shadow.bias = -0.0008; sol.shadow.normalBias = 0.03;
+      Object.assign(sol.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10, near: 1, far: 40 });
+      scene.add(sol); scene.add(sol.target);
+      const cozinha = new THREE.SpotLight(0xffc98a, 6, 6, 0.6, 0.8, 1.4); cozinha.position.set(-0.98, 2.2, -0.6); cozinha.target.position.set(-0.6, 0, 2.2); raiz.add(cozinha.target);   // luz que sai pela porta e cai no chão raiz.add(cozinha);
+      const rosto = new THREE.PointLight(0xe8dccb, 1.0, 4.5, 1.6); rosto.position.set(1.9, 2.1, 3.4); raiz.add(rosto);   // preenchimento no rosto dele
+
+      const camA = new THREE.PerspectiveCamera(40, 1920 / 1080, 0.1, 80);
+      const camB = new THREE.PerspectiveCamera(32, 1920 / 1080, 0.1, 80);
+      const renderer = Cena.renderer("qt-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+      const S = Cena.suave;
+
+      function render() {
+        const t = estado.t;
+        // 0,2-0,8 a porta abre · 0,6-2,2 ele sai e anda até o lado da porta · 2,2-2,9 vira e encosta
+        porta.rotation.y = -1.9 * S((t - 0.2) / 0.6);
+        const anda = S((t - 0.6) / 1.6), encosta = S((t - 2.2) / 0.7);
+        const x = -1.0 + (PX + 1.0) * anda, z = -0.2 + (PZ + 0.2) * Math.min(1, anda * 1.6);
+        // volta pra dentro no fim: vira para a porta e dá o primeiro passo
+        const volta = S((t - 7.1) / 0.8);
+        pai.position.set(x - 0.35 * volta, 0, z - 0.05 * volta);
+        pai.rotation.set(-0.07 * encosta * (1 - volta), 0.6 * (1 - encosta) * (anda > 0 ? 1 : 0) + (-1.9) * volta, 0);
+        const passo = (anda > 0 && anda < 1 ? Math.sin(t * 7) * 0.35 : 0) + (volta > 0 && volta < 1 ? Math.sin(t * 7) * 0.25 : 0);
+        rp.pL.hip.rotation.x = passo; rp.pR.hip.rotation.x = -passo;
+        rp.pL.knee.rotation.x = Math.max(0, -passo) * 1.1; rp.pR.knee.rotation.x = Math.max(0, passo) * 1.1;
+        // braços: soltos -> mão no peito tremendo (3,0) -> a outra enxuga o olho (5,2-6,4) -> soltos
+        const peito = S((t - 3.0) / 0.5) * (1 - S((t - 6.8) / 0.5));
+        mistura(rp.aL, solto, treme, peito);
+        rp.aL.sh.rotation.z += Math.sin(t * 29) * 0.02 * peito; rp.aL.el.rotation.x += Math.sin(t * 23 + 1) * 0.03 * peito;
+        const limpa = S((t - 5.2) / 0.4) * (1 - S((t - 6.3) / 0.4));
+        mistura(rp.aR, soltoE, enxuga, limpa);
+        rp.aR.el.rotation.x += Math.sin(t * 9) * 0.06 * limpa;                                // esfrega
+        Elenco.mao(pai, "dir", "punho", peito); Elenco.mao(pai, "esq", "segura", limpa * 0.6);
+        // cabeça e rosto: segura o choro olhando pra cima; desaba; enxuga; se recompõe
+        let expr = "triste";
+        if (t > 4.4 && t < 6.6) expr = "choro"; else if (t >= 6.9) expr = "firme";
+        if (rp.ficha.expr !== expr) Elenco.expressao(pai, expr);
+        const resp = (Math.sin(t * 2 * Math.PI * 0.9) + 0.6 * Math.sin(t * 2 * Math.PI * 2.3)) * 0.008 * (t > 3 && t < 6.8 ? 1 : 0.4);   // respiração entrecortada
+        const cima = S((t - 2.6) / 0.5) * (1 - S((t - 4.3) / 0.4));
+        const desaba = S((t - 4.3) / 0.4) * (1 - S((t - 6.6) / 0.5));
+        Elenco.cabeca(pai, -0.2 * cima + 0.16 * desaba + 0.1 * limpa * 0 + Math.sin(t * 5.1) * 0.012 * desaba, 0.15 * desaba - 0.5 * S((t - 6.8) / 0.4), 0.05 * cima, resp);
+        // lágrimas: escorrem quando ele desaba; diminuem depois que enxuga
+        Elenco.lagrimas(pai, S((t - 4.4) / 0.4) * (1 - 0.55 * S((t - 6.0) / 0.4)) * (1 - S((t - 6.9) / 0.4)), t);
+        for (const r of roupas) r.rotation.z = Math.sin(t * 1.3 + r.position.z) * 0.05;      // roupa mexendo com o vento
+        let cam;
+        if (t < CORTE) {
+          const v = S(t / CORTE);
+          camA.position.set(3.9 - 0.4 * v, 2.5, 7.0 - 0.4 * v); camA.lookAt(-0.3, 1.45, 0.3); cam = camA;
+        } else {
+          const v = S((t - CORTE) / (DUR - CORTE));
+          camB.position.set(1.9 - 0.15 * v, 2.0, 3.6 - 0.25 * v); camB.lookAt(PX - 0.05, 2.0, PZ); cam = camB;
+        }
+        pos.render(scene, cam, t, LOOK);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["quintal"] = tl;
+      render();
+    })();
+  </script>
+</template>
