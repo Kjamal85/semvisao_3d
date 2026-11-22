@@ -10,3 +10,5 @@ A cegueira não afeta todo mundo de uma vez — aparece gradualmente,
 Cegos são isolados num colégio/ginásio de quarentena.
 Suprimentos vão acabando. A civilização se desintegra aos poucos.
 A causa do apagão é mistério — nunca confirmada. Várias teorias surgem.
+
+cada personagem tem uma historia própria interior, que é mostrada ao longo dos episódios e atualizado no banco de contexto de personagem.
