@@ -1,0 +1,364 @@
+<title>Model Sheet — semvisão</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap">
+<style>
+/* Layout: folha de referência de personagem (turnaround + expressões). Palco neutro fixo p/ cor ler igual nos dois temas; cromo da página segue o tema. */
+:root{
+  --bg:#12131a; --bg2:#1a1c26; --border:rgba(255,255,255,.09);
+  --fg:#e6e8f0; --fg2:#9398b0; --accent:#e0795a; --accent2:#5fb6a8;
+  --stage:#e9e9ee; --stage-ink:#3a3c48; --stage-grid:rgba(0,0,0,.06);
+  --space:"Space Grotesk",system-ui,sans-serif; --inter:"Inter",system-ui,sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#f3f4f8; --bg2:#fff; --border:rgba(0,0,0,.09); --fg:#1a1c26; --fg2:#5a5e76;
+}}
+:root[data-theme="light"]{--bg:#f3f4f8;--bg2:#fff;--border:rgba(0,0,0,.09);--fg:#1a1c26;--fg2:#5a5e76;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--inter);line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 3rem}
+.wrap{max-width:1080px;margin-inline:auto}
+header.top{background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:1.1rem max(16px,env(safe-area-inset-left,0px));
+  margin-left:max(-16px,-1*env(safe-area-inset-left,0px));margin-right:max(-16px,-1*env(safe-area-inset-right,0px));
+  display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap}
+header.top h1{font-family:var(--space);font-size:1.05rem;font-weight:700}
+header.top .sub{font-size:.8rem;color:var(--fg2)}
+.sec{margin-top:2.4rem}
+.sec-title{font-family:var(--space);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--fg2);border-bottom:1px solid var(--border);padding-bottom:.4rem;margin-bottom:1.1rem}
+.note{font-size:.82rem;color:var(--fg2);margin-bottom:1rem}
+.char{display:grid;grid-template-columns:1fr 280px;gap:1.2rem;align-items:start}
+@media(max-width:760px){.char{grid-template-columns:1fr}}
+.stages{display:flex;gap:.7rem;flex-wrap:wrap}
+.stage{background:var(--stage);border:1px solid var(--border);border-radius:10px;padding:.4rem;flex:1;min-width:150px;position:relative}
+.stage .lbl{position:absolute;top:.5rem;left:.6rem;font-family:var(--space);font-size:.62rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--stage-ink);opacity:.65}
+.stage svg{width:100%;height:auto;display:block}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.panel h3{font-family:var(--space);font-size:1.05rem;font-weight:700;display:flex;gap:.5rem;align-items:baseline}
+.panel h3 .age{font-size:.78rem;color:var(--fg2);font-weight:500}
+.panel dl{display:grid;grid-template-columns:auto 1fr;gap:.25rem .7rem;margin:.7rem 0;font-size:.82rem}
+.panel dt{color:var(--fg2)}
+.panel dd{font-variant-numeric:tabular-nums}
+.sw-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.sw{display:flex;flex-direction:column;align-items:center;gap:.2rem;font-size:.62rem;color:var(--fg2)}
+.sw i{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);display:block}
+.panel ul{margin:.6rem 0 0 1rem;font-size:.8rem;line-height:1.5}
+.expr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:.6rem}
+.expr{background:var(--stage);border:1px solid var(--border);border-radius:9px;padding:.3rem}
+.expr svg{width:100%;height:auto;display:block}
+.expr .name{text-align:center;font-family:var(--space);font-size:.66rem;font-weight:600;color:var(--stage-ink);padding:.1rem 0 .25rem}
+.blind-row{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.blind-stage{background:var(--stage);border:1px solid var(--border);border-radius:10px;padding:.5rem;min-width:140px}
+.blind-stage .name{text-align:center;font-family:var(--space);font-size:.66rem;font-weight:700;color:var(--stage-ink);padding-top:.2rem}
+.blind-txt{flex:1;min-width:240px;font-size:.84rem}
+.blind-txt li{margin-left:1rem}
+.todo{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.7rem}
+.todo .card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:.7rem .9rem}
+.todo .card h4{font-family:var(--space);font-size:.82rem;font-weight:700;margin-bottom:.2rem}
+.todo .card p{font-size:.76rem;color:var(--fg2)}
+.badge{display:inline-block;font-family:var(--space);font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:.15em .5em;border-radius:4px;background:rgba(224,121,90,.15);color:var(--accent);margin-left:.4rem}
+footer{margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.74rem;color:var(--fg2)}
+</style>
+
+<header class="top">
+  <h1>Model Sheet — <span style="color:var(--accent)">semvisão</span></h1>
+  <span class="sub">Referência de personagem (frente · 3/4 · costas + expressões) para guiar a modelagem 3D — low-poly estilo E Se?, cabeça ~20% menor</span>
+</header>
+
+<div class="wrap">
+
+  <div class="sec">
+    <div class="sec-title">Escala e proporção</div>
+    <p class="note">O Gabi é mais alto e mais magro; a Duda um pouco mais baixa, magrinha (não muito). Cabeça ~32% da altura (a referência usa ~40%). Silhueta de adulto ao lado só para escala dos pais.</p>
+    <div class="stage" style="padding:1rem">
+      <svg id="lineup" viewBox="0 0 560 400" role="img" aria-label="Comparação de altura entre Gabi, Duda e um adulto"></svg>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Gabriel ("Gabi") · 17</div>
+    <div class="char">
+      <div class="stages" id="gabi-stages"></div>
+      <div class="panel">
+        <h3>Gabi <span class="age">17 anos</span></h3>
+        <dl>
+          <dt>Altura</dt><dd>~1,78 m (o mais alto)</dd>
+          <dt>Tipo</dt><dd>magro, ombros estreitos</dd>
+          <dt>Cabeça</dt><dd>~32% da altura</dd>
+          <dt>Postura</dt><dd>curva um pouco ao cegar</dd>
+        </dl>
+        <div class="sw-row">
+          <div class="sw"><i style="background:#b5603f"></i>blusa</div>
+          <div class="sw"><i style="background:#8f4a30"></i>sombra</div>
+          <div class="sw"><i style="background:#454551"></i>calça</div>
+          <div class="sw"><i style="background:#e6b196"></i>pele</div>
+          <div class="sw"><i style="background:#30261f"></i>cabelo</div>
+          <div class="sw"><i style="background:#6a6a71"></i>olho cego</div>
+        </div>
+        <ul>
+          <li>Cor-assinatura: <strong>terracota / laranja-enferrujado</strong>.</li>
+          <li>Quando cego: <strong>olhos brancos</strong> (ver abaixo).</li>
+          <li>Detalhe-assinatura (objeto que ele agarra): <em>a definir</em>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Duda · 16</div>
+    <div class="char">
+      <div class="stages" id="duda-stages"></div>
+      <div class="panel">
+        <h3>Duda <span class="age">16 anos</span></h3>
+        <dl>
+          <dt>Altura</dt><dd>~1,66 m (menor que o Gabi)</dd>
+          <dt>Tipo</dt><dd>magrinha, não muito</dd>
+          <dt>Cabeça</dt><dd>~32% da altura</dd>
+          <dt>Cabelo</dt><dd>na altura do ombro</dd>
+        </dl>
+        <div class="sw-row">
+          <div class="sw"><i style="background:#5fb6a8"></i>blusa</div>
+          <div class="sw"><i style="background:#48938a"></i>sombra</div>
+          <div class="sw"><i style="background:#5a5560"></i>calça</div>
+          <div class="sw"><i style="background:#ecc0a6"></i>pele</div>
+          <div class="sw"><i style="background:#4b3b2d"></i>cabelo</div>
+          <div class="sw"><i style="background:#8fd8cb;border-color:#aaa"></i>→ dessat.</div>
+        </div>
+        <ul>
+          <li>Cor-assinatura: <strong>verde-água</strong>, que <strong>dessatura</strong> conforme ela vai cegando.</li>
+          <li>Gosta do Gabi (sentimento mútuo não assumido).</li>
+          <li>Detalhe-assinatura: <em>a definir</em>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Expressões — rosto simples, porém expressivo</div>
+    <p class="note">O rosto é minimalista (estilo E Se?) mas <strong>rigado para sentir</strong>: olhos, sobrancelhas e boca. Vale para Gabi e Duda. A emoção completa vem deste rosto <strong>+ corpo + respiração + câmera + vinheta + som</strong>.</p>
+    <div class="expr-grid" id="expr-grid"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">Olho de cego — padrão único para todos que cegam</div>
+    <div class="blind-row">
+      <div class="blind-stage"><svg viewBox="0 0 160 150" id="eye-see"></svg><div class="name">ENXERGANDO</div></div>
+      <div class="blind-stage"><svg viewBox="0 0 160 150" id="eye-blind"></svg><div class="name">CEGO</div></div>
+      <div class="blind-txt">
+        <strong>Regra:</strong> mantém o olho do estilo E Se? (tamanho + a <strong>bolinha de brilho</strong>), mas <strong>nublado</strong>: globo <strong>cinza-escuro fosco</strong> (um cinza mais claro que o preto) e o brilho <strong>off-white</strong> (um pouco mais escuro que o branco). Igual para todos que cegam.
+        <ul>
+          <li>No lugar do olho preto, um <strong>cinza-escuro fosco</strong>; a bolinha de brilho vira <strong>off-white</strong> (apagada).</li>
+          <li>Olho um pouco <strong>mais aberto e sem foco</strong> (o olhar não "pousa" em nada).</li>
+          <li>Pálpebra e sobrancelha <strong>ainda funcionam</strong> — é por elas que a emoção passa (medo, choro).</li>
+          <li>Consistente entre Gabi, a Duda (quando cegar) e os figurantes cegos.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">A criar — aguardando seu OK <span class="badge">rascunho</span></div>
+    <p class="note">Você me deu liberdade para estes; vou propor e você aprova.</p>
+    <div class="todo">
+      <div class="card"><h4>Mãe e Pai do Gabi</h4><p>Adultos, enxergam no Dia 1. Mesmo estilo, cabeça proporcional de adulto. Tons sóbrios.</p></div>
+      <div class="card"><h4>Equipe de quarentena</h4><p>"Roupa de filme": macacão/hazmat azul-ardósia, capuz, viseira. Anônimos, frios — contraste com a casa quente.</p></div>
+      <div class="card"><h4>Repórter (TV)</h4><p>Voz feminina; aparece só na tela da TV. Figurino de telejornal.</p></div>
+      <div class="card"><h4>Figurantes do bairro</h4><p>Vizinhos reagindo ao apagão; variação de cor/silhueta para o minimundo parecer vivo.</p></div>
+      <div class="card"><h4>Cenário base</h4><p>Quarto do Gabi, sala com a TV, portão/calçada, janela da Duda, e depois o ginásio de quarentena.</p></div>
+    </div>
+  </div>
+
+  <footer>Referência vetorial 2D (conceito) para orientar a modelagem 3D — não é render final. Estilo, proporções e cores conforme <code>briefing/linguagem-visual.md</code>.</footer>
+</div>
+
+<script>
+const SVGNS="http://www.w3.org/2000/svg";
+// ---- paletas ----
+const PAL={
+  gabi:{skin:"#e6b196",skinS:"#d19a7f",hair:"#30261f",top:"#b5603f",topS:"#8f4a30",pants:"#454551",pantsS:"#363640",shoe:"#2d2d36"},
+  duda:{skin:"#ecc0a6",skinS:"#d9a98d",hair:"#4b3b2d",top:"#5fb6a8",topS:"#48938a",pants:"#5a5560",pantsS:"#474350",shoe:"#3a3a44"},
+  adult:{skin:"#dcae92",skinS:"#c6977b",hair:"#2b2b30",top:"#6b6f7a",topS:"#555963",pants:"#3c3f48",pantsS:"#30333a",shoe:"#242428"}
+};
+function el(tag,attrs){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+// ---- rosto ----
+function face(g,cx,cy,r,spec,pal){
+  const s=r/46, eDX=r*0.34, eY=cy+r*0.12, mY=cy+r*0.46, brY=eY-r*0.30;
+  const ink="#24242a", glint="#ffffff", bGray="#6a6a71", bGlint="#ecebe4";
+  function cat(ex,ey,rr,col){g.appendChild(el("circle",{cx:ex-rr*0.42,cy:ey-rr*0.48,r:Math.max(1,rr*0.3),fill:col}));}
+  function brow(x,dir){ // dir: flat/up/worry/raise  (x sign: -1 left, +1 right)
+    let x1,y1,x2,y2;
+    const w=r*0.22, side=x*eDX;
+    if(spec.brow==="up"){y1=brY-2*s; y2=brY-6*s;}
+    else if(spec.brow==="worry"){ // inner up
+      if(x<0){x1=side-w;y1=brY; x2=side+w;y2=brY-5*s;} else {x1=side-w;y1=brY-5*s; x2=side+w;y2=brY;}
+      g.appendChild(el("line",{x1:cx+x1,y1:y1,x2:cx+x2,y2:y2,stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"})); return;
+    }
+    else if(spec.brow==="raise"){y1=brY-4*s;y2=brY-4*s;}
+    else {y1=brY;y2=brY;}
+    g.appendChild(el("line",{x1:cx+side-w,y1:y1,x2:cx+side+w,y2:y2,stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"}));
+  }
+  function eye(x){
+    const ex=cx+x*eDX;
+    if(spec.blind){
+      g.appendChild(el("ellipse",{cx:ex,cy:eY,rx:5.4*s,ry:6.8*s,fill:bGray,stroke:"#44444b","stroke-width":1}));
+      cat(ex,eY,6.8*s,bGlint);
+      return;
+    }
+    if(spec.eyes==="wide"){
+      g.appendChild(el("ellipse",{cx:ex,cy:eY,rx:6*s,ry:7.5*s,fill:"#fff",stroke:ink,"stroke-width":1}));
+      g.appendChild(el("circle",{cx:ex,cy:eY+1*s,r:3.4*s,fill:ink}));
+      cat(ex,eY+1*s,3.4*s,glint);
+    } else if(spec.eyes==="down"){
+      g.appendChild(el("path",{d:`M ${ex-6*s} ${eY} Q ${ex} ${eY+5*s} ${ex+6*s} ${eY}`,fill:"none",stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"}));
+    } else if(spec.eyes==="tight"){
+      g.appendChild(el("path",{d:`M ${ex-6*s} ${eY+2*s} Q ${ex} ${eY-3*s} ${ex+6*s} ${eY+2*s}`,fill:"none",stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"}));
+    } else if(spec.eyes==="soft"){
+      g.appendChild(el("path",{d:`M ${ex-6*s} ${eY+1*s} Q ${ex} ${eY+5*s} ${ex+6*s} ${eY+1*s}`,fill:"none",stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"}));
+    } else { // normal
+      g.appendChild(el("ellipse",{cx:ex,cy:eY,rx:4.7*s,ry:6.2*s,fill:ink}));
+      cat(ex,eY,6.2*s,glint);
+    }
+  }
+  // sobrancelhas
+  if(spec.brow!=="none"){brow(-1);brow(1);}
+  eye(-1);eye(1);
+  // boca
+  if(spec.mouth==="O"){g.appendChild(el("ellipse",{cx:cx,cy:mY,rx:5*s,ry:7*s,fill:"#7a3b34"}));}
+  else if(spec.mouth==="smallOpen"){g.appendChild(el("ellipse",{cx:cx,cy:mY,rx:4*s,ry:4.5*s,fill:"#7a3b34"}));}
+  else if(spec.mouth==="smile"){g.appendChild(el("path",{d:`M ${cx-7*s} ${mY-1*s} Q ${cx} ${mY+6*s} ${cx+7*s} ${mY-1*s}`,fill:"none",stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"}));}
+  else if(spec.mouth==="press"){g.appendChild(el("path",{d:`M ${cx-6*s} ${mY+1*s} Q ${cx} ${mY-1*s} ${cx+6*s} ${mY+1*s}`,fill:"none",stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"}));}
+  else if(spec.mouth==="small"){g.appendChild(el("line",{x1:cx-3*s,y1:mY,x2:cx+3*s,y2:mY,stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"}));}
+  else {g.appendChild(el("line",{x1:cx-6*s,y1:mY,x2:cx+6*s,y2:mY,stroke:ink,"stroke-width":3*s,"stroke-linecap":"round"}));}
+  if(spec.tear){g.appendChild(el("path",{d:`M ${cx-eDX} ${eY+7*s} q -3 7 0 9 q 3 -2 0 -9`,fill:"#6fb4e8"}));}
+}
+// ---- corpo ----
+function body(svg,pal,opts){
+  // opts: H, pose(front/threeq/back), face(spec), hairLong
+  const foot=opts.foot||345, cx=opts.cx||110, H=opts.H;
+  const top=foot-H, headH=H*0.31, headR=headH/2, headCy=top+headR;
+  const shoulderY=headCy+headR+7, legLen=H*0.42, hipY=foot-legLen;
+  const shW=opts.shW||H*0.11, waistW=shW*0.82;
+  const line="#2b2730", lw=1.4;
+  const g=el("g",{});
+  // sombra chão
+  g.appendChild(el("ellipse",{cx:cx,cy:foot+6,rx:headR*1.1,ry:7,fill:"rgba(0,0,0,.12)"}));
+  // pernas
+  const legW=H*0.052, lx=H*0.042;
+  [-1,1].forEach(sgn=>{
+    g.appendChild(el("rect",{x:cx+sgn*lx-legW/2,y:hipY,width:legW,height:legLen,rx:legW/2,fill:pal.pants,stroke:line,"stroke-width":lw}));
+    g.appendChild(el("rect",{x:cx+sgn*lx-legW/2,y:hipY,width:legW*0.42,height:legLen,rx:legW*0.21,fill:pal.pantsS,opacity:.55}));
+    g.appendChild(el("ellipse",{cx:cx+sgn*lx,cy:foot+2,rx:legW*0.62,ry:6,fill:pal.shoe,stroke:line,"stroke-width":lw}));
+  });
+  // torso (trapézio)
+  const tTop=shoulderY, tBot=hipY+2;
+  g.appendChild(el("path",{d:`M ${cx-shW} ${tTop} Q ${cx-shW} ${tTop-4} ${cx-shW+5} ${tTop-4} L ${cx+shW-5} ${tTop-4} Q ${cx+shW} ${tTop-4} ${cx+shW} ${tTop} L ${cx+waistW} ${tBot} Q ${cx+waistW} ${tBot+4} ${cx+waistW-4} ${tBot+4} L ${cx-waistW+4} ${tBot+4} Q ${cx-waistW} ${tBot+4} ${cx-waistW} ${tBot} Z`,fill:pal.top,stroke:line,"stroke-width":lw,"stroke-linejoin":"round"}));
+  // cel shadow no torso (lado direito)
+  g.appendChild(el("path",{d:`M ${cx+shW*0.15} ${tTop-3} L ${cx+shW} ${tTop} L ${cx+waistW} ${tBot} L ${cx+waistW*0.15} ${tBot+3} Z`,fill:pal.topS,opacity:.5}));
+  // braços
+  const armW=H*0.040, armLen=H*0.33;
+  [-1,1].forEach(sgn=>{
+    const ax=cx+sgn*(shW-armW*0.3);
+    g.appendChild(el("rect",{x:ax-armW/2,y:tTop+2,width:armW,height:armLen,rx:armW/2,fill:pal.top,stroke:line,"stroke-width":lw}));
+    g.appendChild(el("circle",{cx:ax,cy:tTop+2+armLen,r:armW*0.62,fill:pal.skin,stroke:line,"stroke-width":lw})); // mão
+  });
+  // pescoço
+  g.appendChild(el("rect",{x:cx-headR*0.22,y:headCy+headR-5,width:headR*0.44,height:14,fill:pal.skinS}));
+  // cabelo atrás (p/ costas e cabelo longo)
+  if(opts.pose==="back"){
+    g.appendChild(el("circle",{cx:cx,cy:headCy,r:headR,fill:pal.hair,stroke:line,"stroke-width":lw}));
+    if(opts.hairLong){g.appendChild(el("path",{d:`M ${cx-headR*0.95} ${headCy} Q ${cx-headR} ${headCy+headR*1.3} ${cx-headR*0.5} ${headCy+headR*1.5} L ${cx+headR*0.5} ${headCy+headR*1.5} Q ${cx+headR} ${headCy+headR*1.3} ${cx+headR*0.95} ${headCy} Z`,fill:pal.hair,stroke:line,"stroke-width":lw,"stroke-linejoin":"round"}));}
+    g.appendChild(el("circle",{cx:cx,cy:headCy,r:headR,fill:"rgba(0,0,0,.12)"}));
+    svg.appendChild(g); return;
+  }
+  // cabelo longo (atrás da cabeça) para Duda em frente/3q
+  if(opts.hairLong){g.appendChild(el("path",{d:`M ${cx-headR*0.9} ${headCy-2} Q ${cx-headR*1.05} ${headCy+headR*1.2} ${cx-headR*0.55} ${headCy+headR*1.5} L ${cx-headR*0.2} ${headCy+headR*1.4} L ${cx-headR*0.2} ${headCy} Z M ${cx+headR*0.9} ${headCy-2} Q ${cx+headR*1.05} ${headCy+headR*1.2} ${cx+headR*0.55} ${headCy+headR*1.5} L ${cx+headR*0.2} ${headCy+headR*1.4} L ${cx+headR*0.2} ${headCy} Z`,fill:pal.hair,stroke:line,"stroke-width":lw,"stroke-linejoin":"round"}));}
+  // cabeça
+  const hcx = opts.pose==="threeq"? cx+6 : cx;
+  g.appendChild(el("circle",{cx:hcx,cy:headCy,r:headR,fill:pal.skin,stroke:line,"stroke-width":lw}));
+  // cel shadow cabeça
+  g.appendChild(el("path",{d:`M ${hcx+headR*0.1} ${headCy-headR} A ${headR} ${headR} 0 0 1 ${hcx+headR*0.1} ${headCy+headR} A ${headR*0.7} ${headR} 0 0 0 ${hcx+headR*0.1} ${headCy-headR} Z`,fill:pal.skinS,opacity:.35}));
+  // cabelo (franja/topo)
+  g.appendChild(el("path",{d:`M ${hcx-headR*0.98} ${headCy-headR*0.1} Q ${hcx-headR} ${headCy-headR*1.05} ${hcx} ${headCy-headR*1.02} Q ${hcx+headR} ${headCy-headR*1.05} ${hcx+headR*0.98} ${headCy-headR*0.1} Q ${hcx+headR*0.6} ${headCy-headR*0.55} ${hcx+headR*0.2} ${headCy-headR*0.42} Q ${hcx} ${headCy-headR*0.6} ${hcx-headR*0.2} ${headCy-headR*0.42} Q ${hcx-headR*0.6} ${headCy-headR*0.55} ${hcx-headR*0.98} ${headCy-headR*0.1} Z`,fill:pal.hair,stroke:line,"stroke-width":lw,"stroke-linejoin":"round"}));
+  // orelha no 3/4
+  if(opts.pose==="threeq"){g.appendChild(el("circle",{cx:hcx-headR*0.92,cy:headCy+headR*0.15,r:headR*0.14,fill:pal.skinS,stroke:line,"stroke-width":lw}));}
+  // rosto
+  face(g,hcx,headCy,headR,opts.face,pal);
+  svg.appendChild(g);
+}
+function stage(container,label,pal,opts){
+  const d=document.createElement("div");d.className="stage";
+  const svg=el("svg",{viewBox:"0 0 220 380",role:"img","aria-label":label});
+  body(svg,pal,Object.assign({},opts));
+  d.innerHTML='<span class="lbl">'+label+'</span>';
+  d.appendChild(svg);container.appendChild(d);
+}
+const neutro={eyes:"normal",brow:"flat",mouth:"line"};
+// turnarounds
+function turn(id,pal,H,shW,hairLong){
+  const c=document.getElementById(id);
+  stage(c,"frente",pal,{pose:"front",H:H,shW:shW,hairLong:hairLong,face:neutro});
+  stage(c,"3/4",pal,{pose:"threeq",H:H,shW:shW,hairLong:hairLong,face:neutro});
+  stage(c,"costas",pal,{pose:"back",H:H,shW:shW,hairLong:hairLong,face:neutro});
+}
+turn("gabi-stages",PAL.gabi,300,34,false);
+turn("duda-stages",PAL.duda,272,30,true);
+
+// line-up de escala
+(function(){
+  const svg=document.getElementById("lineup");
+  // guias de altura
+  const foot=360;
+  [["Gabi",300,PAL.gabi,110,34,false],["Duda",272,PAL.duda,250,30,true],["adulto",330,PAL.adult,400,40,false]].forEach(([nm,H,pal,cx,shW,hl])=>{
+    const g=el("g",{});svg.appendChild(g);
+    const sub=el("svg",{x:cx-110,y:0,width:220,height:380,viewBox:"0 0 220 380",overflow:"visible"});
+    body(sub,pal,{pose:"front",H:H,shW:shW,hairLong:hl,foot:foot,cx:110,face:neutro});
+    svg.appendChild(sub);
+    const t=el("text",{x:cx,y:foot+28,"text-anchor":"middle",fill:"#3a3c48","font-size":12,"font-family":"Space Grotesk, sans-serif","font-weight":600});t.textContent=nm;svg.appendChild(t);
+    svg.appendChild(el("line",{x1:cx-90,y1:foot-H,x2:cx+90,y2:foot-H,stroke:"rgba(0,0,0,.18)","stroke-dasharray":"3 3","stroke-width":1}));
+  });
+})();
+
+// grade de expressões (usa a cabeça do Gabi)
+const EXPR=[
+  ["Neutro",{eyes:"normal",brow:"flat",mouth:"line"}],
+  ["Medo",{eyes:"wide",brow:"up",mouth:"smallOpen"}],
+  ["Vergonha",{eyes:"down",brow:"worry",mouth:"small"}],
+  ["Choro contido",{eyes:"tight",brow:"worry",mouth:"press",tear:true}],
+  ["Surpresa",{eyes:"wide",brow:"up",mouth:"O"}],
+  ["Esperança",{eyes:"soft",brow:"flat",mouth:"smile"}],
+  ["Cego (olho fosco)",{blind:true,brow:"raise",mouth:"line"}]
+];
+(function(){
+  const grid=document.getElementById("expr-grid");
+  EXPR.forEach(([nm,spec])=>{
+    const d=document.createElement("div");d.className="expr";
+    const svg=el("svg",{viewBox:"0 0 160 150",role:"img","aria-label":nm});
+    const g=el("g",{});
+    // cabeça grande centralizada
+    const cx=80,cy=78,r=52,pal=PAL.gabi;
+    g.appendChild(el("circle",{cx:cx,cy:cy,r:r,fill:pal.skin,stroke:"#2b2730","stroke-width":1.4}));
+    g.appendChild(el("path",{d:`M ${cx+r*0.1} ${cy-r} A ${r} ${r} 0 0 1 ${cx+r*0.1} ${cy+r} A ${r*0.7} ${r} 0 0 0 ${cx+r*0.1} ${cy-r} Z`,fill:pal.skinS,opacity:.32}));
+    g.appendChild(el("path",{d:`M ${cx-r*0.98} ${cy-r*0.1} Q ${cx-r} ${cy-r*1.05} ${cx} ${cy-r*1.02} Q ${cx+r} ${cy-r*1.05} ${cx+r*0.98} ${cy-r*0.1} Q ${cx+r*0.6} ${cy-r*0.55} ${cx+r*0.2} ${cy-r*0.42} Q ${cx} ${cy-r*0.6} ${cx-r*0.2} ${cy-r*0.42} Q ${cx-r*0.6} ${cy-r*0.55} ${cx-r*0.98} ${cy-r*0.1} Z`,fill:pal.hair,stroke:"#2b2730","stroke-width":1.4,"stroke-linejoin":"round"}));
+    face(g,cx,cy,r,spec,pal);
+    svg.appendChild(g);
+    d.appendChild(svg);
+    const n=document.createElement("div");n.className="name";n.textContent=nm;d.appendChild(n);
+    grid.appendChild(d);
+  });
+})();
+
+// olhos: enxergando vs cego (close)
+(function(){
+  function closeEye(id,blind){
+    const svg=document.getElementById(id);const g=el("g",{});const cx=80,cy=70,r=46,pal=PAL.gabi;
+    g.appendChild(el("circle",{cx:cx,cy:cy,r:r,fill:pal.skin,stroke:"#2b2730","stroke-width":1.4}));
+    g.appendChild(el("path",{d:`M ${cx-r*0.98} ${cy-r*0.1} Q ${cx-r} ${cy-r*1.05} ${cx} ${cy-r*1.02} Q ${cx+r} ${cy-r*1.05} ${cx+r*0.98} ${cy-r*0.1} Q ${cx+r*0.6} ${cy-r*0.55} ${cx+r*0.2} ${cy-r*0.42} Q ${cx} ${cy-r*0.6} ${cx-r*0.2} ${cy-r*0.42} Q ${cx-r*0.6} ${cy-r*0.55} ${cx-r*0.98} ${cy-r*0.1} Z`,fill:pal.hair,stroke:"#2b2730","stroke-width":1.4,"stroke-linejoin":"round"}));
+    face(g,cx,cy,r,blind?{blind:true,brow:"flat",mouth:"line"}:{eyes:"normal",brow:"flat",mouth:"line"},pal);
+    svg.appendChild(g);
+  }
+  closeEye("eye-see",false);closeEye("eye-blind",true);
+})();
+</script>

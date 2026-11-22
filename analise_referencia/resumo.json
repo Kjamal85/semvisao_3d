@@ -1,0 +1,77 @@
+{
+ "reflexos": {
+  "titulo": "E se você tivesse reflexos SOBRE-HUMANOS?",
+  "duracao_s": 515.3,
+  "quadros": 15460,
+  "planos": 140,
+  "cortes": 139,
+  "cortes_por_min": 16.2,
+  "dur_media": 3.68,
+  "dur_mediana": 3.23,
+  "dur_min": 0.07,
+  "dur_max": 10.7,
+  "locacoes_aprox": 20,
+  "luma_media": 99.4,
+  "luma_p5": 40.1,
+  "luma_p95": 140.7,
+  "sat_media": 0.453,
+  "contraste_medio": 47.4,
+  "quente": 0.176,
+  "frio": 0.474,
+  "cam": {
+   "leve": 45,
+   "fixo": 75,
+   "movimento": 20
+  }
+ },
+ "forca": {
+  "titulo": "E se sua força dobrasse TODOS os dias?",
+  "duracao_s": 528.5,
+  "quadros": 15856,
+  "planos": 137,
+  "cortes": 136,
+  "cortes_por_min": 15.4,
+  "dur_media": 3.86,
+  "dur_mediana": 3.37,
+  "dur_min": 0.1,
+  "dur_max": 16.27,
+  "locacoes_aprox": 19,
+  "luma_media": 118.8,
+  "luma_p5": 54.0,
+  "luma_p95": 177.2,
+  "sat_media": 0.352,
+  "contraste_medio": 48.4,
+  "quente": 0.149,
+  "frio": 0.305,
+  "cam": {
+   "movimento": 25,
+   "leve": 78,
+   "fixo": 34
+  }
+ },
+ "velocidade": {
+  "titulo": "E se sua velocidade DOBRASSE todo dia?",
+  "duracao_s": 719.4,
+  "quadros": 21582,
+  "planos": 136,
+  "cortes": 135,
+  "cortes_por_min": 11.3,
+  "dur_media": 5.29,
+  "dur_mediana": 4.02,
+  "dur_min": 0.3,
+  "dur_max": 44.77,
+  "locacoes_aprox": 13,
+  "luma_media": 131.2,
+  "luma_p5": 27.4,
+  "luma_p95": 169.5,
+  "sat_media": 0.337,
+  "contraste_medio": 50.5,
+  "quente": 0.317,
+  "frio": 0.152,
+  "cam": {
+   "leve": 52,
+   "movimento": 33,
+   "fixo": 51
+  }
+ }
+}
