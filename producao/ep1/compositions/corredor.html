@@ -1,0 +1,202 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #0d1018; }
+    #cr-stage { position: absolute; inset: 0; z-index: 0; }
+    #cr-stage canvas { display: block; }
+    #cr-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #cr-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="corredor" data-width="1920" data-height="1080">
+    <div id="cr-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+    <div id="cr-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">CENÁRIO 6 — CORREDOR<small>tarde do dia 1 · conta os passos, erra, bate o ombro na quina · planos 45–46</small></div>
+  </div>
+  <script>
+    (function () {
+      const DUR = 8, CORTE = 4.9, BATE = 4.0;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
+
+      const casa = new THREE.Group();
+      const k = Cena.kit(casa, 45046);
+      const { box, cil, bolha, rnd, M } = k;
+      const luz = (c) => new THREE.MeshBasicMaterial({ color: c });
+
+      // ---------- arquitetura: corredor ao longo de z (quarto do Gabi em z<0, sala em z>8) ----------
+      // largo (x -0,8..1,2) até z=4; ali a parede direita avança e o corredor estreita (x -0,8..0,75): a QUINA
+      const XE = -0.8, XD = 1.2, XD2 = 0.75, ZQ = 4.0, Z0 = -1.0, Z1 = 8.5, H = 3.9;
+      const PAREDE = 0xb9ab94, RODAPE = 0xf0ebe0;
+      for (let i = 0; i < 6; i++) box(0.34, 0.05, Z1 - Z0, [0x9a7452, 0x8e6a4a, 0xa57d5a][i % 3], XE + 0.17 + i * 0.335, -0.025, (Z0 + Z1) / 2, { contorno: false, sombra: false });   // tacos
+      box(XD - XE + 0.3, 0.12, Z1 - Z0, 0xd2c9b8, (XE + XD) / 2, H + 0.06, (Z0 + Z1) / 2, { contorno: false });       // teto
+      // parede esquerda com a porta do quarto dos pais (z 2,1..3,1), aberta
+      const PZ0 = 2.1, PZ1 = 3.1, PY = 2.75;
+      const esq = (z0, z1, y0, y1) => box(0.12, y1 - y0, z1 - z0, PAREDE, XE - 0.06, (y0 + y1) / 2, (z0 + z1) / 2, { contorno: false });
+      esq(Z0, PZ0, 0, H); esq(PZ1, Z1, 0, H); esq(PZ0, PZ1, PY, H);
+      for (const z of [PZ0, PZ1]) box(0.16, PY, 0.08, 0xf1ede4, XE + 0.02, PY / 2, z);
+      box(0.16, 0.08, PZ1 - PZ0 + 0.16, 0xf1ede4, XE + 0.02, PY, (PZ0 + PZ1) / 2);
+      const portaPais = new THREE.Group(); portaPais.position.set(XE, 0, PZ0 + 0.02); portaPais.rotation.y = -1.25; casa.add(portaPais);
+      box(0.05, PY - 0.04, PZ1 - PZ0 - 0.04, 0x8a6446, -0.03, (PY - 0.04) / 2, (PZ1 - PZ0) / 2, { pai: portaPais });
+      // lá dentro: penumbra, pé da cama e a cortina fechada
+      box(3, 0.05, 2.6, 0x7a6a5a, XE - 1.5, -0.02, (PZ0 + PZ1) / 2, { contorno: false, sombra: false });
+      box(0.1, H, 2.6, 0x8b8273, XE - 2.6, H / 2, (PZ0 + PZ1) / 2, { contorno: false });
+      box(1.2, 0.55, 1.4, 0x5d6d8c, XE - 1.6, 0.3, (PZ0 + PZ1) / 2 - 0.3);
+      // parede direita: trecho largo, o degrau da quina e o trecho estreito
+      // parede direita inteira + um bloco de alvenaria (armário embutido) saindo dela: a QUINA é a aresta dele
+      const ZB = 1.3;
+      box(0.12, H, Z1 - Z0, PAREDE, XD + 0.06, H / 2, (Z0 + Z1) / 2, { contorno: false });
+      box(XD - XD2, H, ZB, PAREDE, (XD + XD2) / 2, H / 2, ZQ + ZB / 2, { contorno: false });
+      // a quina: cantoneira clara e a tinta gasta na altura do ombro (já bateram ali antes, de outro jeito)
+      box(0.035, H, 0.035, 0xe8e4da, XD2 - 0.02, H / 2, ZQ + 0.0);
+      bolha(0.07, 0xb3a690, XD2 - 0.0, 1.78, ZQ - 0.01, [0.4, 1.3, 0.2], { contorno: false });
+      for (const [x, z, w, d] of [[XE + 0.02, (Z0 + Z1) / 2, 0.04, Z1 - Z0], [XD - 0.02, (Z0 + Z1) / 2, 0.04, Z1 - Z0], [XD2 - 0.02, ZQ + ZB / 2, 0.04, ZB]]) box(w, 0.14, d, RODAPE, x, 0.07, z, { contorno: false });
+      // fundo: porta aberta do quarto do Gabi, a luz da janela dele lá dentro
+      const fundo = (x0, x1, y0, y1) => box(x1 - x0, y1 - y0, 0.12, PAREDE, (x0 + x1) / 2, (y0 + y1) / 2, Z0 - 0.06, { contorno: false });
+      fundo(XE, -0.35, 0, H); fundo(0.55, XD, 0, H); fundo(-0.35, 0.55, PY, H);
+      const quartoLuz = new THREE.Mesh(new THREE.PlaneGeometry(3, 3.5), luz(0xd9e2ee)); quartoLuz.position.set(0.1, 1.7, Z0 - 1.6); casa.add(quartoLuz);
+      box(0.04, PY, 0.9, 0x8a6446, 0.55, PY / 2, Z0 - 0.45, { r: [0, 0, 0] });                             // porta do quarto aberta
+      box(0.6, 0.4, 0.05, 0x3a4a6a, 0.1, 1.9, Z0 - 1.55, { contorno: false });                            // pôster lá dentro
+      // tapete passadeira, aparador com chaves e planta, interruptor, porta-retratos, calendário
+      box(0.9, 0.012, 5.2, 0x7c4a3e, 0.1, 0.006, 1.6, { contorno: false, sombra: false });
+      for (let i = 0; i < 9; i++) box(0.9, 0.013, 0.05, 0xd9b48f, 0.1, 0.007, -0.8 + i * 0.6, { contorno: false, sombra: false });
+      box(0.4, 0.06, 1.0, 0x6e4c37, XD - 0.22, 0.85, 0.6);
+      for (const [dz] of [[0.2], [1.0]]) box(0.04, 0.85, 0.04, 0x4e3527, XD - 0.22, 0.42, dz);
+      cil(0.11, 0.08, 0.2, 0xd9d2c4, XD - 0.22, 0.98, 0.35);
+      for (let i = 0; i < 6; i++) bolha(0.12, 0x4a7a46, XD - 0.22 + Math.cos(i) * 0.06, 1.15 + i * 0.05, 0.35 + Math.sin(i) * 0.06, [0.6, 1.3, 0.3], { r: [0, i, 0.4] });
+      box(0.16, 0.02, 0.1, 0xc9b07a, XD - 0.2, 0.89, 0.8, { contorno: false });
+      box(0.02, 0.14, 0.09, 0xf4f0e6, XE + 0.01, 1.5, PZ1 + 0.25);                                          // interruptor
+      const FOTOS = [[XE, 1.2, 2.15, 0.5, 0.4], [XE, 3.7, 2.0, 0.45, 0.6], [XE, 4.5, 2.25, 0.6, 0.45], [XE, 6.0, 2.05, 0.4, 0.5], [XD, 1.8, 2.1, 0.55, 0.42], [XD, 3.0, 2.2, 0.4, 0.5]];
+      for (const [x, z, y, w, h] of FOTOS) {
+        const s = x < 0 ? 1 : -1;
+        box(0.03, h, w, 0x4a3a2e, x + s * 0.02, y, z);
+        box(0.01, h - 0.08, w - 0.08, [0xbfa38a, 0x9ab0c2, 0xc9b08a, 0xa9c2b5][Math.floor(rnd() * 4)], x + s * 0.04, y, z, { contorno: false });
+      }
+      box(0.02, 0.55, 0.4, 0xf4f1ea, XD2 - 0.01, 1.8, ZQ + 0.75, { contorno: false });                            // calendário
+      box(0.022, 0.1, 0.4, 0xc94a3e, XD2 - 0.015, 2.02, ZQ + 0.75, { contorno: false });
+
+      // ---------- o Gabi: poses calculadas uma vez no lugar de referência (origem, olhando +z) ----------
+      const gabi = Elenco.build("gabi", { blind: true, expr: "firme" });
+      casa.add(gabi); casa.updateMatrixWorld(true);
+      const rg = gabi.userData.rig;
+      const V = (x, y, z) => new THREE.Vector3(x, y, z);
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      Elenco.alcancar(gabi, "dir", V(-0.47, 1.38, 0.18)); const naParede = guarda(rg.aL);   // mão direita deslizando na parede
+      Elenco.alcancar(gabi, "dir", V(-0.25, 1.35, 0.55)); const procura = guarda(rg.aL);    // perdeu a parede: tateia à frente
+      Elenco.alcancar(gabi, "esq", V(0.22, 1.45, 0.6)); const tateia = guarda(rg.aR);       // mão esquerda tateando à frente
+      // depois da batida: mão direita no ombro esquerdo, cotovelo para baixo (pose à mão)
+      Elenco.alcancar(gabi, "dir", V(0.3, 1.58, 0.2)); const noOmbro = guarda(rg.aL);
+      Elenco.alcancar(gabi, "dir", V(-0.47, 1.38, 0.18));
+      // punhos cerrados: braços tensos, um pouco afastados do corpo
+      const punhoD = [new THREE.Euler(0.05, 0, -0.16), new THREE.Euler(-0.32, 0, 0)];
+      const punhoE = [new THREE.Euler(0.02, 0, 0.2), new THREE.Euler(-0.4, 0, 0)];
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+      // mãos fechadas: as esferas das mãos encolhem um pouco e achatam (punho)
+      const maos = [];
+      for (const b of [rg.aL, rg.aR]) b.el.traverse((o) => { if (o.isMesh && Math.abs(o.position.y + 0.46) < 0.001) maos.push(o); });
+
+      // ---------- luz: tarde; claridade da sala atrás da câmera, quarto dele aceso no fundo ----------
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1d24);
+      scene.fog = new THREE.Fog(0x6a6862, 8, 20);
+      scene.add(casa);
+      scene.add(new THREE.HemisphereLight(0xb7c0cf, 0x5a4c3e, 0.5));
+      const sala = new THREE.SpotLight(0xf2dcb8, 6.5, 16, 0.6, 0.9, 1.2);
+      sala.position.set(0.0, 2.9, 10.5); sala.target.position.set(0.0, 0.4, 2.6);
+      sala.castShadow = true; sala.shadow.mapSize.set(2048, 2048); sala.shadow.bias = -0.0015; sala.shadow.normalBias = 0.04;
+      scene.add(sala); scene.add(sala.target);
+      const quarto = new THREE.PointLight(0xcad8ee, 5, 7, 1.5); quarto.position.set(0.1, 2.0, Z0 - 0.6); casa.add(quarto);
+      const rosto = new THREE.PointLight(0xe6e0d6, 1.3, 3.5, 1.6); casa.add(rosto);   // preenchimento fraco no rosto
+      // poeira no ar (determinística)
+      const N = 140, pg = new THREE.BufferGeometry(), arr = new Float32Array(N * 3), base = [];
+      for (let i = 0; i < N; i++) base.push([XE + 0.1 + rnd() * 1.5, 0.4 + rnd() * 3, rnd() * 7.5, rnd() * 6.28]);
+      pg.setAttribute("position", new THREE.BufferAttribute(arr, 3));
+      casa.add(new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xfff0d8, size: 0.011, transparent: true, opacity: 0.5, depthWrite: false })));
+
+      const camA = new THREE.PerspectiveCamera(38, 1920 / 1080, 0.1, 60);
+      const camB = new THREE.PerspectiveCamera(40, 1920 / 1080, 0.1, 60);
+      const renderer = Cena.renderer("cr-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+      const S = Cena.suave;
+      const bocas = gabi.userData.rosto.bocas;
+      const boca = (nome) => { for (const n in bocas) bocas[n].visible = n === nome; };
+
+      function render() {
+        const t = estado.t;
+        // caminho: mão na parede até a porta dos pais; depois perde a parede e desvia para a quina
+        const u = Math.min(1, t / BATE);
+        let z = 0.3 + (ZQ - 0.14 - 0.3) * u;
+        let x = -0.35 + 0.79 * S((z - 2.1) / 1.75);
+        let ry = 0.12 * S((z - 2.1) / 1.2) * (1 - S((z - 3.3) / 0.5));
+        // a batida: tranco para trás, ombro esquerdo empurrado, meio passo atrás
+        const tranco = S((t - BATE) / 0.18) * (1 - 0.35 * S((t - BATE - 0.3) / 0.8));
+        z -= 0.22 * tranco; ry += 0.42 * tranco; x -= 0.05 * tranco;
+        gabi.position.set(x, 0, z); gabi.rotation.y = ry;
+        // passos curtos de quem não enxerga (param na batida)
+        const anda = t < BATE ? 1 : 0, fase = t * Math.PI * 1.7;
+        const passo = Math.sin(fase) * 0.28 * anda;
+        rg.pL.hip.rotation.x = passo; rg.pR.hip.rotation.x = -passo;
+        rg.pL.knee.rotation.x = Math.max(0, -passo) * 1.1; rg.pR.knee.rotation.x = Math.max(0, passo) * 1.1;
+        gabi.position.y = Math.abs(Math.sin(fase)) * 0.025 * anda;
+        if (t >= BATE) {   // depois: pernas firmes, um pé meio atrás
+          const s2 = S((t - BATE) / 0.3);
+          rg.pL.hip.rotation.x = -0.15 * s2; rg.pR.hip.rotation.x = 0.1 * s2; rg.pL.knee.rotation.x = 0.1 * s2; rg.pR.knee.rotation.x = 0;
+        }
+        // braços: parede -> tateia -> mão no ombro -> punhos cerrados
+        const perde = S((z - 2.05) / 0.35);
+        if (t < BATE) {
+          mistura(rg.aL, naParede, procura, perde);
+          mistura(rg.aR, tateia, tateia, 0);
+          rg.aR.sh.rotation.x += Math.sin(t * 2.1) * 0.08; rg.aL.sh.rotation.z += Math.sin(fase) * 0.03;
+        } else if (t < CORTE + 0.6) {
+          const a = S((t - BATE - 0.08) / 0.3);
+          mistura(rg.aL, procura, noOmbro, a);
+          mistura(rg.aR, tateia, punhoE, S((t - BATE) / 0.4));
+        } else {
+          const a = S((t - CORTE - 0.6) / 0.5), tremor = Math.sin(t * 31) * 0.012 * a;
+          mistura(rg.aL, noOmbro, punhoD, a); mistura(rg.aR, punhoE, punhoE, 0);
+          rg.aL.sh.rotation.z += tremor; rg.aR.sh.rotation.z -= tremor;
+        }
+        const fecha = t > BATE + 0.1 ? S((t - BATE - 0.1) / 0.4) : 0;
+        for (const m of maos) m.scale.set(1 - 0.12 * fecha, 1 - 0.2 * fecha, 1 - 0.08 * fecha);
+        // cabeça e rosto: escuta e conta os passos (boca mexe a cada passo); a batida vira careta de dor; depois a raiva presa
+        if (t < BATE) {
+          if (rg.ficha.expr !== "firme") Elenco.expressao(gabi, "firme");
+          boca(Math.sin(fase) > 0.55 ? "o" : "linha");
+          Elenco.cabeca(gabi, -0.02 + Math.sin(fase * 0.5) * 0.02, -0.25 + Math.sin(t * 0.8) * 0.12, 0.1, 0);
+        } else {
+          if (rg.ficha.expr !== "raiva") Elenco.expressao(gabi, "raiva");
+          const solto = S((t - 6.6) / 0.6);
+          boca(t < BATE + 1.2 || solto < 0.5 ? "dentes" : "triste");
+          const resp = Math.sin(t * 2 * Math.PI * 0.75) * 0.012;      // respiração pesada
+          Elenco.cabeca(gabi, 0.08 + 0.06 * S((t - 6.0) / 1.2) - 0.1 * (1 - S((t - BATE) / 0.25)) * S((t - BATE) / 0.06), 0.3 * (1 - S((t - BATE - 0.4) / 0.8)) - 0.15, -0.12 * tranco, resp);
+        }
+        rosto.position.set(x - 0.7, 2.3, z + 1.2);
+        for (let i = 0; i < N; i++) {
+          const b = base[i];
+          arr[i * 3] = b[0] + Math.sin(t * 0.3 + b[3]) * 0.07; arr[i * 3 + 1] = b[1] + Math.sin(t * 0.2 + b[3] * 2) * 0.05; arr[i * 3 + 2] = b[2];
+        }
+        pg.attributes.position.needsUpdate = true;
+        // pico da batida só no grão (+0,1); fumaça fica no padrão (usuário: fumaça no pico "forte demais", até com +0,12)
+        const pico = Math.max(0, 1 - Math.abs(t - BATE - 0.15) / 0.6);
+        const look = { grao: LOOK.grao + 0.1 * pico, fumaca: LOOK.fumaca, dessat: LOOK.dessat };
+        let cam;
+        if (t < CORTE) {
+          const v = S(t / CORTE);
+          camA.position.set(-0.2, 2.25 - 0.1 * v, 8.3 - 0.8 * v); camA.lookAt(0.3, 1.5, 2.4 + 0.8 * v); cam = camA;
+          if (t > BATE && t < BATE + 0.25) camA.position.x += Math.sin(t * 90) * 0.015 * (1 - (t - BATE) / 0.25);   // tranco
+        } else {
+          const v = S((t - CORTE) / (DUR - CORTE));
+          camB.position.set(-0.45 + 0.08 * v, 2.1, 7.2 - 0.3 * v); camB.lookAt(x + 0.2, 1.6, z); cam = camB;
+        }
+        pos.render(scene, cam, t, look);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["corredor"] = tl;
+      render();
+    })();
+  </script>
+</template>

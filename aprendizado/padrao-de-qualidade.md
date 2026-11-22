@@ -60,6 +60,9 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
 - **Modo cego (episódios do Gabi):** padrão **`grao baixo · fumaça 0,15 · dessat 0,2`** (escolha do usuário, 2026-11-22). Fumaça
   0,45+ e grão médio/forte só em picos (revelação dos olhos, queda, levada) — em 2026-11-22 o
   usuário achou 0,45 + médio "muito pesado". Comparação: briefing/look/niveis-*.png.
+- **Pico de impacto** (batida, queda): **só o grão sobe** (+0,1); a fumaça fica no padrão 0,15. No corredor
+  (2026-11-22) fumaça 0,45 no pico derrubou a luma para 64 ("muito escuro") e até +0,12 ficou "forte demais".
+  Medir a luma também no quadro do pico.
 - **Modo vidente (Duda):** sem fumaça; o escurecimento das bordas dela é outro efeito, a criar.
 - O `grain-overlay` do registro foi descartado: animação CSS em loop, não segue o quadro exato.
 
