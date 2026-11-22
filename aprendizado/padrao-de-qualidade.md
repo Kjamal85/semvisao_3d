@@ -45,6 +45,11 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
   cabeça — senão o queixo afunda no corpo (aconteceu na sala, 2026-11-22). Olho cego não fecha
   abaixo de 0,78 (achatado parece olho roxo).
 - **A boca aparece sempre** (pedido do usuário): nada de queixo afundado nem mão/objeto na frente da boca.
+- **Juntas aparentes** (pedido do usuário, 2026-11-22: "todo tem que ser assim"): ombro e cotovelo
+  arredondados no rig, cotovelo visível e apontando para baixo quando a mão sobe ao peito/rosto.
+  Se o `alcancar` levantar o ombro para trás (cotovelo do rig só dobra até -2,2), posar à mão.
+- **Pescoço** (2026-11-22): tronco até 1,82, pescoço de pele, cabeça em `Elenco.CABECA_Y` (2,30).
+  Nunca escrever 2.2 à mão para a cabeça; usar `Elenco.CABECA_Y` ou `Elenco.cabeca()`.
 - Mão que toca algo (copo, batente, ombro) usa `Elenco.alcancar(g, "esq"|"dir", alvo)` — não chutar ângulo.
 - Personagem de frente para uma bancada/parede fica meio de lado (3/4) para a câmera ver o rosto.
 - No rig, `aL` é o braço DIREITO da personagem (lado -x local); conferir o lado no snapshot.

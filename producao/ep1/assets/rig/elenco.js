@@ -26,6 +26,9 @@
               sapato: 0x24242a, mao: 0x2d3038, epi: true, faixa: 0xe8b923 },
   };
 
+  // a cabeça gira pela base do pescoço (PESCOCO); centro da cabeça em pé = CABECA_Y
+  const PESCOCO = 1.82, R_CAB = 0.48, CABECA_Y = PESCOCO + R_CAB;
+
   function build(id, opts) {
     const P = Object.assign({}, FICHAS[id], opts || {});
     const w = P.larg;
@@ -57,16 +60,17 @@
       return { hip, knee };
     }
     const pL = leg(-1), pR = leg(1);
-    // tronco
-    add(new THREE.CylinderGeometry(0.30 * w, 0.26 * w, 0.82, 20), P.roupa, 0, 1.5, 0);
+    // tronco (topo em 1,82) + pescoço: a cabeça não fica enterrada no corpo
+    add(new THREE.CylinderGeometry(0.30 * w, 0.26 * w, 0.74, 20), P.roupa, 0, 1.45, 0);
+    add(new THREE.CylinderGeometry(0.105 * w, 0.115 * w, 0.26, 14), P.epi ? P.roupa : P.pele, 0, 1.9, 0);
     if (P.capuz) { // moletom do Gabi: capuz caído + bolso
-      add(sphere(0.26, 18, 14), P.roupa, 0, 1.92, -0.14, g, { s: [1.15, 0.7, 0.85] });
+      add(sphere(0.26, 18, 14), P.roupa, 0, 1.83, -0.15, g, { s: [1.15, 0.6, 0.8] });
       add(new THREE.BoxGeometry(0.34, 0.16, 0.06), P.roupa, 0, 1.2, 0.27);
     }
     if (P.fone) { // objeto-assinatura do Gabi: fone no pescoço
-      add(new THREE.TorusGeometry(0.24, 0.05, 10, 24), P.fone, 0, 1.93, 0.02, g, { r: [Math.PI / 2, 0, 0] });
-      add(sphere(0.075, 12, 12), P.fone, -0.24, 1.93, 0.02);
-      add(sphere(0.075, 12, 12), P.fone, 0.24, 1.93, 0.02);
+      add(new THREE.TorusGeometry(0.2, 0.045, 10, 24), P.fone, 0, 1.86, 0.03, g, { r: [Math.PI / 2 - 0.25, 0, 0] });
+      add(sphere(0.085, 12, 12), P.fone, -0.21, 1.87, 0.06, g, { s: [0.7, 1, 1] });
+      add(sphere(0.085, 12, 12), P.fone, 0.21, 1.87, 0.06, g, { s: [0.7, 1, 1] });
     }
     if (P.lapela) { // blazer: blusa clara em V e duas lapelas
       // V da blusa entre as lapelas; cada lapela com o topo aberto para fora (rot z = -lado)
@@ -78,7 +82,7 @@
     }
     // braços (ombro -> cotovelo, com juntas para posar)
     function arm(side) {
-      const sh = new THREE.Group(); sh.position.set(side * 0.30 * w, 1.85, 0); g.add(sh);
+      const sh = new THREE.Group(); sh.position.set(side * 0.30 * w, 1.74, 0); g.add(sh);
       add(sphere(0.105 * w, 14, 12), P.roupa, 0, -0.02, 0, sh);                          // ombro arredondado
       add(new THREE.CylinderGeometry(0.09 * w, 0.085 * w, 0.46, 14), P.roupa, 0, -0.23, 0, sh);
       if (P.faixa) add(new THREE.CylinderGeometry(0.092 * w, 0.09 * w, 0.07, 14), P.faixa, 0, -0.16, 0, sh);
@@ -91,7 +95,7 @@
     const aL = arm(-1), aR = arm(1);
 
     // cabeça
-    const head = new THREE.Group(); head.position.set(0, 2.2, 0); g.add(head);
+    const head = new THREE.Group(); head.position.set(0, CABECA_Y, 0); g.add(head);
     if (P.epi) {
       // capuz do macacão, óculos escuros e respirador: sem rosto visível
       add(sphere(0.43, 28, 22), P.roupa, 0, 0, 0, head);
@@ -251,7 +255,6 @@
   // Inclina a cabeça a partir do PESCOÇO (não do centro da cabeça): baixar a cabeça leva
   // o rosto para a frente e o queixo não afunda no corpo. baixa (+ = olha para baixo),
   // vira (+ = vira para a esquerda da personagem), lado (inclina de lado), dy (respiração).
-  const PESCOCO = 1.86, R_CAB = 0.34;
   function cabeca(g, baixa, vira, lado, dy) {
     const rig = g.userData.rig, P = rig.ficha;
     const a = (baixa || 0) + ((EXPR[P.expr] || EXPR.neutro).cab || 0);
@@ -288,5 +291,5 @@
     return bc;
   }
 
-  window.Elenco = { FICHAS, EXPR, build, expressao, cabeca, alcancar };
+  window.Elenco = { FICHAS, EXPR, CABECA_Y, build, expressao, cabeca, alcancar };
 })();
