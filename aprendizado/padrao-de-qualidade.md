@@ -50,6 +50,12 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
   Se o `alcancar` levantar o ombro para trás (cotovelo do rig só dobra até -2,2), posar à mão.
 - **Pescoço** (2026-11-22): tronco até 1,82, pescoço de pele, cabeça em `Elenco.CABECA_Y` (2,30).
   Nunca escrever 2.2 à mão para a cabeça; usar `Elenco.CABECA_Y` ou `Elenco.cabeca()`.
+- **Corpo** (aprovado 2026-11-22): mãos com dedos na cor da pele (agente: luva branca), forma por cena com
+  `Elenco.mao(g, lado, "aberta"|"segura"|"punho", u)`; cintura (`cintura` na ficha) e quadril na cor da calça.
+  O fone NÃO fica no pescoço do Gabi (usuário: "deixa assim").
+- **Cotovelo nunca dentro do corpo** (regra do usuário, 2026-11-22): mão no peito/fone/colo com o cotovelo
+  para fora do tronco. Cenas novas: `Elenco.alcancar(g, lado, alvo, { foraDoCorpo: true })`
+  (pune cotovelo/antebraço dentro do tronco). Desligado por padrão para NÃO mexer nas cenas já aprovadas (pedido do usuário).
 - Mão que toca algo (copo, batente, ombro) usa `Elenco.alcancar(g, "esq"|"dir", alvo)` — não chutar ângulo.
 - Personagem de frente para uma bancada/parede fica meio de lado (3/4) para a câmera ver o rosto.
 - No rig, `aL` é o braço DIREITO da personagem (lado -x local); conferir o lado no snapshot.

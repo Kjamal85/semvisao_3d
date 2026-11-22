@@ -294,14 +294,26 @@
   // Leva a mão até um ponto do mundo: procura os ângulos do ombro (x, z) e do cotovelo (x)
   // que deixam a mão mais perto do alvo. Busca em grade + refinamento: determinística.
   // lado: "esq" ou "dir" DA PERSONAGEM. Devolve a distância que sobrou (0 = encostou).
-  const _v = new THREE.Vector3();
-  function alcancar(g, lado, alvo) {
+  const _v = new THREE.Vector3(), _w = new THREE.Vector3();
+  function alcancar(g, lado, alvo, op) {
+    const fora = !!(op && op.foraDoCorpo);   // regra do cotovelo: só nas cenas novas (as aprovadas ficam como estão)
     const rig = g.userData.rig, braco = lado === "esq" ? rig.aR : rig.aL;   // aR = esquerda da personagem
     const mao = new THREE.Object3D(); mao.position.set(0, -0.46, 0); braco.el.add(mao);
+    // regra do usuário: cotovelo e antebraço NUNCA dentro do corpo — pontos de controle punidos se entram no tronco
+    const cot = new THREE.Object3D(); braco.el.add(cot);
+    const ante = new THREE.Object3D(); ante.position.set(0, -0.2, 0); braco.el.add(ante);
     let raiz = g; while (raiz.parent) raiz = raiz.parent;
+    raiz.updateMatrixWorld(true);
+    const inv = g.matrixWorld.clone().invert(), RMIN = 0.41 * (rig.ficha.larg || 1);
+    const dentro = (o) => {
+      o.getWorldPosition(_w); _w.applyMatrix4(inv);
+      if (_w.y < 1.0 || _w.y > 1.95) return 0;
+      return Math.max(0, RMIN - Math.hypot(_w.x, _w.z));
+    };
     const custo = (sx, sz, ex) => {
       braco.sh.rotation.set(sx, 0, sz); braco.el.rotation.set(ex, 0, 0);
-      raiz.updateMatrixWorld(true); mao.getWorldPosition(_v); return _v.distanceTo(alvo);
+      raiz.updateMatrixWorld(true); mao.getWorldPosition(_v);
+      return _v.distanceTo(alvo) + (fora ? 6 * (dentro(cot) + dentro(ante)) : 0);
     };
     const s = lado === "esq" ? 1 : -1;            // abrir o braço para fora: z + na esquerda, - na direita
     let best = [0, 0, 0], bc = Infinity;
@@ -316,7 +328,7 @@
         if (v < bc) { bc = v; best = [b0[0] + a * passo, b0[1] + b * passo, ex]; }
       }
     }
-    custo(best[0], best[1], best[2]); braco.el.remove(mao);
+    custo(best[0], best[1], best[2]); braco.el.remove(mao); braco.el.remove(cot); braco.el.remove(ante);
     return bc;
   }
 

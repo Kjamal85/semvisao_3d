@@ -1,0 +1,156 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #0d1018; }
+    #vn-stage { position: absolute; inset: 0; z-index: 0; }
+    #vn-stage canvas { display: block; }
+    #vn-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #vn-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="van" data-width="1920" data-height="1080">
+    <div id="vn-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+    <div id="vn-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">CENÁRIO 8 — INTERIOR DA VAN<small>anoitecer · agarra o moletom no peito · a porta bate · plano 69</small></div>
+  </div>
+  <script>
+    (function () {
+      const DUR = 8, FECHA = 4.4, BATE = 5.2, CORTE = 5.6;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
+
+      const raiz = new THREE.Group();
+      const k = Cena.kit(raiz, 69069);
+      const { box, cil, bolha, rnd, M } = k;
+      const luz = (c) => new THREE.MeshBasicMaterial({ color: c });
+
+      // ---------- baú da van: x 0 (divisória da cabine) .. 4,2 (portas de trás); z -1,2..1,2 ----------
+      const L = 4.2, W = 1.2, H = 2.7, CHAPA = 0xa9afb4;
+      box(L, 0.06, 2 * W, 0x2a2c31, L / 2, -0.03, 0, { contorno: false, sombra: false });            // piso de borracha
+      for (let i = 0; i < 14; i++) box(L, 0.012, 0.03, 0x3a3d44, L / 2, 0.004, -W + 0.1 + i * 0.17, { contorno: false, sombra: false });
+      box(L, 0.08, 2 * W, 0xc9cdd0, L / 2, H + 0.04, 0, { contorno: false });                         // teto
+      for (const s of [-1, 1]) {
+        box(L, H, 0.08, CHAPA, L / 2, H / 2, s * (W + 0.04), { contorno: false });                     // laterais
+        for (let i = 0; i < 9; i++) box(0.05, H - 0.2, 0.04, 0xc2c7ca, 0.25 + i * 0.47, H / 2, s * (W - 0.01), { contorno: false });   // nervuras
+        // banco ao longo da lateral, estofado gasto
+        box(L - 0.6, 0.12, 0.5, 0x4a4f5a, L / 2 + 0.1, 0.48, s * (W - 0.27));
+        box(L - 0.6, 0.42, 0.06, 0x3a3d44, L / 2 + 0.1, 0.21, s * (W - 0.5), { contorno: false });
+        box(L - 0.6, 0.55, 0.1, 0x4a4f5a, L / 2 + 0.1, 1.0, s * (W - 0.06));
+        for (let i = 0; i < 4; i++) {                                                                // alças penduradas
+          const ax = 0.9 + i * 0.85;
+          cil(0.012, 0.012, 0.35, 0x6a6d74, ax, H - 0.18, s * (W - 0.35), { seg: 4, contorno: false });
+          const al = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.012, 6, 14), M(0x2a2c31)); al.position.set(ax, H - 0.4, s * (W - 0.35)); raiz.add(al);
+        }
+      }
+      box(0.08, H, 2 * W, 0xb9bec2, -0.04, H / 2, 0, { contorno: false });                            // divisória da cabine
+      box(0.04, 0.4, 0.7, 0x151820, 0.0, 1.95, 0, { contorno: false });                               // vigia escura para a cabine
+      for (let i = 0; i < 4; i++) box(0.05, 0.4, 0.02, 0x8a8f96, 0.02, 1.95, -0.27 + i * 0.18, { contorno: false });
+      // janelinha gradeada na lateral esquerda: por ela entra o giroflex
+      box(0.6, 0.35, 0.02, 0x1a2030, 2.0, 2.05, -W + 0.02, { mat: luz(0x1a2236), contorno: false });
+      for (let i = 0; i < 4; i++) box(0.02, 0.35, 0.03, 0x8a8f96, 1.78 + i * 0.15, 2.05, -W + 0.04, { contorno: false });
+      // maleta de primeiros socorros, extintor, cinto de segurança solto
+      box(0.4, 0.28, 0.2, 0xe9e9e4, 0.35, 1.7, W - 0.15); box(0.05, 0.16, 0.21, 0xc8102e, 0.35, 1.7, W - 0.15, { contorno: false }); box(0.16, 0.05, 0.21, 0xc8102e, 0.35, 1.7, W - 0.15, { contorno: false });
+      cil(0.08, 0.08, 0.45, 0xc8102e, 0.25, 0.3, -W + 0.2);
+      // luminária do teto (fria, fraca)
+      const domo = box(0.5, 0.05, 0.25, 0, 2.1, H - 0.03, 0, { mat: luz(0xdce8f2), contorno: false });
+      // portas de trás (abrem para fora) e a rua lá fora, quente e estourada
+      const portas = [];
+      for (const s of [-1, 1]) {
+        const p = new THREE.Group(); p.position.set(L, 0, s * W); raiz.add(p); portas.push({ p, s });
+        box(0.06, H, W, CHAPA, 0, H / 2, -s * W / 2, { pai: p });
+        box(0.03, 0.6, 0.45, 0x1a2236, 0.035, 1.9, -s * W / 2, { pai: p, mat: luz(0x1f2840), contorno: false });   // vidro da porta
+      }
+      const rua = new THREE.Mesh(new THREE.PlaneGeometry(12, 7), luz(0xf0b27a)); rua.position.set(L + 6, 2.2, 0); rua.rotation.y = -Math.PI / 2; raiz.add(rua);
+      box(6, 0.05, 6, 0x6a5a4a, L + 3, -0.1, 0, { contorno: false, sombra: false });
+      // a mãe lá fora, esticando o braço (silhueta contra a luz)
+      const mae = Elenco.build("mae", { expr: "grito" });
+      mae.position.set(L + 3.2, -0.1, 0.5); mae.rotation.y = -Math.PI / 2 - 0.2; raiz.add(mae);
+      raiz.updateMatrixWorld(true);
+      Elenco.alcancar(mae, "dir", new THREE.Vector3(L + 2.0, 1.9, 0.25), { foraDoCorpo: true });
+
+      // ---------- o Gabi no banco da direita, o agente na frente dele ----------
+      const SEAT = 0.54;
+      const gabi = Elenco.build("gabi", { blind: true, expr: "choro", pose: "sentado" });
+      gabi.position.set(2.75, SEAT + 0.1 - 1.075, W - 0.5); gabi.rotation.y = Math.PI + 0.35; raiz.add(gabi);
+      const rg = gabi.userData.rig;
+      const ag = Elenco.build("agente", { pose: "sentado" });
+      ag.position.set(3.55, SEAT + 0.1 - 1.075, -W + 0.5); ag.rotation.y = 0.35; raiz.add(ag);
+      raiz.updateMatrixWorld(true);
+      // sem fone (decisão do usuário, 2026-11-22): as mãos fechadas agarram o moletom no peito
+      raiz.updateMatrixWorld(true);
+      Elenco.alcancar(gabi, "esq", gabi.localToWorld(new THREE.Vector3(0.12, 1.5, 0.4)), { foraDoCorpo: true });
+      Elenco.alcancar(gabi, "dir", gabi.localToWorld(new THREE.Vector3(-0.1, 1.38, 0.42)), { foraDoCorpo: true });
+      const pose = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      const pE = pose(rg.aR), pD = pose(rg.aL);
+      Elenco.alcancar(ag, "esq", ag.localToWorld(new THREE.Vector3(0.15, 0.62, 0.45)), { foraDoCorpo: true });                // mãos de luva no joelho
+      Elenco.alcancar(ag, "dir", ag.localToWorld(new THREE.Vector3(-0.15, 0.62, 0.45)), { foraDoCorpo: true });
+
+      // ---------- luz: rua quente entrando pela porta; depois só o domo fraco e o giroflex ----------
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0b0d12);
+      scene.fog = new THREE.Fog(0x14161c, 8, 18);
+      scene.add(raiz);
+      const amb = new THREE.HemisphereLight(0x8a9ab8, 0x3a3430, 0.35); scene.add(amb);
+      const fora = new THREE.SpotLight(0xffc48a, 8, 12, 0.7, 0.6, 1.2);
+      fora.position.set(L + 3.5, 2.4, 0); fora.target.position.set(1.5, 0.6, 0.3);
+      fora.castShadow = true; fora.shadow.mapSize.set(1024, 1024); fora.shadow.bias = -0.002; fora.shadow.normalBias = 0.04;
+      scene.add(fora); scene.add(fora.target);
+      const domoLuz = new THREE.PointLight(0xcfe0f0, 2.2, 4.5, 1.4); domoLuz.position.set(2.1, H - 0.2, 0); raiz.add(domoLuz);
+      const giroA = new THREE.PointLight(0x3a6bff, 0, 5, 1.4); giroA.position.set(2.0, 2.0, -W + 0.3); raiz.add(giroA);
+      const giroV = new THREE.PointLight(0xff2a2a, 0, 5, 1.4); giroV.position.set(2.0, 2.0, -W + 0.3); raiz.add(giroV);
+      const rosto = new THREE.PointLight(0xdfe4ee, 1.0, 3, 1.6); raiz.add(rosto);
+
+      const camA = new THREE.PerspectiveCamera(46, 1920 / 1080, 0.1, 60);
+      const camB = new THREE.PerspectiveCamera(30, 1920 / 1080, 0.1, 60);
+      const renderer = Cena.renderer("vn-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+      const S = Cena.suave;
+
+      function render() {
+        const t = estado.t;
+        // portas: abertas, fecham de 4,4 a 5,2 (a última batida é seca)
+        const f = S((t - FECHA) / (BATE - FECHA - 0.1)), fechou = t >= BATE;
+        for (const { p, s } of portas) p.rotation.y = s * (fechou ? 0 : 1.75 * (1 - f));
+        fora.intensity = 8 * Math.max(0, 1 - f * 1.05);
+        rua.visible = mae.visible = !fechou;
+        // giroflex pela janelinha (pulsos duplos, como na rua)
+        const fase = (t * 2.2) % 1, azul = (Math.floor(t * 2.2) % 2) === 0, pisca = fase < 0.18 || (fase > 0.3 && fase < 0.46);
+        giroA.intensity = azul && pisca ? 3 : 0; giroV.intensity = !azul && pisca ? 3 : 0;
+        // o domo treme com a van saindo depois da batida
+        domoLuz.intensity = (fechou ? 2.2 : 0.8) + (fechou ? Math.sin(t * 37) * 0.2 : 0);   // fechada: o domo é a única luz
+        // o Gabi: agarra o moletom no peito; na batida, encolhe e aperta mais; respira curto; lágrimas
+        const aperta = S((t - 0.3) / 0.6), tranco = S((t - BATE) / 0.08) * (1 - S((t - BATE - 0.15) / 0.5));
+        rg.aR.sh.rotation.copy(pE[0]); rg.aR.el.rotation.copy(pE[1]); rg.aL.sh.rotation.copy(pD[0]); rg.aL.el.rotation.copy(pD[1]);
+        const treme = Math.sin(t * 27) * 0.02 * (t > BATE ? 1 : 0.4);
+        rg.aR.sh.rotation.z += treme; rg.aL.sh.rotation.z -= treme;
+        Elenco.mao(gabi, "esq", "punho", aperta); Elenco.mao(gabi, "dir", "punho", aperta);
+        const resp = Math.sin(t * 2 * Math.PI * 0.8) * 0.01;
+        // escuta a mãe gritando (cabeça vira para a porta) e, na batida, se encolhe
+        Elenco.cabeca(gabi, 0.04 + 0.08 * tranco + 0.03 * S((t - 6.2) / 1.2), 0.55 * (1 - S((t - BATE) / 0.6)) + Math.sin(t * 1.1) * 0.05, -0.08, resp);
+        gabi.position.y = SEAT + 0.1 - 1.075 - 0.03 * tranco;
+        Elenco.lagrimas(gabi, S((t - 0.5) / 0.6), t);
+        // a mãe lá fora grita e estica o braço
+        Elenco.cabeca(mae, Math.sin(t * 6) * 0.03, 0.1, 0);
+        Elenco.cabeca(ag, 0.05, Math.sin(t * 0.4) * 0.05, 0);
+        rosto.position.set(gabi.position.x - 0.6, 2.0, gabi.position.z - 1.0);
+        // pós: na batida só o grão sobe (regra do padrão de qualidade)
+        const pico = Math.max(0, 1 - Math.abs(t - BATE - 0.1) / 0.5);
+        const look = { grao: LOOK.grao + 0.1 * pico, fumaca: LOOK.fumaca, dessat: LOOK.dessat };
+        let cam;
+        if (t < CORTE) {
+          const v = S(t / CORTE);
+          camA.position.set(0.45 + 0.2 * v, 1.95, -0.55 + 0.05 * v); camA.lookAt(3.2, 1.35, 0.35); cam = camA;
+          if (t > BATE && t < BATE + 0.3) camA.position.y += Math.sin(t * 80) * 0.02 * (1 - (t - BATE) / 0.3);
+        } else {
+          const v = S((t - CORTE) / (DUR - CORTE));
+          camB.position.set(0.35 + 0.15 * v, 1.6, -0.75 + 0.05 * v); camB.lookAt(gabi.position.x, 1.5, gabi.position.z); cam = camB;
+          camB.position.x += Math.sin(t * 13) * 0.004; camB.position.y += Math.sin(t * 17 + 1) * 0.004;   // van andando
+        }
+        pos.render(scene, cam, t, look);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["van"] = tl;
+      render();
+    })();
+  </script>
+</template>
