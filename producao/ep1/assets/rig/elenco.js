@@ -41,11 +41,18 @@
     };
     const sphere = (r, a, b) => new THREE.SphereGeometry(r, a || 16, b || 12);
 
-    // pernas e sapatos
-    for (const s of [-1, 1]) {
-      add(new THREE.CylinderGeometry(0.12 * w, 0.12 * w, 1.05, 16), P.calca, s * 0.14 * w, 0.55, 0);
-      add(new THREE.BoxGeometry(0.22 * w, 0.12, 0.34), P.sapato, s * 0.14 * w, 0.06, 0.06);
+    // pernas com quadril e joelho (para sentar, tropeçar e cair); em pé fica igual à
+    // perna inteiriça aprovada: coxa 0,53 + canela 0,52, do chão (0,025) ao quadril (1,075)
+    function leg(side) {
+      const hip = new THREE.Group(); hip.position.set(side * 0.14 * w, 1.075, 0); g.add(hip);
+      add(new THREE.CylinderGeometry(0.12 * w, 0.12 * w, 0.55, 16), P.calca, 0, -0.265, 0, hip);
+      const knee = new THREE.Group(); knee.position.set(0, -0.53, 0); hip.add(knee);
+      add(new THREE.SphereGeometry(0.12 * w, 14, 10), P.calca, 0, 0, 0, knee); // joelho sem fresta ao dobrar
+      add(new THREE.CylinderGeometry(0.12 * w, 0.115 * w, 0.52, 16), P.calca, 0, -0.26, 0, knee);
+      add(new THREE.BoxGeometry(0.22 * w, 0.12, 0.34), P.sapato, 0, -0.485, 0.06, knee);
+      return { hip, knee };
     }
+    const pL = leg(-1), pR = leg(1);
     // tronco
     add(new THREE.CylinderGeometry(0.30 * w, 0.26 * w, 0.82, 20), P.roupa, 0, 1.5, 0);
     if (P.capuz) { // moletom do Gabi: capuz caído + bolso
@@ -138,7 +145,12 @@
       g.userData.rosto = rosto;
     }
 
-    if (P.pose === "hands_to_face") {
+    if (P.pose === "sentado_cama") {
+      // sentado na cama com as pernas esticadas sob o lençol; braços tateando o ar à frente
+      for (const l of [pL, pR]) { l.hip.rotation.x = -Math.PI / 2; }
+      aL.sh.rotation.set(-1.05, 0, 0.12); aL.el.rotation.x = -0.35;
+      aR.sh.rotation.set(-0.8, 0, -0.1); aR.el.rotation.x = -0.55;
+    } else if (P.pose === "hands_to_face") {
       aL.sh.rotation.x = -2.25; aL.sh.rotation.z = 0.35; aL.el.rotation.x = -1.7;
       aR.sh.rotation.x = -2.25; aR.sh.rotation.z = -0.35; aR.el.rotation.x = -1.7;
       head.rotation.x = 0.22;
@@ -147,8 +159,9 @@
       aL.sh.rotation.z = -0.06; aR.sh.rotation.z = 0.09;
       aL.el.rotation.x = -0.08; aR.el.rotation.x = -0.14;
     }
+    g.traverse((o) => { if (o.isMesh && o.material !== outlineMat) { o.castShadow = true; o.receiveShadow = true; } });
     g.scale.setScalar(P.alt);
-    g.userData.rig = { head, aL, aR, ficha: P };
+    g.userData.rig = { head, aL, aR, pL, pR, ficha: P };
     if (g.userData.rosto) expressao(g, P.expr || "neutro");
     return g;
   }
