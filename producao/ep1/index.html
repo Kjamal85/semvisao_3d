@@ -10,16 +10,16 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
       #root { width: 100%; height: 100%; position: relative; font-family: var(--font-display); }
-      #stage { position: absolute; inset: 0; }
+      #stage { position: absolute; inset: 0; z-index: 0; }
       #stage canvas { display: block; }
-      .vlabel { position: absolute; bottom: 56px; width: 420px; text-align: center;
+      .vlabel { position: absolute; bottom: 22px; width: 420px; text-align: center; z-index: 2;
         color: var(--ink); font-size: 34px; font-weight: 700; letter-spacing: .04em; }
-      #l1 { left: calc(960px - 720px - 210px); }
-      #l2 { left: calc(960px - 210px); }
-      #l3 { left: calc(960px + 720px - 210px); }
+      #l1 { left: 120px; }
+      #l2 { left: 750px; }
+      #l3 { left: 1380px; }
       #title { position:absolute; top:44px; left:0; width:100%; text-align:center; color:var(--ink);
-        font-size:40px; font-weight:700; letter-spacing:-.01em; }
-      #sub { position:absolute; top:98px; left:0; width:100%; text-align:center; color:#6a6d77; font-size:28px; }
+        font-size:40px; font-weight:700; letter-spacing:-.01em; z-index:2; }
+      #sub { position:absolute; top:98px; left:0; width:100%; text-align:center; color:#6a6d77; font-size:28px; z-index:2; }
     </style>
   </head>
   <body>
@@ -42,11 +42,16 @@
         const C = { skin:0xc68e62, hair:0x241c17, top:0xaed0ec, pants:0x454551,
                     shoe:0x2d2d36, dark:0x24242a, eyeW:0xffffff, blind:0x6a6a71, glintB:0xecebe4, glint:0xffffff };
         const mat = (c)=> new THREE.MeshToonMaterial({ color: c });
+        const outlineMat = new THREE.MeshBasicMaterial({ color: 0x1b1b20, side: THREE.BackSide });
 
         function buildGabi(opts){
           opts = opts || {};
           const g = new THREE.Group();
-          const add = (geo,c,x,y,z,parent)=>{ const m=new THREE.Mesh(geo,mat(c)); m.position.set(x,y,z); (parent||g).add(m); return m; };
+          const add = (geo,c,x,y,z,parent)=>{
+            const p = parent||g;
+            const o = new THREE.Mesh(geo, outlineMat); o.position.set(x,y,z); o.scale.multiplyScalar(1.07); p.add(o);
+            const m = new THREE.Mesh(geo, mat(c)); m.position.set(x,y,z); p.add(m); return m;
+          };
           add(new THREE.CylinderGeometry(0.12,0.12,1.05,16), C.pants, -0.14, 0.55, 0);
           add(new THREE.CylinderGeometry(0.12,0.12,1.05,16), C.pants,  0.14, 0.55, 0);
           add(new THREE.BoxGeometry(0.22,0.12,0.34), C.shoe, -0.14, 0.06, 0.06);
@@ -99,12 +104,13 @@
         const key = new THREE.DirectionalLight(0xffffff,1.05); key.position.set(-3,5,4); scene.add(key);
         const rim = new THREE.DirectionalLight(0xbcd0e6,0.3); rim.position.set(3,2,-3); scene.add(rim);
 
-        const cam = new THREE.OrthographicCamera(-3.9,3.9,3.7,-0.69,0.1,100);
+        // frustum relativo à câmera (y=1.5): mostra o mundo de y=-0.35 (abaixo dos pés) a y=3.25 (acima da cabeça)
+        const cam = new THREE.OrthographicCamera(-3.2,3.2,1.75,-1.85,0.1,100);
         cam.position.set(0,1.5,12); cam.lookAt(0,1.5,0);
 
-        const front=buildGabi({}); front.position.x=-2.4; scene.add(front);
+        const front=buildGabi({}); front.position.x=-2.1; scene.add(front);
         const prof =buildGabi({}); prof.position.x=0; prof.rotation.y=Math.PI/2; scene.add(prof);
-        const act  =buildGabi({blind:true,browRaise:1,arm:"hands_to_face"}); act.position.x=2.4; scene.add(act);
+        const act  =buildGabi({blind:true,browRaise:1,arm:"hands_to_face"}); act.position.x=2.1; scene.add(act);
 
         const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
         renderer.setPixelRatio(1); renderer.setSize(1920,1080);
