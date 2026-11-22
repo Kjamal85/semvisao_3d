@@ -79,9 +79,11 @@
     // braços (ombro -> cotovelo, com juntas para posar)
     function arm(side) {
       const sh = new THREE.Group(); sh.position.set(side * 0.30 * w, 1.85, 0); g.add(sh);
+      add(sphere(0.105 * w, 14, 12), P.roupa, 0, -0.02, 0, sh);                          // ombro arredondado
       add(new THREE.CylinderGeometry(0.09 * w, 0.085 * w, 0.46, 14), P.roupa, 0, -0.23, 0, sh);
       if (P.faixa) add(new THREE.CylinderGeometry(0.092 * w, 0.09 * w, 0.07, 14), P.faixa, 0, -0.16, 0, sh);
       const el = new THREE.Group(); el.position.set(0, -0.46, 0); sh.add(el);
+      add(sphere(0.085 * w, 14, 10), P.roupa, 0, 0, 0, el);                              // cotovelo sem fresta ao dobrar
       add(new THREE.CylinderGeometry(0.08 * w, 0.075 * w, 0.44, 14), P.roupa, 0, -0.22, 0, el);
       add(sphere(0.10, 14, 12), P.mao || P.pele, 0, -0.46, 0, el);
       return { sh, el };

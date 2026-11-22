@@ -1,0 +1,267 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #0d1018; }
+    #p-stage { position: absolute; inset: 0; z-index: 0; }
+    #p-stage canvas { display: block; }
+    #p-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #p-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="portao" data-width="1920" data-height="1080">
+    <div id="p-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+    <div id="p-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">CENÁRIO 5 — A DUDA NO PORTÃO (DE DENTRO)<small>fim de tarde · silhueta na cortina, sem rosto · planos 57–60</small></div>
+  </div>
+  <script>
+    (function () {
+      const DUR = 8, C1 = 3.9, C2 = 6.1;                                // cortina · o Gabi congela · a Duda vai embora
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
+
+      const sala = new THREE.Group();
+      const k = Cena.kit(sala, 57060);
+      const { box, cil, bolha, rnd, M } = k;
+
+      // ---------- arquitetura: parede da frente (z=0) com janela e porta da rua; a casa fica em z>0 ----------
+      const X0 = -3.4, X1 = 3.0, Z1 = 5.0, H = 3.9;
+      for (let i = 0; i < 13; i++) for (let j = 0; j < 10; j++) {
+        const tom = ((i + j) % 2) ? 0xb9ad9b : 0xb2a693;
+        box((X1 - X0) / 13 - 0.01, 0.06, Z1 / 10 - 0.01, tom, X0 + (i + 0.5) * (X1 - X0) / 13, -0.03, (j + 0.5) * Z1 / 10, { contorno: false, sombra: false });
+      }
+      const PAREDE = 0xd8cdb8, RODAPE = 0xf0ebe0;
+      box(0.12, H, Z1, PAREDE, X0 - 0.06, H / 2, Z1 / 2, { contorno: false });
+      box(0.12, H, Z1, PAREDE, X1 + 0.06, H / 2, Z1 / 2, { contorno: false });
+      box(X1 - X0 + 0.4, 0.12, Z1 + 0.4, 0xcfc6b3, (X0 + X1) / 2, H + 0.06, Z1 / 2, { contorno: false });
+      for (const x of [X0 + 0.02, X1 - 0.02]) box(0.04, 0.14, Z1, RODAPE, x, 0.07, Z1 / 2, { contorno: false });
+      // janela (x JX0..JX1, y JY0..JY1) e porta (x PX0..PX1)
+      const JX0 = -1.9, JX1 = 0.5, JY0 = 0.95, JY1 = 2.95, PX0 = 1.25, PX1 = 2.15, PY1 = 2.75;
+      const frente = (x0, x1, y0, y1) => box(x1 - x0, y1 - y0, 0.14, PAREDE, (x0 + x1) / 2, (y0 + y1) / 2, -0.07, { contorno: false });
+      frente(X0, JX0, 0, H); frente(JX1, PX0, 0, H); frente(PX1, X1, 0, H);
+      frente(JX0, JX1, 0, JY0); frente(JX0, JX1, JY1, H); frente(PX0, PX1, PY1, H);
+      box(X1 - X0, 0.14, 0.04, RODAPE, (X0 + X1) / 2, 0.07, 0.02, { contorno: false });
+      const CX = 0xf1ede4;
+      for (const x of [PX0, PX1]) box(0.08, PY1, 0.16, CX, x, PY1 / 2, 0.02);
+      box(PX1 - PX0 + 0.16, 0.08, 0.16, CX, (PX0 + PX1) / 2, PY1, 0.02);
+      box(JX1 - JX0 + 0.3, 0.06, 0.28, CX, (JX0 + JX1) / 2, JY0 - 0.04, 0.12);          // peitoril
+      // lá fora pela porta: quintal estourado de sol (a câmera só vê uma fresta)
+      const fora = new THREE.Mesh(new THREE.PlaneGeometry(8, 5), new THREE.MeshBasicMaterial({ color: 0xffe2b0, fog: false }));
+      fora.position.set(1.7, 2.0, -2.5); sala.add(fora);
+      box(6, 0.04, 2.4, 0xd9b98a, 1.7, -0.02, -1.25, { contorno: false, sombra: false });
+      // porta de madeira: dobradiça do lado de PX1, abre para dentro
+      const porta = new THREE.Group(); porta.position.set(PX1 - 0.02, 0, 0.06); sala.add(porta);
+      box(PX1 - PX0 - 0.06, PY1 - 0.04, 0.06, 0x6a4632, -(PX1 - PX0) / 2 + 0.01, (PY1 - 0.04) / 2, 0, { pai: porta });
+      for (const y of [0.75, 1.95]) box(0.6, 0.6, 0.02, 0x5a3b2a, -(PX1 - PX0) / 2 + 0.01, y, 0.04, { pai: porta, contorno: false });
+      const trinco = cil(0.03, 0.03, 0.1, 0xc9b07a, -(PX1 - PX0) + 0.14, 1.05, 0.08, { pai: porta, r: [Math.PI / 2, 0, 0], seg: 8 });
+
+      // cortina fechada (o pai fechou no plano 37): tecido bege, contraluz do sol baixo
+      const CX0 = JX0 - 0.45, CX1 = JX1 + 0.4, CH = JY1 + 0.3, CZ = 0.34;
+      cil(0.025, 0.025, CX1 - CX0 + 0.3, 0x3a3530, (CX0 + CX1) / 2, CH + 0.02, CZ, { r: [0, 0, Math.PI / 2], seg: 8 });
+
+      // ---------- a "luz do sol": câmera ortográfica do lado de fora, só vê a Duda, o muro e o portão ----------
+      // (projeção perpendicular à parede: a sombra cai no tecido no mesmo tamanho; o shader borra)
+      const fora3D = new THREE.Scene(); fora3D.background = new THREE.Color(0xffffff);
+      fora3D.overrideMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const kF = Cena.kit(fora3D, 909);
+      const MZ = -3.5;                                                 // muro baixo (rua.html: MURO - FZ)
+      kF.box(2.6, 1.25, 0.2, 0, JX0 - 1.0, 0.62, MZ, { contorno: false });
+      kF.box(2.0, 1.25, 0.2, 0, JX1 + 1.4, 0.62, MZ, { contorno: false });
+      const GX = JX0 + 0.3;                                            // portãozinho de grade em frente à janela
+      for (const y of [1.15, 0.15]) kF.box(1.1, 0.05, 0.05, 0, GX + 0.55, y, MZ, { contorno: false });
+      for (let i = 0; i < 8; i++) kF.box(0.03, 1.05, 0.03, 0, GX + 0.08 + i * 0.135, 0.65, MZ, { contorno: false });
+      kF.cil(0.09, 0.12, 6, 0, JX1 + 2.6, 3, -8, { seg: 8, contorno: false });                         // poste
+      for (let i = 0; i < 7; i++) kF.bolha(0.45, 0, JX0 - 0.6 + Math.cos(i * 1.7) * 0.6, 3.25 + Math.sin(i * 2.3) * 0.25, -6, [1.2, 0.6, 1], { contorno: false });   // galho da árvore da calçada
+      const duda = Elenco.build("duda", { expr: "medo" });
+      duda.position.set(-6, 0.16, MZ - 0.45); duda.rotation.y = 0; fora3D.add(duda);
+      const rd = duda.userData.rig;
+      const camLuz = new THREE.OrthographicCamera(-(CX1 - CX0) / 2, (CX1 - CX0) / 2, CH / 2, -CH / 2, 0.1, 40);
+      camLuz.position.set((CX0 + CX1) / 2, CH / 2, -20); camLuz.lookAt((CX0 + CX1) / 2, CH / 2, 0);
+      const SW = 420, SH = Math.round(420 * CH / (CX1 - CX0));
+      const alvoSombra = new THREE.WebGLRenderTarget(SW, SH);
+
+      const corLuz = new THREE.Color(0xf6d29c), corTecido = new THREE.Color(0xc9b28e), corSombra = new THREE.Color(0x8a6a52);
+      const cortina = new THREE.Mesh(new THREE.PlaneGeometry(CX1 - CX0, CH, 120, 8), new THREE.ShaderMaterial({
+        uniforms: { tS: { value: alvoSombra.texture }, px: { value: new THREE.Vector2(1 / SW, 1 / SH) },
+          luz: { value: corLuz }, tecido: { value: corTecido }, somb: { value: corSombra },
+          jan: { value: new THREE.Vector4((JX0 - CX0) / (CX1 - CX0), JY0 / CH, (JX1 - CX0) / (CX1 - CX0), JY1 / CH) }, onda: { value: 0 } },
+        vertexShader: `
+          uniform float onda; varying vec2 vUv;
+          void main() { vUv = uv;
+            vec3 p = position; p.z += 0.045 * sin(uv.x * 6.2832 * 13.0) + 0.012 * sin(uv.x * 40.0 + onda) * uv.y;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`,
+        fragmentShader: `
+          uniform sampler2D tS; uniform vec2 px; uniform vec3 luz, tecido, somb; uniform vec4 jan; varying vec2 vUv;
+          void main() {
+            // sombra borrada (tecido difunde): 7x7 amostras em raio largo; u espelhado (a câmera de luz olha de fora)
+            float s = 0.0, wt = 0.0;
+            for (int i = -3; i <= 3; i++) for (int j = -3; j <= 3; j++) {
+              float w = exp(-float(i * i + j * j) / 6.0);
+              s += w * texture2D(tS, vec2(1.0 - vUv.x, vUv.y) + vec2(float(i), float(j)) * px * 3.2).r; wt += w;
+            }
+            float sombra = 1.0 - s / wt;
+            // só a área da janela recebe o sol; borda macia
+            float m = smoothstep(jan.x - 0.02, jan.x + 0.03, vUv.x) * smoothstep(jan.z + 0.02, jan.z - 0.03, vUv.x)
+                    * smoothstep(jan.y - 0.03, jan.y + 0.04, vUv.y) * smoothstep(jan.w + 0.03, jan.w - 0.04, vUv.y);
+            float dobra = 0.8 + 0.2 * sin(vUv.x * 6.2832 * 13.0 + 1.3);
+            vec3 acesa = mix(luz, somb, sombra * 0.88);
+            vec3 c = mix(tecido * 0.38, acesa, m) * dobra;
+            c *= mix(1.0, 0.82, smoothstep(0.85, 1.0, vUv.y));           // prega escura no varão
+            gl_FragColor = vec4(c, 1.0);
+          }`,
+      }));
+      cortina.position.set((CX0 + CX1) / 2, CH / 2, CZ); sala.add(cortina);
+
+      // ---------- sala: sofá encostado na parede direita, rack, planta, chaveiro e mochila perto da porta ----------
+      const SX = 2.25, SZ = 2.4, SL = 2.6, SEAT = 0.48, SOFA = 0x6b7a5e;
+      box(0.95, 0.32, SL, 0x58654d, SX, 0.2, SZ);
+      for (const dz of [-0.65, 0.65]) bolha(0.55, SOFA, SX - 0.05, SEAT - 0.04, SZ + dz, [0.95, 0.22, 1.1]);
+      box(0.32, 0.65, SL, SOFA, SX + 0.38, 0.75, SZ);
+      for (const dz of [-0.65, 0.65]) bolha(0.45, 0x75855f, SX + 0.25, 0.86, SZ + dz, [0.35, 0.75, 1.25], { r: [0, 0, -0.15] });
+      for (const s of [-1, 1]) box(0.95, 0.62, 0.25, SOFA, SX, 0.42, SZ + s * (SL / 2 + 0.05));
+      bolha(0.4, 0xb3563f, SX + 0.15, 0.75, SZ + 1.15, [0.6, 0.8, 0.35], { r: [0.3, 0, -0.2] });   // a manta de sempre
+      // mesinha lateral com o copo d'água (da cozinha) e o abajur colado com fita (quebrou no plano 19)
+      box(0.5, 0.05, 0.5, 0x6e4c37, SX - 0.1, 0.62, SZ - 1.75);
+      for (const [dx, dz] of [[-0.2, -0.2], [0.2, -0.2], [-0.2, 0.2], [0.2, 0.2]]) box(0.04, 0.6, 0.04, 0x4e3527, SX - 0.1 + dx, 0.3, SZ - 1.75 + dz);
+      cil(0.05, 0.045, 0.16, 0xcfe0e8, SX - 0.2, 0.73, SZ - 1.65, { seg: 12 });
+      // rack baixo na parede esquerda com porta-retrato (Gabi e Duda pequenos) e a TV desligada
+      box(0.45, 0.55, 2.0, 0x5a4232, X0 + 0.25, 0.28, 2.2);
+      box(0.08, 0.75, 1.3, 0x1b1c22, X0 + 0.12, 1.1, 2.2);
+      box(0.06, 0.32, 0.26, 0x4a3a2e, X0 + 0.3, 0.72, 1.35, { r: [0, 0.4, 0] });
+      bolha(0.05, 0xc68e62, X0 + 0.34, 0.74, 1.3, [0.4, 1.1, 1], { contorno: false });
+      bolha(0.05, 0xf3d6c2, X0 + 0.36, 0.74, 1.42, [0.4, 1.1, 1], { contorno: false });
+      cil(0.24, 0.2, 0.5, 0xd9d2c4, X0 + 0.45, 0.25, 0.55);
+      for (let i = 0; i < 9; i++) bolha(0.22, 0x4a7a46, X0 + 0.45 + Math.cos(i * 0.7) * 0.15, 0.75 + i * 0.13, 0.55 + Math.sin(i * 0.7) * 0.15, [0.55, 1.4, 0.3], { r: [0.4 * Math.sin(i), i * 0.7, 0.5] });
+      // perto da porta: chaveiro, a mochila da escola parada no gancho, tênis no tapete
+      box(0.5, 0.06, 0.05, 0x6e4c37, PX1 + 0.45, 1.75, 0.04);
+      for (let i = 0; i < 3; i++) cil(0.012, 0.012, 0.12, 0xc9b07a, PX1 + 0.27 + i * 0.16, 1.66, 0.07, { seg: 6, contorno: false });
+      bolha(0.28, 0x3b4a7a, PX1 + 0.5, 1.35, 0.17, [0.9, 1.2, 0.5]);
+      box(1.0, 0.015, 0.6, 0x8a5a44, (PX0 + PX1) / 2, 0.008, 0.45, { contorno: false, sombra: false });
+      for (const dx of [-0.12, 0.12]) bolha(0.1, 0xf2f2ee, PX1 + 0.35 + dx, 0.06, 0.4, [0.9, 0.5, 1.9]);
+
+      // ---------- as pessoas: o Gabi no sofá com o fone; a mãe entre ele e a porta ----------
+      const gabi = Elenco.build("gabi", { blind: true, expr: "neutro", pose: "sentado" });
+      gabi.position.set(SX - 0.05, SEAT + 0.1 - 1.075, SZ - 0.55); gabi.rotation.y = -Math.PI / 2 - 0.25; sala.add(gabi);
+      const rg = gabi.userData.rig;
+      const mae = Elenco.build("mae", { expr: "triste" });
+      const MX0 = PX0 + 0.15, MZ0 = 0.85, MRY = Math.atan2(SX - 0.05 - MX0, SZ - 0.55 - MZ0);
+      mae.position.set(MX0, 0, MZ0); mae.rotation.y = MRY; sala.add(mae);
+      const rm = mae.userData.rig;
+      sala.updateMatrixWorld(true);
+      // mãos do Gabi: no colo (escutando música) e depois apertando o fone no pescoço
+      const gp = (x, y, z) => gabi.localToWorld(new THREE.Vector3(x, y, z));
+      const pose = () => [rg.aR.sh.rotation.clone(), rg.aR.el.rotation.clone(), rg.aL.sh.rotation.clone(), rg.aL.el.rotation.clone()];
+      Elenco.alcancar(gabi, "esq", gp(0.08, 1.12, 0.55)); Elenco.alcancar(gabi, "dir", gp(-0.08, 1.1, 0.58));
+      const colo = pose();
+      // aperta o fone: cotovelo para baixo, antebraço dobrado subindo até o pescoço (a busca do alcancar
+      // levantava o ombro porque o cotovelo dela vai só até -2,2); a outra mão continua no colo
+      const aperta = [new THREE.Euler(-0.45, -0.55, 0.1), new THREE.Euler(-2.45, 0, 0), colo[2].clone(), colo[3].clone()];
+      // mãe: mão no trinco
+      Elenco.alcancar(mae, "dir", trinco.getWorldPosition(new THREE.Vector3()));
+      const maeTrinco = [rm.aL.sh.rotation.clone(), rm.aL.el.rotation.clone()];
+      const aplicar = (P, Q, u) => {
+        const arr = [rg.aR.sh, rg.aR.el, rg.aL.sh, rg.aL.el];
+        arr.forEach((o, i) => o.rotation.set(P[i].x + (Q[i].x - P[i].x) * u, P[i].y + (Q[i].y - P[i].y) * u, P[i].z + (Q[i].z - P[i].z) * u));
+      };
+
+      // ---------- luz: sol baixo atravessando a cortina (laranja), sala na penumbra fria ----------
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1d24);
+      scene.fog = new THREE.Fog(0x4a4640, 9, 22);
+      scene.add(sala);
+      scene.add(new THREE.HemisphereLight(0x8c97ad, 0x4a3e33, 1.5));
+      const brilho = new THREE.SpotLight(0xf3c58a, 16, 9, 0.95, 0.85, 1.3);          // a cortina acesa ilumina a sala
+      brilho.position.set((JX0 + JX1) / 2, 2.0, 0.45); brilho.target.position.set(1.2, 0.6, 3.2);
+      brilho.castShadow = true; brilho.shadow.mapSize.set(1024, 1024); brilho.shadow.bias = -0.002; brilho.shadow.normalBias = 0.04;
+      scene.add(brilho); scene.add(brilho.target);
+      const fresta = new THREE.SpotLight(0xffd9a0, 0, 8, 0.45, 0.6, 1.2);            // a porta abre: faixa de sol no chão
+      fresta.position.set((PX0 + PX1) / 2 - 0.3, 2.2, -1.6); fresta.target.position.set(1.2, 0, 2.2);
+      fresta.castShadow = true; fresta.shadow.mapSize.set(1024, 1024); fresta.shadow.bias = -0.002;
+      scene.add(fresta); scene.add(fresta.target);
+      const rosto = new THREE.PointLight(0xc9d6ee, 1.4, 3.2, 1.6);                    // preenchimento fraco no rosto do Gabi
+      rosto.position.set(SX - 1.3, 1.9, SZ - 0.2); sala.add(rosto);
+      // poeira no feixe da janela (determinística)
+      const N = 160, pg = new THREE.BufferGeometry(), arr = new Float32Array(N * 3), base = [];
+      for (let i = 0; i < N; i++) base.push([JX0 + rnd() * (JX1 - JX0 + 1.5), 0.5 + rnd() * 2.6, 0.4 + rnd() * 3.2, rnd() * 6.28]);
+      pg.setAttribute("position", new THREE.BufferAttribute(arr, 3));
+      sala.add(new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xffe2b8, size: 0.012, transparent: true, opacity: 0.55, depthWrite: false })));
+
+      const camA = new THREE.PerspectiveCamera(40, 1920 / 1080, 0.1, 60);
+      const camB = new THREE.PerspectiveCamera(34, 1920 / 1080, 0.1, 60);
+      const camC = new THREE.PerspectiveCamera(36, 1920 / 1080, 0.1, 60);
+      const renderer = Cena.renderer("p-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+      const S = Cena.suave;
+
+      function animarDuda(t) {
+        // 0-1,4 s chega andando pela calçada · 1,5-2,2 bate no portão · fala · 6,3+ olha a janela do quarto e vai embora
+        const GXc = GX + 0.55;
+        let x, andando = 0, vira = 0, lado = 0;
+        if (t < 1.4) { x = -4.2 + (GXc + 4.2) * S(t / 1.4); andando = 1 - S((t - 1.0) / 0.4); }
+        else if (t < 6.9) { x = GXc; }
+        else { const u = S((t - 6.9) / 1.3); x = GXc - 3.2 * u; andando = Math.min(1, (t - 6.9) / 0.3); }
+        // chega de lado (perfil), vira para a casa no portão, e vira de novo para ir embora
+        // o rig olha para +z (a casa): +90° anda para +x, 0 de frente para a casa, -90° volta para -x
+        let ry = Math.PI / 2 * (1 - S((t - 1.2) / 0.4));
+        if (t >= 6.75) ry = -Math.PI / 2 * S((t - 6.75) / 0.35);
+        duda.rotation.y = ry; duda.position.x = x;
+        const passo = Math.sin(t * 9.5) * 0.45 * andando;
+        rd.pL.hip.rotation.x = passo; rd.pR.hip.rotation.x = -passo;
+        rd.pL.knee.rotation.x = Math.max(0, -passo) * 0.8; rd.pR.knee.rotation.x = Math.max(0, passo) * 0.8;
+        rd.aL.sh.rotation.set(-passo * 0.6, 0, -0.08); rd.aR.sh.rotation.set(passo * 0.6, 0, 0.08);
+        rd.aL.el.rotation.x = -0.2; rd.aR.el.rotation.x = -0.2;
+        // batidas no portão: a mão direita sobe e bate três vezes
+        if (t > 1.5 && t < 2.5) {
+          const u = Math.min(1, (t - 1.5) / 0.25), bate = Math.abs(Math.sin((t - 1.75) * 3 * Math.PI / 0.6)) * (t > 1.75 && t < 2.35 ? 1 : 0);
+          rd.aL.sh.rotation.set(-0.9 * u - 0.25 * bate, 0, 0); rd.aL.el.rotation.x = -0.5 * u;
+        }
+        // fala (3,0-3,9): cabeça hesita; depois de 4 s escuta a mãe; 6,2 olha pra janela do quarto (para cima e ao lado)
+        if (t > 2.6 && t < 6.2) { vira = Math.sin(t * 2.3) * 0.06; lado = Math.sin(t * 1.7) * 0.05; }
+        const olhaQuarto = S((t - 6.0) / 0.45) * (1 - S((t - 6.75) / 0.25));
+        Elenco.cabeca(duda, -0.1 * olhaQuarto + (t > 4.2 && t < 5.6 ? 0.1 : 0), vira + 0.9 * olhaQuarto, lado, Math.sin(t * 2 * Math.PI * 0.4) * 0.008);
+      }
+
+      function render() {
+        const t = estado.t;
+        animarDuda(t);
+        renderer.setRenderTarget(alvoSombra); renderer.render(fora3D, camLuz); renderer.setRenderTarget(null);
+        cortina.material.uniforms.onda.value = t * 1.3;
+        for (let i = 0; i < N; i++) {
+          const b = base[i];
+          arr[i * 3] = b[0] + Math.sin(t * 0.3 + b[3]) * 0.08; arr[i * 3 + 1] = b[1] + Math.sin(t * 0.21 + b[3] * 2) * 0.06; arr[i * 3 + 2] = b[2];
+        }
+        pg.attributes.position.needsUpdate = true;
+        // o Gabi: ouve a batida (1,8 s) e congela · a mão sobe e aperta o fone (4,2) · "não" com a cabeça (4,9-5,8)
+        const ouve = S((t - 1.8) / 0.25);
+        aplicar(colo, aperta, S((t - 4.1) / 0.5));
+        const nao = (t > 4.9 && t < 5.9) ? Math.sin((t - 4.9) * 2 * Math.PI * 2) * 0.32 * (1 - (t - 4.9)) : 0;
+        const resp = Math.sin(t * 2 * Math.PI * (t > 1.8 ? 0.55 : 0.3)) * (t > 1.8 && t < 5 ? 0.003 : 0.008);   // respiração presa
+        Elenco.cabeca(gabi, 0.15 - 0.2 * ouve + 0.12 * S((t - 6.2) / 0.8), -0.55 * ouve + 0.75 * S((t - 4.6) / 0.3) + nao, 0.12 * ouve, resp);
+        if (t > 1.8 && rg.ficha.expr !== "medo") Elenco.expressao(gabi, "medo");
+        if (t > 6.3 && rg.ficha.expr !== "choro") Elenco.expressao(gabi, "choro");
+        if (t <= 1.8 && rg.ficha.expr !== "neutro") Elenco.expressao(gabi, "neutro");
+        // a mãe: olha o filho; depois da cabeça dele, vai ao trinco e abre a porta (fala com a Duda pela fresta)
+        const vai = S((t - 5.4) / 0.6);
+        mae.position.set(MX0 + 0.05 * vai, 0, MZ0 - 0.2 * vai); mae.rotation.y = MRY + (Math.PI - 0.5 - MRY) * vai;   // vira para a porta
+        if (t > 5.9) { rm.aL.sh.rotation.copy(maeTrinco[0]); rm.aL.el.rotation.copy(maeTrinco[1]); } else { rm.aL.sh.rotation.set(-0.15, 0, 0.05); rm.aL.el.rotation.set(-0.3, 0, 0); }
+        Elenco.cabeca(mae, 0.12, t < 5.4 ? 0.1 : -0.4 * vai, 0, Math.sin(t * 2 * Math.PI * 0.3) * 0.008);
+        const abre = S((t - 6.2) / 0.6) * 0.55;
+        porta.rotation.y = abre; fresta.intensity = 30 * abre;
+        let cam;
+        if (t < C1) {
+          const u = S(t / C1);
+          camA.position.set(-2.9 + 0.4 * u, 1.6, 4.85 - 0.3 * u); camA.lookAt(0.1, 1.4, 0.8); cam = camA;
+        } else if (t < C2) {
+          const u = S((t - C1) / (C2 - C1));
+          camB.position.set(-1.6 + 0.25 * u, 1.75, 4.1 - 0.1 * u); camB.lookAt(SX - 0.6, 1.4, SZ - 0.9); cam = camB;
+        } else {
+          const u = S((t - C2) / (DUR - C2));
+          camC.position.set(-2.7 + 0.25 * u, 1.6, 4.7 - 0.25 * u); camC.lookAt(-0.75, 1.5, 0.3); cam = camC;
+        }
+        pos.render(scene, cam, t, LOOK);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["portao"] = tl;
+      render();
+    })();
+  </script>
+</template>
