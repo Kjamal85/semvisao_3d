@@ -45,6 +45,8 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
   cabeça — senão o queixo afunda no corpo (aconteceu na sala, 2026-11-22). Olho cego não fecha
   abaixo de 0,78 (achatado parece olho roxo).
 - **A boca aparece sempre** (pedido do usuário): nada de queixo afundado nem mão/objeto na frente da boca.
+- Mão que toca algo (copo, batente, ombro) usa `Elenco.alcancar(g, "esq"|"dir", alvo)` — não chutar ângulo.
+- Personagem de frente para uma bancada/parede fica meio de lado (3/4) para a câmera ver o rosto.
 - No rig, `aL` é o braço DIREITO da personagem (lado -x local); conferir o lado no snapshot.
 
 ## Look de pós (assets/rig/pos.js)

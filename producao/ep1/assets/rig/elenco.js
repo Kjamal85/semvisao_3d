@@ -257,5 +257,34 @@
     rig.head.rotation.set(a, vira || 0, lado || 0);
   }
 
-  window.Elenco = { FICHAS, EXPR, build, expressao, cabeca };
+  // Leva a mão até um ponto do mundo: procura os ângulos do ombro (x, z) e do cotovelo (x)
+  // que deixam a mão mais perto do alvo. Busca em grade + refinamento: determinística.
+  // lado: "esq" ou "dir" DA PERSONAGEM. Devolve a distância que sobrou (0 = encostou).
+  const _v = new THREE.Vector3();
+  function alcancar(g, lado, alvo) {
+    const rig = g.userData.rig, braco = lado === "esq" ? rig.aR : rig.aL;   // aR = esquerda da personagem
+    const mao = new THREE.Object3D(); mao.position.set(0, -0.46, 0); braco.el.add(mao);
+    let raiz = g; while (raiz.parent) raiz = raiz.parent;
+    const custo = (sx, sz, ex) => {
+      braco.sh.rotation.set(sx, 0, sz); braco.el.rotation.set(ex, 0, 0);
+      raiz.updateMatrixWorld(true); mao.getWorldPosition(_v); return _v.distanceTo(alvo);
+    };
+    const s = lado === "esq" ? 1 : -1;            // abrir o braço para fora: z + na esquerda, - na direita
+    let best = [0, 0, 0], bc = Infinity;
+    for (let sx = -2.6; sx <= 0.6; sx += 0.2) for (let sz = -0.4; sz <= 1.6; sz += 0.2) for (let ex = -2.2; ex <= 0; ex += 0.2) {
+      const c = custo(sx, s * sz, ex); if (c < bc) { bc = c; best = [sx, s * sz, ex]; }
+    }
+    for (const passo of [0.06, 0.02]) {
+      const b0 = best.slice();
+      for (let a = -3; a <= 3; a++) for (let b = -3; b <= 3; b++) for (let c = -3; c <= 3; c++) {
+        const ex = Math.min(0, b0[2] + c * passo);
+        const v = custo(b0[0] + a * passo, b0[1] + b * passo, ex);
+        if (v < bc) { bc = v; best = [b0[0] + a * passo, b0[1] + b * passo, ex]; }
+      }
+    }
+    custo(best[0], best[1], best[2]); braco.el.remove(mao);
+    return bc;
+  }
+
+  window.Elenco = { FICHAS, EXPR, build, expressao, cabeca, alcancar };
 })();
