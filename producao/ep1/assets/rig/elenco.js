@@ -11,19 +11,19 @@
   // Fichas. alt = escala da altura (Gabi = 1); larg = largura do corpo.
   const FICHAS = {
     gabi: { nome: "Gabi", alt: 1.0, larg: 1.0, pele: 0xc68e62, cabelo: 0x241c17, cabeloEstilo: "gabi",
-            roupa: 0xaed0ec, calca: 0x454551, sapato: 0x2d2d36, capuz: true, fone: 0x24242a },
+            roupa: 0xaed0ec, calca: 0x454551, sapato: 0x2d2d36, capuz: true, fone: 0x24242a, cintura: 0.93 },
     mae:  { nome: "Mãe", alt: 0.96, larg: 0.95, pele: 0xf0cfb4, cabelo: 0x7a5236, cabeloEstilo: "rabo", blush: 0xf0aaa6,
-            roupa: 0xc9835b, calca: 0x5d6d8c, sapato: 0x6b4b3a },
+            roupa: 0xc9835b, calca: 0x5d6d8c, sapato: 0x6b4b3a, cintura: 0.8 },
     pai:  { nome: "Pai", alt: 1.07, larg: 1.12, pele: 0x6e4630, cabelo: 0x16110e, cabeloEstilo: "crespo",
-            barba: true, roupa: 0x6f7f5a, calca: 0x8a7a5e, sapato: 0x3a2e26 },
+            barba: true, roupa: 0x6f7f5a, calca: 0x8a7a5e, sapato: 0x3a2e26, cintura: 0.93 },
     duda: { nome: "Duda", alt: 0.92, larg: 0.86, pele: 0xf3d6c2, cabelo: 0xe0bd72, cabeloEstilo: "longo", blush: 0xf3aeb2, sobrancelha: 0x9a7038,
-            roupa: 0xf2c4d0, calca: 0x8fa3c4, sapato: 0xe9e4dc },
+            roupa: 0xf2c4d0, calca: 0x8fa3c4, sapato: 0xe9e4dc, cintura: 0.78 },
     // adulta de TV: olhos menores, batom, brincos, blazer com lapela sobre blusa clara
     reporter: { nome: "Repórter", alt: 0.97, larg: 0.95, pele: 0xd9a77f, cabelo: 0x1a1412, cabeloEstilo: "chanel",
                 blush: 0xd98c7e, roupa: 0x7a2e3a, calca: 0x2b2b33, sapato: 0x1b1b20,
-                olho: 0.82, batom: 0xa3333f, brinco: 0xd9b44a, lapela: 0x5e1f2a, blusa: 0xf1ece4 },
+                olho: 0.82, batom: 0xa3333f, brinco: 0xd9b44a, lapela: 0x5e1f2a, blusa: 0xf1ece4, cintura: 0.8 },
     agente: { nome: "Agente", alt: 1.05, larg: 1.1, pele: 0xd9b08c, roupa: 0xe4e8eb, calca: 0xe4e8eb,
-              sapato: 0x24242a, mao: 0x2d3038, epi: true, faixa: 0xe8b923 },
+              sapato: 0x24242a, mao: 0xf7f7f3, epi: true, faixa: 0xe8b923, cintura: 0.95 },   // luva branca
   };
 
   // a cabeça gira pela base do pescoço (PESCOCO); centro da cabeça em pé = CABECA_Y
@@ -61,7 +61,12 @@
     }
     const pL = leg(-1), pR = leg(1);
     // tronco (topo em 1,82) + pescoço: a cabeça não fica enterrada no corpo
-    add(new THREE.CylinderGeometry(0.30 * w, 0.26 * w, 0.74, 20), P.roupa, 0, 1.45, 0);
+    // tronco torneado (ombro, peito, cintura, quadril) e bacia na cor da calça ligando as pernas
+    const c = P.cintura || 0.88;
+    const perfil = [[0, 1.84], [0.2, 1.83], [0.29, 1.8], [0.305, 1.72], [0.3, 1.58], [0.3 * c, 1.38], [0.285, 1.2], [0.28, 1.1], [0.2, 1.065], [0, 1.06]]
+      .map(([r, y]) => new THREE.Vector2(r * w, y - 1.45)).reverse();   // de baixo p/ cima (normais para fora), centrado: o contorno escala em volta do tronco
+    add(new THREE.LatheGeometry(perfil, 24), P.roupa, 0, 1.45, 0);
+    add(sphere(0.27 * w, 20, 14), P.calca, 0, 1.02, 0, g, { s: [1, 0.5, 0.8] });
     add(new THREE.CylinderGeometry(0.105 * w, 0.115 * w, 0.26, 14), P.epi ? P.roupa : P.pele, 0, 1.9, 0);
     if (P.capuz) { // moletom (referência do usuário, 2026-11-22): capuz caído em gola, cordões, bolso canguru, ribanas
       const rib = new THREE.Color(P.roupa).multiplyScalar(0.86).getHex();
@@ -75,7 +80,7 @@
       add(new THREE.BoxGeometry(0.4, 0.22, 0.05), P.roupa, 0, 1.25, 0.265, g, { semContorno: true });          // bolso canguru: só costuras
       add(new THREE.BoxGeometry(0.26, 0.012, 0.012), rib, 0, 1.36, 0.292, g, { semContorno: true });
       for (const s of [-1, 1]) add(new THREE.BoxGeometry(0.012, 0.2, 0.012), rib, s * 0.18, 1.26, 0.293, g, { r: [0, 0, s * 0.35], semContorno: true });   // boca do bolso
-      add(new THREE.CylinderGeometry(0.268 * w, 0.262 * w, 0.08, 20), rib, 0, 1.12, 0);                          // barra de ribana
+      add(new THREE.CylinderGeometry(0.286 * w, 0.283 * w, 0.08, 20), rib, 0, 1.12, 0);                          // barra de ribana
     }
     if (P.fone && P.foneNoPescoco) {   // fone fora do pescoço por padrão (usuário não gostou do aro preto) // objeto-assinatura do Gabi: fone no pescoço
       // aro largo e solto, caído para a frente sobre o peito (não aperta o pescoço); conchas na clavícula
@@ -89,7 +94,7 @@
       for (const s of [-1, 1]) add(new THREE.BoxGeometry(0.08, 0.44, 0.04), P.lapela, s * 0.1, 1.7, 0.285, g, { r: [-0.1, 0, -s * 0.3] });
     }
     if (P.faixa) { // EPI: faixa refletiva no peito
-      add(new THREE.CylinderGeometry(0.297 * w, 0.29 * w, 0.09, 20), P.faixa, 0, 1.62, 0);
+      add(new THREE.CylinderGeometry(0.308 * w, 0.308 * w, 0.09, 20), P.faixa, 0, 1.62, 0);
     }
     // braços (ombro -> cotovelo, com juntas para posar)
     function arm(side) {
@@ -101,8 +106,19 @@
       add(sphere(0.085 * w, 14, 10), P.roupa, 0, 0, 0, el);                              // cotovelo sem fresta ao dobrar
       add(new THREE.CylinderGeometry(0.08 * w, 0.075 * w, 0.44, 14), P.roupa, 0, -0.22, 0, el);
       if (P.capuz) add(new THREE.CylinderGeometry(0.083 * w, 0.083 * w, 0.07, 14), new THREE.Color(P.roupa).multiplyScalar(0.86).getHex(), 0, -0.41, 0, el);   // punho de ribana
-      add(sphere(0.10, 14, 12), P.mao || P.pele, 0, -0.46, 0, el);
-      return { sh, el };
+      // mão (referência do usuário): palma achatada voltada para o corpo, 4 dedos e polegar à frente
+      const cm = P.mao || P.pele, mao = new THREE.Group(); mao.position.set(0, -0.41, 0); mao.scale.setScalar(1.35); el.add(mao);
+      add(sphere(0.07, 14, 12), cm, 0, -0.05, 0, mao, { s: [0.6, 1.0, 0.9] });
+      const dedos = [];
+      for (let i = 0; i < 4; i++) {
+        const d = new THREE.Group(); d.position.set(0, -0.1, (i - 1.5) * 0.031); mao.add(d);
+        add(new THREE.CapsuleGeometry(0.016, 0.055 - Math.abs(i - 1.2) * 0.01, 4, 8), cm, 0, -0.035, 0, d);
+        dedos.push(d);
+      }
+      const pol = new THREE.Group(); pol.position.set(-side * 0.012, -0.045, 0.05); mao.add(pol);
+      add(new THREE.CapsuleGeometry(0.018, 0.04, 4, 8), cm, 0, -0.03, 0, pol);
+      const ret = { sh, el, mao: { g: mao, dedos, pol, side } };
+      return ret;
     }
     const aL = arm(-1), aR = arm(1);
 
@@ -194,6 +210,7 @@
       aL.sh.rotation.z = -0.06; aR.sh.rotation.z = 0.09;
       aL.el.rotation.x = -0.08; aR.el.rotation.x = -0.14;
     }
+    for (const b of [aL, aR]) { b.mao.dedos.forEach((d) => d.rotation.set(0, 0, -b.mao.side * 0.35)); b.mao.pol.rotation.set(-0.54, 0, -b.mao.side * 0.2); }
     g.traverse((o) => { if (o.isMesh && o.material !== outlineMat) { o.castShadow = true; o.receiveShadow = true; } });
     g.scale.setScalar(P.alt);
     g.userData.rig = { head, aL, aR, pL, pR, ficha: P };
@@ -303,5 +320,15 @@
     return bc;
   }
 
-  window.Elenco = { FICHAS, EXPR, CABECA_Y, build, expressao, cabeca, alcancar };
+  // Formas da mão: "relaxada" (padrão), "aberta" (tateando), "segura" (copo, fone), "punho". u mistura com a relaxada.
+  const MAOS = { relaxada: [0.35, 0.2], aberta: [0.05, -0.1], segura: [1.1, 0.6], punho: [1.75, 1.1] };
+  function mao(g, lado, forma, u) {
+    const rig = g.userData.rig, m = (lado === "esq" ? rig.aR : rig.aL).mao;
+    const A = MAOS.relaxada, B = MAOS[forma] || A, k = u === undefined ? 1 : u;
+    const curl = A[0] + (B[0] - A[0]) * k, pol = A[1] + (B[1] - A[1]) * k;
+    m.dedos.forEach((d, i) => { d.rotation.set(0, 0, -m.side * curl * (1 + i * 0.06)); });   // dobra para a palma
+    m.pol.rotation.set(-0.6 + 0.3 * pol, 0, -m.side * pol);
+  }
+
+  window.Elenco = { FICHAS, EXPR, CABECA_Y, mao, build, expressao, cabeca, alcancar };
 })();

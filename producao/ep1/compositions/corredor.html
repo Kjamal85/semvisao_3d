@@ -93,8 +93,7 @@
         b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
       };
       // mãos fechadas: as esferas das mãos encolhem um pouco e achatam (punho)
-      const maos = [];
-      for (const b of [rg.aL, rg.aR]) b.el.traverse((o) => { if (o.isMesh && Math.abs(o.position.y + 0.46) < 0.001) maos.push(o); });
+
 
       // ---------- luz: tarde; claridade da sala atrás da câmera, quarto dele aceso no fundo ----------
       const scene = new THREE.Scene();
@@ -160,7 +159,8 @@
           rg.aL.sh.rotation.z += tremor; rg.aR.sh.rotation.z -= tremor;
         }
         const fecha = t > BATE + 0.1 ? S((t - BATE - 0.1) / 0.4) : 0;
-        for (const m of maos) m.scale.set(1 - 0.12 * fecha, 1 - 0.2 * fecha, 1 - 0.08 * fecha);
+        if (t < BATE) { Elenco.mao(gabi, "dir", "aberta", 1); Elenco.mao(gabi, "esq", "aberta", 1); }   // tateando
+        else { Elenco.mao(gabi, "dir", "punho", fecha); Elenco.mao(gabi, "esq", "punho", fecha); }
         // cabeça e rosto: escuta e conta os passos (boca mexe a cada passo); a batida vira careta de dor; depois a raiva presa
         if (t < BATE) {
           if (rg.ficha.expr !== "firme") Elenco.expressao(gabi, "firme");
