@@ -63,11 +63,21 @@
     // tronco (topo em 1,82) + pescoço: a cabeça não fica enterrada no corpo
     add(new THREE.CylinderGeometry(0.30 * w, 0.26 * w, 0.74, 20), P.roupa, 0, 1.45, 0);
     add(new THREE.CylinderGeometry(0.105 * w, 0.115 * w, 0.26, 14), P.epi ? P.roupa : P.pele, 0, 1.9, 0);
-    if (P.capuz) { // moletom do Gabi: capuz caído + bolso
-      add(sphere(0.26, 18, 14), P.roupa, 0, 1.83, -0.15, g, { s: [1.15, 0.6, 0.8] });
-      add(new THREE.BoxGeometry(0.34, 0.16, 0.06), P.roupa, 0, 1.2, 0.27);
+    if (P.capuz) { // moletom (referência do usuário, 2026-11-22): capuz caído em gola, cordões, bolso canguru, ribanas
+      const rib = new THREE.Color(P.roupa).multiplyScalar(0.86).getHex();
+      const cordao = new THREE.Color(P.roupa).lerp(new THREE.Color(0xffffff), 0.45).getHex();
+      add(sphere(0.26, 18, 14), P.roupa, 0, 1.84, -0.14, g, { s: [1.15, 0.62, 0.8] });                          // volume do capuz nas costas
+      add(new THREE.TorusGeometry(0.17 * w, 0.06, 12, 28), P.roupa, 0, 1.8, -0.02, g, { r: [Math.PI / 2 - 0.3, 0, 0] });   // gola do capuz
+      for (const s of [-1, 1]) {                                                                                   // dois cordões com ponteira
+        add(new THREE.CylinderGeometry(0.014, 0.014, 0.32, 6), cordao, s * 0.075, 1.6, 0.3, g, { r: [-0.06, 0, s * 0.04] });
+        add(new THREE.CylinderGeometry(0.018, 0.018, 0.05, 8), 0x9a9aa2, s * 0.082, 1.42, 0.31, g, { semContorno: true });
+      }
+      add(new THREE.BoxGeometry(0.4, 0.22, 0.05), P.roupa, 0, 1.25, 0.265, g, { semContorno: true });          // bolso canguru: só costuras
+      add(new THREE.BoxGeometry(0.26, 0.012, 0.012), rib, 0, 1.36, 0.292, g, { semContorno: true });
+      for (const s of [-1, 1]) add(new THREE.BoxGeometry(0.012, 0.2, 0.012), rib, s * 0.18, 1.26, 0.293, g, { r: [0, 0, s * 0.35], semContorno: true });   // boca do bolso
+      add(new THREE.CylinderGeometry(0.268 * w, 0.262 * w, 0.08, 20), rib, 0, 1.12, 0);                          // barra de ribana
     }
-    if (P.fone) { // objeto-assinatura do Gabi: fone no pescoço
+    if (P.fone && P.foneNoPescoco) {   // fone fora do pescoço por padrão (usuário não gostou do aro preto) // objeto-assinatura do Gabi: fone no pescoço
       // aro largo e solto, caído para a frente sobre o peito (não aperta o pescoço); conchas na clavícula
       add(new THREE.TorusGeometry(0.27, 0.04, 10, 28), P.fone, 0, 1.8, 0.06, g, { r: [Math.PI / 2 + 0.55, 0, 0] });
       add(sphere(0.085, 12, 12), P.fone, -0.23, 1.74, 0.2, g, { s: [0.7, 1, 1], r: [0, -0.4, 0] });
@@ -90,6 +100,7 @@
       const el = new THREE.Group(); el.position.set(0, -0.46, 0); sh.add(el);
       add(sphere(0.085 * w, 14, 10), P.roupa, 0, 0, 0, el);                              // cotovelo sem fresta ao dobrar
       add(new THREE.CylinderGeometry(0.08 * w, 0.075 * w, 0.44, 14), P.roupa, 0, -0.22, 0, el);
+      if (P.capuz) add(new THREE.CylinderGeometry(0.083 * w, 0.083 * w, 0.07, 14), new THREE.Color(P.roupa).multiplyScalar(0.86).getHex(), 0, -0.41, 0, el);   // punho de ribana
       add(sphere(0.10, 14, 12), P.mao || P.pele, 0, -0.46, 0, el);
       return { sh, el };
     }
