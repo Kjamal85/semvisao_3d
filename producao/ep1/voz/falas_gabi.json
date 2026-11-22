@@ -1,0 +1,26 @@
+[
+  {
+    "id": "c01-gabi-01",
+    "voz": "Enceladus",
+    "estilo": "com voz de menino, sussurro rouco de quem acabou de acordar, a segunda palavra já tremendo, à beira do pânico",
+    "texto": "...pai? mãe?"
+  },
+  {
+    "id": "c03-gabi-03",
+    "voz": "Enceladus",
+    "estilo": "com voz de menino, grito de raiva que começa forte e falha na última palavra, sem chorar",
+    "texto": "Por que isso aconteceu comigo?!"
+  },
+  {
+    "id": "c06-gabi-04",
+    "voz": "Enceladus",
+    "estilo": "com voz de menino, seco, baixo, orgulho ferido, teimoso sem ser grosseiro",
+    "texto": "Deixa, mãe. Eu consigo."
+  },
+  {
+    "id": "c10-gabi-05",
+    "voz": "Enceladus",
+    "estilo": "com voz de menino, grito de pânico sendo arrastado, a voz quebrando",
+    "texto": "Mãe! Pai!"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "c02-mae-01",
+    "voz": "Sola",
+    "estilo": "com voz de mulher adulta, grito de susto, entrando correndo, voz aguda de medo",
+    "texto": "Gabi!"
+  },
+  {
+    "id": "c08-mae-02",
+    "voz": "Sola",
+    "estilo": "com voz de mulher adulta, baixo, devagar, com ternura, meia-voz, pausa entre as frases",
+    "texto": "Sente a borda primeiro. Devagar."
+  },
+  {
+    "id": "c09-mae-03",
+    "voz": "Sola",
+    "estilo": "com voz de mulher adulta, gentil e cansada, sorriso forçado na voz",
+    "texto": "Oi, querida... hoje não dá. Ele não tá querendo ver ninguém."
+  },
+  {
+    "id": "c10-mae-04",
+    "voz": "Sola",
+    "estilo": "com voz de mulher adulta, grito desesperado, a voz rasgando",
+    "texto": "Não! Solta ele!"
+  },
+  {
+    "id": "c10-mae-05",
+    "voz": "Sola",
+    "estilo": "com voz de mulher adulta, desesperada, chamando de longe",
+    "texto": "Gabi!... Gabi!"
+  }
+]

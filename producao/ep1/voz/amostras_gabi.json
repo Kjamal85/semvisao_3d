@@ -2,13 +2,13 @@
   {
     "id": "amostra-gabi-enceladus-emotiva",
     "voz": "Enceladus",
-    "estilo": "menino de 17 anos; rápido, respiração curta entre as palavras, voz tremendo, quase chorando; não grita, implora",
+    "estilo": "com voz de menino, rápido, voz tremendo, quase chorando, implorando sem gritar",
     "texto": "Não tô enxergando, mãe, não tô vendo nada."
   },
   {
     "id": "amostra-gabi-enceladus-seca",
     "voz": "Enceladus",
-    "estilo": "menino de 17 anos; seco, direto e baixo, sem emoção aparente, frases curtas",
+    "estilo": "com voz de menino, seco, baixo e sem emoção",
     "texto": "Meu nome é Gabi. Eu tô bem."
   }
 ]

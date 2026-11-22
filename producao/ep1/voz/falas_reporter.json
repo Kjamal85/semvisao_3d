@@ -1,0 +1,14 @@
+[
+  {
+    "id": "c04-reporter-02",
+    "voz": "Lumi",
+    "estilo": "com voz de repórter de telejornal, mulher adulta, grave e lenta, tom de alerta, ênfase em transmissível e em isolar",
+    "texto": "Investiga-se se a cegueira é transmissível. Recomenda-se isolar os afetados."
+  },
+  {
+    "id": "c04-reporter-01",
+    "voz": "Lumi",
+    "estilo": "com voz de repórter de plantão de telejornal, mulher adulta, firme, rápida, controlada, com urgência",
+    "texto": "Plantão urgente. Um apagão global atingiu o planeta nesta madrugada. Em várias cidades, pessoas acordaram sem enxergar."
+  }
+]

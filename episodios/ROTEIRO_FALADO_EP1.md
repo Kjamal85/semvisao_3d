@@ -86,7 +86,7 @@ joelhos, com o fone na mão (29–31). Só respiração e a música triste entra
 
 | ID | Personagem | Direção | Fala |
 |---|---|---|---|
-| `c04-reporter-01` ✏️ | Repórter | Mulher adulta, PT-BR. Plantão de telejornal: firme, rápida, controlada, com urgência. Sai filtrada como som de TV na pós. | "Plantão urgente. Um apagão global atingiu o planeta nesta madrugada. Em várias cidades, pessoas acordaram sem enxergar." (34) |
+| `c04-reporter-01` 🔒 | Repórter | Mulher adulta, PT-BR. Plantão de telejornal: firme, rápida, controlada, com urgência. Sai filtrada como som de TV na pós. | "Plantão urgente. Um apagão global atingiu o planeta nesta madrugada. Em várias cidades, pessoas acordaram sem enxergar." (34) |
 
 > O roteiro em cenas só tinha os trechos *"apagão global... pessoas acordaram sem enxergar..."*.
 > Mantive esses trechos e completei o resto da frase. Overlay **"DIA 1"** aparece aqui.
@@ -112,7 +112,7 @@ portas batem (38–39).
 
 | ID | Personagem | Direção | Fala |
 |---|---|---|---|
-| `c05-radio-01` ✏️ opcional | Rádio da equipe | Homem adulto, PT-BR, ao longe. Protocolo seco, quase entediado. Chiado de rádio na pós. | "Unidade três, mais um afetado confirmado. Recolhendo." (39) |
+| `c05-radio-01` 🔒 | Rádio da equipe | Homem adulto, PT-BR, ao longe. Protocolo seco, quase entediado. Chiado de rádio na pós. | "Unidade três, mais um afetado confirmado. Recolhendo." (39) |
 
 > O briefing prevê só "rádio chiando". Esta fala mostra que, lá fora, isso já virou rotina.
 > Pode cortar sem perder nada da história.
@@ -185,7 +185,7 @@ figuras de roupa de quarentena descem (63).
 
 | ID | Personagem | Direção | Fala |
 |---|---|---|---|
-| `c10-radio-02` ✏️ opcional | Rádio da equipe | Mesma voz do `c05-radio-01`. Curto, protocolar. | "Equipe na porta. Afetado na residência." (63) |
+| `c10-radio-02` ✂️ só chiado | Rádio da equipe | Mesma voz do `c05-radio-01`. Curto, protocolar. | "Equipe na porta. Afetado na residência." (63) |
 
 ⚡ **TUM-TUM-TUM** na porta; os pais se levantam (64).
 
@@ -200,8 +200,8 @@ figuras de roupa de quarentena descem (63).
 
 | ID | Personagem | Direção | Fala |
 |---|---|---|---|
-| `c10-agente-02` ✏️ | Agente | Mesma voz, agora ríspida e alta. Comando. | "Afasta da porta, senhor!" (66) |
-| `c10-mae-04` ✏️ | Mãe | Grito desesperado, a voz rasgando. | "Não! Solta ele!" (67) |
+| `c10-agente-02` 🔒 | Agente | Mesma voz, agora ríspida e alta. Comando. | "Afasta da porta, senhor!" (66) |
+| `c10-mae-04` 🔒 | Mãe | Grito desesperado, a voz rasgando. | "Não! Solta ele!" (67) |
 | `c10-gabi-05` 🔒 | Gabi | Grito de pânico sendo arrastado. Voz de menino, quebrando. | "Mãe! Pai!" (67) |
 
 **Na tela:** na rua, o Gabi é conduzido à van e os pais são contidos na porta; ao fundo, a janela da
@@ -211,7 +211,7 @@ Duda (68). Dentro da van, ele aperta o fone no peito; a porta bate (69).
 
 | ID | Personagem | Direção | Fala |
 |---|---|---|---|
-| `c10-mae-05` ✏️ | Mãe | Distante, abafada, desesperada; some em fade. | "Gabi!... Gabi!" (71) |
+| `c10-mae-05` 🔒 | Mãe | Distante, abafada, desesperada; some em fade. | "Gabi!... Gabi!" (71) |
 
 > O roteiro em cenas pede "a voz distante da mãe chamando", sem texto. Sugeri o nome dele.
 
@@ -264,14 +264,16 @@ a vinheta fechando (70).
 ### Decisões que precisam do seu ok
 1. **Idioma e duração:** PT-BR e 8–10 min, como no briefing?
 2. **Plano 22, "Gabi!":** só a mãe (como está) ou a mãe e o pai juntos?
-3. **`c04-reporter-01`:** aprova o texto que completa a fala da repórter?
-4. **Final (`c10-agente-02`, `c10-mae-04`, `c10-mae-05`):** aprova, corta ou ajusta por ID?
-5. **Rádio (`c05-radio-01`, `c10-radio-02`):** fala ou só chiado, como prevê o briefing?
-6. **Voz da Duda:** o [efeitos-e-audio-ep1.md](../briefing/efeitos-e-audio-ep1.md) marca
-   "[gravar]" para ela; o curso usa voz gerada (Gemini). Gerar ou gravar com uma pessoa real?
+3. ✅ (aprovado 2026-11-22) **`c04-reporter-01`:** aprova o texto que completa a fala da repórter?
+4. ✅ (aprovado 2026-11-22, como está) **Final (`c10-agente-02`, `c10-mae-04`, `c10-mae-05`):** aprova, corta ou ajusta por ID?
+5. ✅ (2026-11-22: só `c05-radio-01` falada, voz Algenib; `c10-radio-02` vira só chiado) **Rádio (`c05-radio-01`, `c10-radio-02`):** fala ou só chiado, como prevê o briefing?
+6. ✅ **Voz da Duda:** DECIDIDO em 2026-11-22: gerada no Gemini, voz **Achernar** (o
+   [efeitos-e-audio-ep1.md](../briefing/efeitos-e-audio-ep1.md) marcava "[gravar]").
 7. **Respiração e sons do corpo:** ficam fora da geração de voz (gravados ou CC0), como o briefing
    já prevê?
 8. **`c04-reporter-02`:** ok trocar o ";" por ponto e a caixa-alta por direção de ênfase, com as
    palavras intactas?
 
-**Nenhuma voz foi gerada.**
+**Vozes já escolhidas:** Gabi = Enceladus (amostras emotiva e seca aprovadas em 2026-11-22); Duda = Achernar; Pai = Charon; Mãe = Sola; Repórter = Lumi; Agente = Achird; Rádio = Algenib.
+**Todas as 16 falas de personagem geradas e aprovadas em 2026-11-22** (`producao/ep1/voz/audio/<ID>.wav`; filtros de TV, máscara, portão e distância ficam para a pós).
+Todas as vozes do EP1 vêm do Gemini TTS; as demais (Mãe, Pai, repórter, agente) o Rogério escolhe ouvindo no Gemini.

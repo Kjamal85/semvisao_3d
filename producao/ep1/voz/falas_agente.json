@@ -1,0 +1,14 @@
+[
+  {
+    "id": "c10-agente-01",
+    "voz": "Achird",
+    "estilo": "com voz de homem adulto, frio, burocrático, sem pressa, como quem lê uma ordem",
+    "texto": "Ordem de isolamento. Há um afetado aqui."
+  },
+  {
+    "id": "c10-agente-02",
+    "voz": "Achird",
+    "estilo": "com voz de homem adulto, ríspido e alto, dando uma ordem",
+    "texto": "Afasta da porta, senhor!"
+  }
+]
