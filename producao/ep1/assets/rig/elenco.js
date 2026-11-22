@@ -68,9 +68,10 @@
       add(new THREE.BoxGeometry(0.34, 0.16, 0.06), P.roupa, 0, 1.2, 0.27);
     }
     if (P.fone) { // objeto-assinatura do Gabi: fone no pescoço
-      add(new THREE.TorusGeometry(0.2, 0.045, 10, 24), P.fone, 0, 1.86, 0.03, g, { r: [Math.PI / 2 - 0.25, 0, 0] });
-      add(sphere(0.085, 12, 12), P.fone, -0.21, 1.87, 0.06, g, { s: [0.7, 1, 1] });
-      add(sphere(0.085, 12, 12), P.fone, 0.21, 1.87, 0.06, g, { s: [0.7, 1, 1] });
+      // aro largo e solto, caído para a frente sobre o peito (não aperta o pescoço); conchas na clavícula
+      add(new THREE.TorusGeometry(0.27, 0.04, 10, 28), P.fone, 0, 1.8, 0.06, g, { r: [Math.PI / 2 + 0.55, 0, 0] });
+      add(sphere(0.085, 12, 12), P.fone, -0.23, 1.74, 0.2, g, { s: [0.7, 1, 1], r: [0, -0.4, 0] });
+      add(sphere(0.085, 12, 12), P.fone, 0.23, 1.74, 0.2, g, { s: [0.7, 1, 1], r: [0, 0.4, 0] });
     }
     if (P.lapela) { // blazer: blusa clara em V e duas lapelas
       // V da blusa entre as lapelas; cada lapela com o topo aberto para fora (rot z = -lado)
