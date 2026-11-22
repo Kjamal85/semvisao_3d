@@ -41,6 +41,11 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
   as vistas usadas (frente, 3/4, costas).
 - Rig com quadril e joelho para sentar, tropeçar e cair; poses novas entram como `pose`
   no rig, não ajustadas à mão em cada cena.
+- Cabeça inclina pelo **pescoço** (`Elenco.cabeca(g, baixa, vira, lado)`), nunca pelo centro da
+  cabeça — senão o queixo afunda no corpo (aconteceu na sala, 2026-11-22). Olho cego não fecha
+  abaixo de 0,78 (achatado parece olho roxo).
+- **A boca aparece sempre** (pedido do usuário): nada de queixo afundado nem mão/objeto na frente da boca.
+- No rig, `aL` é o braço DIREITO da personagem (lado -x local); conferir o lado no snapshot.
 
 ## Look de pós (assets/rig/pos.js)
 - Um passe só, por cima do 3D, controlado por números: `grao` (0–1; `Pos.GRAO.baixo/leve/medio/forte`),

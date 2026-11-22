@@ -18,6 +18,10 @@
             barba: true, roupa: 0x6f7f5a, calca: 0x8a7a5e, sapato: 0x3a2e26 },
     duda: { nome: "Duda", alt: 0.92, larg: 0.86, pele: 0xf3d6c2, cabelo: 0xe0bd72, cabeloEstilo: "longo", blush: 0xf3aeb2, sobrancelha: 0x9a7038,
             roupa: 0xf2c4d0, calca: 0x8fa3c4, sapato: 0xe9e4dc },
+    // adulta de TV: olhos menores, batom, brincos, blazer com lapela sobre blusa clara
+    reporter: { nome: "Repórter", alt: 0.97, larg: 0.95, pele: 0xd9a77f, cabelo: 0x1a1412, cabeloEstilo: "chanel",
+                blush: 0xd98c7e, roupa: 0x7a2e3a, calca: 0x2b2b33, sapato: 0x1b1b20,
+                olho: 0.82, batom: 0xa3333f, brinco: 0xd9b44a, lapela: 0x5e1f2a, blusa: 0xf1ece4 },
     agente: { nome: "Agente", alt: 1.05, larg: 1.1, pele: 0xd9b08c, roupa: 0xe4e8eb, calca: 0xe4e8eb,
               sapato: 0x24242a, mao: 0x2d3038, epi: true, faixa: 0xe8b923 },
   };
@@ -64,6 +68,11 @@
       add(sphere(0.075, 12, 12), P.fone, -0.24, 1.93, 0.02);
       add(sphere(0.075, 12, 12), P.fone, 0.24, 1.93, 0.02);
     }
+    if (P.lapela) { // blazer: blusa clara em V e duas lapelas
+      // V da blusa entre as lapelas; cada lapela com o topo aberto para fora (rot z = -lado)
+      add(new THREE.BoxGeometry(0.13, 0.34, 0.03), P.blusa, 0, 1.72, 0.275, g, { r: [-0.1, 0, 0] });
+      for (const s of [-1, 1]) add(new THREE.BoxGeometry(0.08, 0.44, 0.04), P.lapela, s * 0.1, 1.7, 0.285, g, { r: [-0.1, 0, -s * 0.3] });
+    }
     if (P.faixa) { // EPI: faixa refletiva no peito
       add(new THREE.CylinderGeometry(0.297 * w, 0.29 * w, 0.09, 20), P.faixa, 0, 1.62, 0);
     }
@@ -104,6 +113,7 @@
       const rosto = { olhos: [], pupilas: [], sobr: [], bocas: {} };
       for (const side of [-1, 1]) {
         const olho = grupo(side * 0.15, -0.05, 0.315); // centro a ~0,35 do centro da cabeça
+        if (P.olho) olho.userData.k = P.olho;
         if (P.blind) {
           // olho nublado (briefing): globo cinza-escuro fosco do mesmo tamanho do olho que
           // enxerga, sem pupila, e um brilho off-white largo e apagado
@@ -129,13 +139,15 @@
         }
       }
       if (P.barba) add(sphere(0.2, 20, 14), P.cabelo, 0, -0.3, 0.17, head, { s: [1.2, 0.5, 0.95] });
+      if (P.brinco) for (const s of [-1, 1]) add(sphere(0.035, 10, 8), P.brinco, s * 0.37, -0.2, 0.08, head);
       // bocas: uma de cada tipo, só uma visível por vez
       const by = P.barba ? -0.17 : -0.21, bz = P.barba ? 0.36 : 0.335;
       const boca = (nome, fn) => { const o = grupo(0, by, bz, [0.5, 0, 0]); fn(o); o.visible = false; rosto.bocas[nome] = o; };
       const ESC = 0x3a2226;
-      boca("linha", (o) => add(new THREE.BoxGeometry(0.13, 0.03, 0.04), EYE.pupil, 0, 0, 0, o));
-      boca("sorriso", (o) => add(new THREE.TorusGeometry(0.065, 0.016, 6, 18, Math.PI), EYE.pupil, 0, 0.035, 0, o, { r: [0, 0, Math.PI] }));
-      boca("triste", (o) => add(new THREE.TorusGeometry(0.06, 0.016, 6, 18, Math.PI), EYE.pupil, 0, -0.04, 0, o));
+      const LAB = P.batom || EYE.pupil;
+      boca("linha", (o) => add(new THREE.BoxGeometry(0.13, P.batom ? 0.04 : 0.03, 0.04), LAB, 0, 0, 0, o));
+      boca("sorriso", (o) => add(new THREE.TorusGeometry(0.065, 0.016, 6, 18, Math.PI), LAB, 0, 0.035, 0, o, { r: [0, 0, Math.PI] }));
+      boca("triste", (o) => add(new THREE.TorusGeometry(0.06, 0.016, 6, 18, Math.PI), LAB, 0, -0.04, 0, o));
       boca("o", (o) => add(sphere(0.042, 14, 10), ESC, 0, 0, 0, o, { s: [0.9, 1.2, 0.45] }));
       boca("aberta", (o) => {
         add(sphere(0.085, 16, 12), ESC, 0, -0.02, 0, o, { s: [1.15, 1.0, 0.4] });
@@ -145,7 +157,12 @@
       g.userData.rosto = rosto;
     }
 
-    if (P.pose === "sentado_cama") {
+    if (P.pose === "sentado") {
+      // sentado em sofá/cadeira, pés no chão: assento a 1,075 - 0,53 = 0,545 abaixo do quadril
+      for (const l of [pL, pR]) { l.hip.rotation.x = -Math.PI / 2; l.knee.rotation.x = Math.PI / 2; }
+      aL.sh.rotation.set(-0.35, 0, 0.1); aL.el.rotation.x = -0.9;
+      aR.sh.rotation.set(-0.35, 0, -0.1); aR.el.rotation.x = -0.9;
+    } else if (P.pose === "sentado_cama") {
       // sentado na cama com as pernas esticadas sob o lençol; braços tateando o ar à frente
       for (const l of [pL, pR]) { l.hip.rotation.x = -Math.PI / 2; }
       aL.sh.rotation.set(-1.05, 0, 0.12); aL.el.rotation.x = -0.35;
@@ -182,16 +199,20 @@
   function expressao(g, nome) {
     const r = g.userData.rosto, e = EXPR[nome] || EXPR.neutro;
     if (!r) return;
+    g.userData.rig.ficha.expr = nome;
     for (const sb of r.sobr) {
       const b = sb.userData.base;
       sb.position.y = b.y + e.sy;
       sb.rotation.set(b.r[0], b.r[1], -sb.userData.side * e.sa);
     }
-    for (const o of r.olhos) o.scale.set(1, e.olho, 1);
+    // olho cego não fecha demais: achatado, o globo nublado vira mancha e parece olho roxo
+    const olho = g.userData.rig.ficha.blind ? Math.max(e.olho, 0.78) : e.olho;
+    for (const o of r.olhos) { const k = o.userData.k || 1; o.scale.set(k, olho * k, k); }
     // pupila menor precisa vir para a frente, senão afunda no branco do olho
     for (const pu of r.pupilas) { pu.scale.setScalar(e.pupila); pu.position.z = 0.082 - 0.037 * e.pupila; }
     for (const k in r.bocas) r.bocas[k].visible = (k === e.boca);
-    g.userData.rig.head.rotation.x = (g.userData.rig.ficha.pose === "hands_to_face" ? 0.22 : 0) + e.cab;
+    // inclinação da expressão também pelo pescoço (o queixo não afunda no corpo)
+    cabeca(g, g.userData.rig.ficha.pose === "hands_to_face" ? 0.22 : 0, 0, 0);
   }
 
   function hair(P, head, add, sphere) {
@@ -209,10 +230,10 @@
       add(sphere(0.15, 16, 12), c, 0, -0.2, -0.5, head, { s: [0.62, 1.7, 0.62], r: [0.28, 0, 0] });
     } else if (P.cabeloEstilo === "chanel") {
       // na altura do queixo, risca de lado: moldura do rosto que lê de frente
-      add(cap(0.425, 0.56), c, 0, 0.03, -0.02, head, { r: [-0.22, 0, 0] });
+      add(cap(0.425, 0.56), c, 0, 0.03, -0.02, head, { r: [-0.55, 0, 0] });                 // testa e sobrancelhas livres
       add(sphere(0.40, 20, 16), c, 0, -0.08, -0.12, head, { s: [1.1, 0.95, 0.75] });
       for (const s of [-1, 1]) add(sphere(0.16, 14, 12), c, s * 0.34, -0.12, 0.06, head, { s: [0.7, 1.35, 0.9] });
-      add(sphere(0.2, 16, 12), c, -0.1, 0.29, 0.24, head, { s: [1.35, 0.42, 0.62], r: [0, 0, 0.3] });
+      add(sphere(0.2, 16, 12), c, -0.1, 0.31, 0.22, head, { s: [1.35, 0.4, 0.62], r: [-0.3, 0, 0.3] });
     } else if (P.cabeloEstilo === "crespo") {
       // curto e rente, entradas altas: calota inclinada para trás deixa testa e sobrancelhas livres
       add(cap(0.43, 0.55), c, 0, 0.03, -0.03, head, { r: [-0.65, 0, 0] }); // frente alta, nuca baixa
@@ -225,5 +246,16 @@
     }
   }
 
-  window.Elenco = { FICHAS, EXPR, build, expressao };
+  // Inclina a cabeça a partir do PESCOÇO (não do centro da cabeça): baixar a cabeça leva
+  // o rosto para a frente e o queixo não afunda no corpo. baixa (+ = olha para baixo),
+  // vira (+ = vira para a esquerda da personagem), lado (inclina de lado), dy (respiração).
+  const PESCOCO = 1.86, R_CAB = 0.34;
+  function cabeca(g, baixa, vira, lado, dy) {
+    const rig = g.userData.rig, P = rig.ficha;
+    const a = (baixa || 0) + ((EXPR[P.expr] || EXPR.neutro).cab || 0);
+    rig.head.position.set(0, PESCOCO + R_CAB * Math.cos(a) + (dy || 0), R_CAB * Math.sin(a));
+    rig.head.rotation.set(a, vira || 0, lado || 0);
+  }
+
+  window.Elenco = { FICHAS, EXPR, build, expressao, cabeca };
 })();
