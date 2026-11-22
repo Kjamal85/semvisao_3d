@@ -5,3 +5,6 @@ node_modules/
 # voz: originais crus do TTS (com a instrução lida) e cache do Python
 voz/audio/bruto/
 __pycache__/
+
+# vídeos renderizados (saída, regenerável)
+renders/

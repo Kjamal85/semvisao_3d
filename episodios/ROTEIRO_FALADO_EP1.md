@@ -262,8 +262,8 @@ a vinheta fechando (70).
   - **Personagens:** Mãe, Pai, a silhueta da Duda, o vizinho e os agentes.
 
 ### Decisões que precisam do seu ok
-1. **Idioma e duração:** PT-BR e 8–10 min, como no briefing?
-2. **Plano 22, "Gabi!":** só a mãe (como está) ou a mãe e o pai juntos?
+1. ✅ (2026-11-22: PT-BR, 8–10 min) **Idioma e duração:** PT-BR e 8–10 min, como no briefing?
+2. ✅ (2026-11-22: como está, só a mãe) **Plano 22, "Gabi!":** só a mãe (como está) ou a mãe e o pai juntos?
 3. ✅ (aprovado 2026-11-22) **`c04-reporter-01`:** aprova o texto que completa a fala da repórter?
 4. ✅ (aprovado 2026-11-22, como está) **Final (`c10-agente-02`, `c10-mae-04`, `c10-mae-05`):** aprova, corta ou ajusta por ID?
 5. ✅ (2026-11-22: só `c05-radio-01` falada, voz Algenib; `c10-radio-02` vira só chiado) **Rádio (`c05-radio-01`, `c10-radio-02`):** fala ou só chiado, como prevê o briefing?
@@ -271,7 +271,7 @@ a vinheta fechando (70).
    [efeitos-e-audio-ep1.md](../briefing/efeitos-e-audio-ep1.md) marcava "[gravar]").
 7. **Respiração e sons do corpo:** ficam fora da geração de voz (gravados ou CC0), como o briefing
    já prevê?
-8. **`c04-reporter-02`:** ok trocar o ";" por ponto e a caixa-alta por direção de ênfase, com as
+8. ✅ (na prática: gerada com ponto e aprovada em 2026-11-22) **`c04-reporter-02`:** ok trocar o ";" por ponto e a caixa-alta por direção de ênfase, com as
    palavras intactas?
 
 **Vozes já escolhidas:** Gabi = Enceladus (amostras emotiva e seca aprovadas em 2026-11-22); Duda = Achernar; Pai = Charon; Mãe = Sola; Repórter = Lumi; Agente = Achird; Rádio = Algenib.
