@@ -1,0 +1,137 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #es-stage { position: absolute; inset: 0; z-index: 0; }
+    #es-stage canvas { display: block; }
+    #es-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #es-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="esperanca" data-width="1920" data-height="1080">
+    <div id="es-stage" class="clip" data-start="0" data-duration="12" data-track-index="0"></div>
+    <div id="es-rotulo" class="clip" data-start="0" data-duration="12" data-track-index="1">C08 — ESPERANÇA FRÁGIL<small>"Sente a borda primeiro. Devagar." · bebe sem derramar · o fone · planos 52–56</small></div>
+    <audio id="es-mae" class="clip" src="voz/audio/c08-mae-02.wav" data-start="0.6" data-duration="3.22" data-track-index="2" data-volume="1"></audio>
+  </div>
+  <script>
+    (function () {
+      const DUR = 12, C1 = 4.0, C2 = 7.5, C3 = 10.0;
+      const PEGA = 4.3, BEBE = 5.2, BAIXA = 6.6, FONE = 8.3;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };
+      const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z), E = (x, y, z) => new THREE.Euler(x, y, z);
+      const expr = (g, n) => { if (g.userData.rig.ficha.expr !== n) Elenco.expressao(g, n); };
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      const aplica = (b, P) => { b.sh.rotation.copy(P[0]); b.el.rotation.copy(P[1]); };
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+      const raiz = new THREE.Group();
+      const K = Cenarios.cozinha(raiz);
+      const { k, MX, MZ } = K;
+      const sentY = 0.745 - 1.075;
+      const gabi = Elenco.build("gabi", { blind: true, expr: "firme", pose: "sentado" });
+      gabi.position.set(MX - 0.45, sentY, MZ - 0.95); gabi.rotation.y = 0.1; raiz.add(gabi);
+      const rg = gabi.userData.rig;
+      const mae = Elenco.build("mae", { expr: "ternura", pose: "sentado" });
+      mae.position.set(MX + 0.5, sentY, MZ - 0.6); mae.rotation.y = -0.75; raiz.add(mae);
+      const rm = mae.userData.rig;
+      // a mão esquerda enfaixada, apoiada na mesa
+      const gaze = new THREE.MeshToonMaterial({ color: 0xf6f3ea, gradientMap: k.grad });
+      const fx = new THREE.Mesh(new THREE.CylinderGeometry(0.082, 0.082, 0.15, 16), gaze); fx.position.set(0, -0.06, 0); fx.scale.set(1.1, 1.1, 1.1); rg.aR.mao.g.add(fx);
+      // o copo d'água na mesa, na frente dele
+      const vidro = new THREE.MeshToonMaterial({ color: 0xd8ecf6, gradientMap: k.grad, transparent: true, opacity: 0.5 });
+      const aguaM = new THREE.MeshToonMaterial({ color: 0x8fbfde, gradientMap: k.grad, transparent: true, opacity: 0.75 });
+      const copo = new THREE.Group(); raiz.add(copo);
+      k.cil(0.065, 0.055, 0.2, 0, 0, 0.1, 0, { mat: vidro, seg: 16, pai: copo });
+      k.cil(0.06, 0.052, 0.14, 0, 0, 0.075, 0, { mat: aguaM, seg: 16, contorno: false, pai: copo });
+      const COPO0 = V(MX - 0.52, 1.035, MZ - 0.3); copo.position.copy(COPO0);
+      // o fone na mesa (vai para a cabeça dele)
+      const fone = new THREE.Group(); raiz.add(fone);
+      fone.add(new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.03, 8, 20, Math.PI), k.M(0x24242a)));
+      for (const s of [-1, 1]) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.06, 14), k.M(0x24242a)); c.rotation.z = Math.PI / 2; c.position.set(s * 0.17, 0, 0); fone.add(c); }
+      const FONE0 = { pos: V(MX - 0.95, 1.07, MZ - 0.25), rot: E(-Math.PI / 2, 0, 0.5) };
+      Elenco.cabeca(gabi, 0.12, 0.1, 0); raiz.updateMatrixWorld(true);
+      // poses
+      Elenco.alcancar(gabi, "esq", V(MX - 0.25, 1.1, MZ - 0.42), { foraDoCorpo: true }); const esqMesa = guarda(rg.aR);
+      Elenco.alcancar(gabi, "dir", V(COPO0.x - 0.06, 1.12, COPO0.z - 0.12), { foraDoCorpo: true }); const dirPerto = guarda(rg.aL);
+      Elenco.alcancar(gabi, "dir", V(COPO0.x - 0.07, COPO0.y + 0.1, COPO0.z), { foraDoCorpo: true }); const dirCopo = guarda(rg.aL);
+      raiz.updateMatrixWorld(true);
+      // o copo preso na mão no instante em que ele pega (transformação local guardada)
+      const maoD = rg.aL.mao.g; maoD.updateMatrixWorld(true);
+      const copoLocal = new THREE.Matrix4().copy(maoD.matrixWorld).invert().multiply(new THREE.Matrix4().compose(COPO0, new THREE.Quaternion(), V(1, 1, 1)));
+      const bocaW = rg.head.localToWorld(V(-0.02, -0.25, 0.48));
+      const dirBebe = [E(-1.85, 0.3, 0.2), E(-1.75, 0, 0)];   // pose à mão: o copo nos lábios (o alcancar não chegava)
+      // fone: as duas mãos nas orelhas
+      Elenco.alcancar(gabi, "dir", rg.head.localToWorld(V(-0.46, -0.05, 0.05)), { foraDoCorpo: true }); const dirOrelha = guarda(rg.aL);
+      Elenco.alcancar(gabi, "esq", rg.head.localToWorld(V(0.46, -0.05, 0.05)), { foraDoCorpo: true }); const esqOrelha = guarda(rg.aR);
+      // a mãe: a mão dela por cima da mão dele, guiando até a borda
+      aplica(rg.aL, dirCopo); raiz.updateMatrixWorld(true);
+      Elenco.alcancar(mae, "dir", maoD.localToWorld(V(0.02, 0.06, 0.05)), { foraDoCorpo: true }); const mGuia = guarda(rm.aL);
+      const mSolta = [E(-0.6, 0, -0.15), E(-1.3, 0, 0)];
+      rm.aR.sh.rotation.set(-0.5, 0, 0.1); rm.aR.el.rotation.set(-1.3, 0, 0);
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1d24);
+      scene.fog = new THREE.Fog(0xd9cdb4, 12, 30);
+      scene.add(raiz);
+      scene.add(new THREE.HemisphereLight(0xe2d6be, 0x5a4c3e, 1.35));
+      const sol = new THREE.DirectionalLight(0xffd6a0, 2.4);
+      sol.position.set(1.6, 4.6, -9); sol.target.position.set(0.6, 0.6, 0.8);
+      sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); sol.shadow.bias = -0.0006; sol.shadow.normalBias = 0.03;
+      Object.assign(sol.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 0.5, far: 25 });
+      scene.add(sol); scene.add(sol.target);
+      const rosto = new THREE.PointLight(0xe8dccb, 1.3, 4, 1.6); rosto.position.set(MX, 2.4, MZ + 1.6); raiz.add(rosto);
+      const cam = new THREE.PerspectiveCamera(40, 1920 / 1080, 0.05, 60);
+      const renderer = Cena.renderer("es-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+      const _m = new THREE.Matrix4(), _p = V(), _q = new THREE.Quaternion(), _s = V();
+
+      function render() {
+        const t = estado.t;
+        // ---- a mão direita: chega perto do copo, a mãe guia até a borda, pega, bebe, devolve; depois o fone ----
+        aplica(rg.aR, esqMesa);
+        if (t < PEGA) mistura(rg.aL, dirPerto, dirCopo, S((t - 1.6) / 1.6));
+        else if (t < BAIXA) mistura(rg.aL, dirCopo, dirBebe, S((t - PEGA - 0.3) / 0.9) * (1 - S((t - BAIXA + 0.5) / 0.5)));
+        else if (t < C2) mistura(rg.aL, dirBebe, dirCopo, 0 + S((t - BAIXA) / 0.6));
+        else { mistura(rg.aL, dirCopo, dirOrelha, S((t - C2) / 0.8)); mistura(rg.aR, esqMesa, esqOrelha, S((t - C2) / 0.8) * (1 - S((t - FONE - 0.9) / 0.6))); }
+        if (t > FONE + 0.9) mistura(rg.aL, dirOrelha, dirCopo, S((t - FONE - 0.9) / 0.6));
+        // bebe devagar: a mão tremendo menos a cada tentativa
+        rg.aL.sh.rotation.z += Math.sin(t * 9) * 0.012 * (t < BEBE ? 1 : 0.3);
+        Elenco.mao(gabi, "dir", t > PEGA && t < C2 ? "segura" : "aberta", 1);
+        raiz.updateMatrixWorld(true);
+        // o copo: na mesa, ou preso na mão enquanto ele bebe (inclina na boca)
+        if (t >= PEGA && t < C2 - 0.3) {
+          maoD.getWorldPosition(_p);                                   // o copo na mão: um pouco à frente dos dedos
+          copo.position.set(_p.x + 0.07, _p.y - 0.06, _p.z + 0.05);
+          copo.rotation.set(-0.9 * S((t - BEBE) / 0.4) * (1 - S((t - BAIXA + 0.4) / 0.4)), 0, 0);
+        } else { copo.position.copy(COPO0); copo.rotation.set(0, 0, 0); }
+        // o fone: na mesa; na cabeça a partir de FONE
+        if (t >= FONE) { if (fone.parent !== rg.head) rg.head.add(fone); fone.position.set(0, 0.05, 0); fone.rotation.set(0, 0, 0); fone.scale.set(2.55, 2.4, 2.4); }
+        else { if (fone.parent !== raiz) raiz.add(fone); fone.position.copy(FONE0.pos); fone.rotation.copy(FONE0.rot); fone.scale.set(1, 1, 1); }
+        // ---- caras: concentrado -> meio-sorriso (54) -> ouvindo a música; a mãe ensina e se alivia ----
+        expr(gabi, t < BAIXA + 0.2 ? "firme" : "ternura");
+        Elenco.cabeca(gabi, 0.12 - 0.08 * S((t - BEBE) / 0.4) * (1 - S((t - BAIXA) / 0.4)), 0.1 + (t > FONE ? Math.sin(t * 1.4) * 0.08 : 0), (t > FONE ? Math.sin(t * 1.4 + 1) * 0.06 : 0), Math.sin(t * 2 * Math.PI * 0.3) * 0.008);
+        mistura(rm.aL, mSolta, mGuia, S((t - 1.4) / 0.7) * (1 - S((t - PEGA + 0.2) / 0.5)));
+        Elenco.mao(mae, "dir", "aberta", 1);
+        expr(mae, "ternura");
+        Elenco.cabeca(mae, 0.2 - 0.12 * S((t - C3) / 0.6), -0.1, 0.05 * S((t - C3) / 0.6), Math.sin(t * 2 * Math.PI * 0.28) * 0.008);
+        // ---- planos ----
+        let alvo;
+        if (t < C1) { cam.fov = 40; const u = S(t / C1); cam.position.set(MX + 0.1, 2.0 - 0.05 * u, MZ + 2.7 - 0.3 * u); alvo = V(MX - 0.1, 1.45, MZ - 0.6); }
+        else if (t < C2) { cam.fov = 50; cam.position.set(MX - 1.55, 1.75, MZ + 0.25); alvo = V(MX - 0.45, 1.6, MZ - 0.75); }            // 3/4: bebe
+        else if (t < C3) { cam.fov = 38; const u = S((t - C2) / 2.5); cam.position.set(MX - 0.35, 2.15, MZ + 1.55 - 0.25 * u); alvo = V(MX - 0.45, 1.85, MZ - 0.9); }   // o fone
+        else { cam.fov = 36; cam.position.set(MX + 0.25, 2.1, MZ + 1.3); alvo = V(MX + 0.45, 1.9, MZ - 0.6); }                              // a mãe, aliviada
+        cam.updateProjectionMatrix(); cam.lookAt(alvo);
+        // 54: a vinheta recua (o olho "abre" um pouco)
+        const recua = S((t - BAIXA - 0.2) / 1.0);
+        pos.render(scene, cam, t, { grao: LOOK.grao, fumaca: LOOK.fumaca - 0.1 * recua, dessat: LOOK.dessat - 0.08 * recua });
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["esperanca"] = tl;
+      render();
+    })();
+  </script>
+</template>
