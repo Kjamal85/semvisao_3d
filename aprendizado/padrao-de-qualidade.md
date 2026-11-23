@@ -69,6 +69,11 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
 - **Pico de impacto** (batida, queda): **só o grão sobe** (+0,1); a fumaça fica no padrão 0,15. No corredor
   (2026-11-22) fumaça 0,45 no pico derrubou a luma para 64 ("muito escuro") e até +0,12 ficou "forte demais".
   Medir a luma também no quadro do pico.
+- **Vinheta que "avança" no fim de um plano** (roteiro: "a vinheta fecha um pouco / avança rápido"): NÃO escurecer.
+  Em 2026-11-23 (plano 67, levam.html) +0,3 de fumaça ficou "muito forte" e mesmo +0,12 ainda "muito escuro"
+  → o plano fica no padrão 0,15 até o fim. O fechamento para o preto é só no plano 70 (o roteiro pede ali).
+- **Contraluz** (câmera olhando para a janela/porta acesa): pôr preenchimento no rosto de quem é o foco; sem ele o
+  quadro fica "escuro" mesmo com a luma média ok.
 - **Antes do evento (abertura) e modo vidente:** sem filtro nenhum (grão 0, fumaça 0, dessat 0) — pedido do usuário 2026-11-22.
 - **Modo vidente (Duda):** sem fumaça; o escurecimento das bordas dela é outro efeito, a criar.
 - O `grain-overlay` do registro foi descartado: animação CSS em loop, não segue o quadro exato.

@@ -1,0 +1,303 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #0d1018; }
+    #lv-stage { position: absolute; inset: 0; z-index: 0; }
+    #lv-stage canvas { display: block; }
+    #lv-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #lv-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="levam" data-width="1920" data-height="1080">
+    <div id="lv-stage" class="clip" data-start="0" data-duration="11" data-track-index="0"></div>
+    <div id="lv-rotulo" class="clip" data-start="0" data-duration="11" data-track-index="1">C10 — FORÇAM A ENTRADA<small>a mãe abraça o Gabi · separam · "Não! Solta ele!" · "Mãe! Pai!" · planos 66–67</small></div>
+    <audio id="lv-agente" class="clip" src="voz/audio/c10-agente-02.wav" data-start="0.05" data-duration="1.63" data-track-index="2" data-volume="0.9"></audio>
+    <audio id="lv-mae" class="clip" src="voz/audio/c10-mae-04.wav" data-start="5.6" data-duration="2.71" data-track-index="3" data-volume="1"></audio>
+    <audio id="lv-gabi" class="clip" src="voz/audio/c10-gabi-05.wav" data-start="8.2" data-duration="2.57" data-track-index="4" data-volume="1"></audio>
+  </div>
+  <script>
+    (function () {
+      const DUR = 11, C1 = 2.3, C2 = 4.6, C3A = 7.0, C3 = 8.2;        // porta arrebenta · abraço · a mãe arrancada · o pai contido · o Gabi levado
+      const ARREBENTA = 1.5, BATIDAS = [0.55, 1.0, ARREBENTA];
+      const MAE_F = [5.6, 8.3], GABI_F = [8.2, 10.77];
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
+      const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z), E = (x, y, z) => new THREE.Euler(x, y, z);
+      const cl = (u) => Math.min(1, Math.max(0, u));
+      const expr = (g, n) => { if (g.userData.rig.ficha.expr !== n) Elenco.expressao(g, n); };
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+      const lerpA = (a, b, u) => a + (b - a) * u;
+      const impulso = (t) => { let m = 0; for (const b of BATIDAS) if (t >= b) m = Math.max(m, Math.exp(-(t - b) * (b === ARREBENTA ? 6 : 14)) * (b === ARREBENTA ? 1.6 : 1)); return m; };
+      const giro = (t) => { const fase = (t * 2.2) % 1, azul = (Math.floor(t * 2.2) % 2) === 0, pisca = fase < 0.18 || (fase > 0.3 && fase < 0.46); return { a: azul && pisca, v: !azul && pisca }; };
+      const pernas = (g, u) => { const r = g.userData.rig; for (const l of [r.pL, r.pR]) { l.hip.rotation.x = -Math.PI / 2 * u; l.knee.rotation.x = Math.PI / 2 * u; } };
+      const passo = (g, t, on, f) => {
+        const r = g.userData.rig, p = Math.sin(t * (f || 9.5)) * 0.42 * on;
+        r.pL.hip.rotation.x = p; r.pR.hip.rotation.x = -p; r.pL.knee.rotation.x = Math.max(0, -p) * 0.8; r.pR.knee.rotation.x = Math.max(0, p) * 0.8;
+      };
+      const bez = (A, B, C, u) => { const b = 1 - u; return V(b * b * A.x + 2 * b * u * B.x + u * u * C.x, 0, b * b * A.z + 2 * b * u * B.z + u * u * C.z); };
+      const rumo = (A, B, C, u) => { const b = 1 - u; return Math.atan2(2 * b * (B.x - A.x) + 2 * u * (C.x - B.x), 2 * b * (B.z - A.z) + 2 * u * (C.z - B.z)); };
+      const falando = (t, F, f) => t > F[0] && t < F[1] && Math.sin(t * (f || 15)) + Math.sin(t * 6.1) > 0.1;
+      const boca = (g, n) => { const b = g.userData.rosto.bocas; for (const k in b) b[k].visible = k === n; };
+
+      // ======================= a sala da frente, anoitecendo (mesma luz do 62-65) =======================
+      const sala = new THREE.Group();
+      const F = Cenarios.frente(sala);
+      const { k, SX, SZ, SEAT, PX0, PX1 } = F;
+      const Y_SENT = SEAT + 0.1 - 1.075;
+      F.fora.material.color.setHex(0x6a6f96);
+      F.brilho.color.setHex(0xe0a07e); F.brilho.intensity = 8;
+      F.fresta.color.setHex(0x9aa8e0);                                   // a porta arrebentada: a noite e o giroflex entram
+      // parede do fundo (as outras cenas nunca olham para lá): porta do corredor, quadro, interruptor
+      k.box(6.6, 3.9, 0.12, 0xd8cdb8, -0.2, 1.95, 5.06, { contorno: false });
+      k.box(6.6, 0.14, 0.04, 0xf0ebe0, -0.2, 0.07, 4.99, { contorno: false });
+      k.box(0.95, 2.15, 0.05, 0x2a2c33, -1.6, 1.08, 5.0, { contorno: false, sombra: false });
+      for (const x of [-2.1, -1.1]) k.box(0.08, 2.2, 0.1, 0xf1ede4, x, 1.1, 4.98);
+      k.box(1.08, 0.08, 0.1, 0xf1ede4, -1.6, 2.2, 4.98);
+      k.box(1.1, 0.75, 0.04, 0x6e4c37, 0.6, 2.1, 4.98);
+      k.box(0.98, 0.63, 0.02, 0x8fa8a0, 0.6, 2.1, 4.96, { contorno: false });
+      k.box(0.08, 0.12, 0.02, 0xf4f1ea, -0.75, 1.35, 4.98, { contorno: false });
+      const LUZ_CORT = new THREE.Color(0xd9a07e);
+      const lustre = new THREE.PointLight(0xffd6a0, 1.2, 8, 1.3); lustre.position.set(0.8, 3.5, 2.6); sala.add(lustre);
+      const sirene = new THREE.PointLight(0x4a6bff, 0, 6, 1.4); sala.add(sirene);
+      const rostoGabi = new THREE.PointLight(0xffe2c4, 0, 4, 1.4); rostoGabi.position.set(1.5, 2.5, 2.7); sala.add(rostoGabi);   // preenchimento no rosto dele (67c, contraluz da porta)
+      const giroPorta = new THREE.PointLight(0x4a6bff, 0, 7, 1.4); giroPorta.position.set((PX0 + PX1) / 2, 2.2, -0.9); sala.add(giroPorta);
+
+      // ---------- o Gabi no sofá ----------
+      const gabi = Elenco.build("gabi", { blind: true, expr: "medo", pose: "sentado" });
+      const G0 = V(SX - 0.05, Y_SENT, SZ - 0.55), GRY0 = -Math.PI / 2 - 0.25;
+      gabi.position.copy(G0); gabi.rotation.y = GRY0; sala.add(gabi);
+      const rg = gabi.userData.rig;
+      const gaze = new THREE.MeshToonMaterial({ color: 0xf6f3ea, gradientMap: k.grad });
+      const fx = new THREE.Mesh(new THREE.CylinderGeometry(0.082, 0.082, 0.15, 16), gaze); fx.position.set(0, -0.06, 0); fx.scale.set(1.1, 1.1, 1.1); rg.aR.mao.g.add(fx);
+      sala.updateMatrixWorld(true);
+      const gp = (x, y, z) => gabi.localToWorld(V(x, y, z));
+      Elenco.alcancar(gabi, "esq", gp(0.08, 1.12, 0.55)); const gEsqColo = guarda(rg.aR);
+      Elenco.alcancar(gabi, "dir", gp(-0.05, 1.55, 0.3), { foraDoCorpo: true }); const gDirPeito = guarda(rg.aL);
+      Elenco.alcancar(gabi, "esq", gp(0.2, 1.5, 0.32), { foraDoCorpo: true }); const gEsqAgarra = guarda(rg.aR);   // agarra a mãe no abraço
+      Elenco.alcancar(gabi, "dir", gp(-0.55, 1.35, 0.45), { foraDoCorpo: true }); const gDirPuxadoSent = guarda(rg.aL);   // o braço puxado pelo agente (sentado)
+
+      // ---------- a mãe: ao lado do pai, na porta (fim do 65) ----------
+      const mae = Elenco.build("mae", { expr: "medo" }); sala.add(mae);
+      const rm = mae.userData.rig;
+      const MRY = -Math.PI / 2 - 0.3, M_SENT = V(SX - 0.05, Y_SENT, SZ + 0.25), M_PE = V(SX - 0.62, 0, SZ + 0.3);
+      const M0 = V(2.6, 0, 0.62), MC = V(1.35, 0, 1.25), M_RY0 = -1.65;
+      // o abraço (sentada ao lado dele): a mão direita nas costas dele, a esquerda no peito
+      mae.position.copy(M_SENT); mae.rotation.y = MRY; pernas(mae, 1); sala.updateMatrixWorld(true);
+      Elenco.alcancar(mae, "dir", gp(-0.22, 1.75, -0.12), { foraDoCorpo: true }); const mAbracoD = guarda(rm.aL);
+      Elenco.alcancar(mae, "esq", gp(0.15, 1.6, 0.3), { foraDoCorpo: true }); const mAbracoE = guarda(rm.aR);
+      // arrancada: em pé, longe do sofá, estica um braço para ele; o outro preso pelo agente atrás dela
+      const M67 = V(1.2, 0, 3.2), MRY67 = 2.5;                              // arrastada para o lado da cortina, virada para ele
+      mae.position.copy(M67); mae.rotation.y = MRY67; pernas(mae, 0); sala.updateMatrixWorld(true);
+      const mp = (x, y, z) => mae.localToWorld(V(x, y, z));
+      Elenco.alcancar(mae, "dir", mp(-0.15, 1.85, 0.85), { foraDoCorpo: true }); const mEstica = guarda(rm.aL);
+      Elenco.alcancar(mae, "esq", mp(0.4, 1.3, -0.4), { foraDoCorpo: true }); const mPresa = guarda(rm.aR);
+      const mSolta = [E(-0.15, 0, 0.08), E(-0.3, 0, 0)], mSoltaD = [E(-0.15, 0, -0.08), E(-0.3, 0, 0)];
+      const mJuntas = [[E(-0.45, -0.3, -0.15), E(-1.45, 0, 0)], [E(-0.45, 0.3, 0.15), E(-1.45, 0, 0)]];
+      // o agente 2 atrás dela, segurando o braço preso
+      const ag2 = Elenco.build("agente"); sala.add(ag2);
+      const A2_OFF = V(0.3, 0, -0.75), A2_OFF1 = V(0.45, 0, 0.7), A2_MEIO = V(0.9, 0, -0.6);
+      ag2.position.copy(mp(A2_OFF.x, 0, A2_OFF.z)); ag2.rotation.y = MRY67 - 0.3; sala.updateMatrixWorld(true);
+      const pulsoMae = rm.aR.mao.g.getWorldPosition(V(0, 0, 0));
+      Elenco.alcancar(ag2, "dir", pulsoMae, { foraDoCorpo: true }); const a2D = guarda(ag2.userData.rig.aL);
+      Elenco.alcancar(ag2, "esq", mp(0.22, 1.7, -0.05), { foraDoCorpo: true }); const a2E = guarda(ag2.userData.rig.aR);
+      // sentada abraçando: o agente 2 na frente-esquerda dela, as mãos no ombro e no braço
+      mae.position.copy(M_SENT); mae.rotation.y = MRY; pernas(mae, 1); mistura(rm.aL, mAbracoD, mAbracoD, 0); mistura(rm.aR, mAbracoE, mAbracoE, 0); sala.updateMatrixWorld(true);
+      { const w = mp(A2_OFF1.x, 0, A2_OFF1.z); ag2.position.set(w.x, 0, w.z); } ag2.rotation.y = MRY + Math.PI - 0.5; sala.updateMatrixWorld(true);
+      Elenco.alcancar(ag2, "dir", mp(0.25, 1.7, 0.05), { foraDoCorpo: true }); const a2D1 = guarda(ag2.userData.rig.aL);
+      Elenco.alcancar(ag2, "esq", mp(0.32, 1.42, 0.12), { foraDoCorpo: true }); const a2E1 = guarda(ag2.userData.rig.aR);
+
+      // ---------- o Gabi arrastado (em pé, virado para a mãe) e o agente 3 atrás puxando o braço ----------
+      const G67 = V(1.7, 0, 1.2), G67F = V(1.45, 0, 0.58), GRY67 = -0.28;      // arrastado para o vão da porta (a folha aberta fica em x 1,94-2,13)
+      gabi.position.copy(G67); gabi.rotation.y = GRY67; pernas(gabi, 0); sala.updateMatrixWorld(true);
+      Elenco.alcancar(gabi, "esq", gp(0.4, 1.6, 0.65), { foraDoCorpo: true }); const gEsqEstica = guarda(rg.aR);
+      Elenco.alcancar(gabi, "dir", gp(-0.35, 1.4, -0.45), { foraDoCorpo: true }); const gDirPuxado = guarda(rg.aL);
+      const ag3 = Elenco.build("agente"); sala.add(ag3);
+      const A3_OFF2 = V(-0.25, 0, -0.85), A3_OFF1 = V(-0.5, 0, 0.75), A3_MEIO = V(-1.0, 0, 0);
+      ag3.position.copy(gp(A3_OFF2.x, 0, A3_OFF2.z)); ag3.rotation.y = GRY67 + 0.1; sala.updateMatrixWorld(true);
+      const pulsoG2 = rg.aL.mao.g.getWorldPosition(V(0, 0, 0));
+      Elenco.alcancar(ag3, "dir", pulsoG2.clone().add(V(0.06, 0, 0)), { foraDoCorpo: true }); const a3D2 = guarda(ag3.userData.rig.aL);
+      Elenco.alcancar(ag3, "esq", pulsoG2.clone().add(V(-0.06, 0.05, 0.04)), { foraDoCorpo: true }); const a3E2 = guarda(ag3.userData.rig.aR);
+      // no sofá: o agente 3 na frente-direita dele, pegando o braço
+      gabi.position.copy(G0); gabi.rotation.y = GRY0; pernas(gabi, 1); mistura(rg.aL, gDirPuxadoSent, gDirPuxadoSent, 0); sala.updateMatrixWorld(true);
+      ag3.position.copy(gp(A3_OFF1.x, 0, A3_OFF1.z)); ag3.position.y = 0; ag3.rotation.y = GRY0 + Math.PI - 0.4; sala.updateMatrixWorld(true);
+      const pulsoG1 = rg.aL.mao.g.getWorldPosition(V(0, 0, 0));
+      Elenco.alcancar(ag3, "dir", pulsoG1, { foraDoCorpo: true }); const a3D1 = guarda(ag3.userData.rig.aL);
+      Elenco.alcancar(ag3, "esq", pulsoG1.clone().add(V(0, 0.08, 0.08)), { foraDoCorpo: true }); const a3E1 = guarda(ag3.userData.rig.aR);
+
+      // ---------- o pai: jogado para dentro; o agente 1 o empurra para o lado da cortina ----------
+      const pai = Elenco.build("pai", { expr: "firme" }); sala.add(pai);
+      const rp = pai.userData.rig;
+      const PA1 = V((PX0 + PX1) / 2, 0, 0.42), PJOGA = V(0.95, 0, 1.0), P67 = V(0.45, 0, 0.6), PRY = 0.95;                     // virado para o sofá: para o filho
+      const ag1 = Elenco.build("agente"); sala.add(ag1);
+      pai.position.copy(P67); pai.rotation.y = PRY; sala.updateMatrixWorld(true);
+      const pp = (x, y, z) => pai.localToWorld(V(x, y, z));
+      ag1.position.copy(pp(0.45, 0, 0.4)); ag1.rotation.y = Math.atan2(P67.x - ag1.position.x, P67.z - ag1.position.z);   // à frente-esquerda dele (lado da parede): o rosto do pai fica livre sala.updateMatrixWorld(true);
+      Elenco.alcancar(ag1, "dir", pp(0.17, 1.55, 0.27), { foraDoCorpo: true }); const a1D = guarda(ag1.userData.rig.aL);
+      Elenco.alcancar(ag1, "esq", pp(-0.17, 1.55, 0.27), { foraDoCorpo: true }); const a1E = guarda(ag1.userData.rig.aR);
+      Elenco.alcancar(pai, "dir", pp(-0.65, 1.55, 0.6), { foraDoCorpo: true }); const pEstica = guarda(rp.aL);   // o braço por cima do ombro do agente, para o filho
+      const pTenso = [[E(0.12, 0, 0.3), E(-0.15, 0, 0)], [E(0.12, 0, -0.3), E(-0.15, 0, 0)]];
+      const pAgarra = [E(-0.6, 0, 0.25), E(-1.0, 0, 0)];                // a outra mão no braço do agente
+      ag2.visible = ag3.visible = true;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1d24);
+      scene.fog = new THREE.Fog(0x4a4640, 9, 22);
+      scene.add(sala); scene.add(F.luzes);
+      F.rosto.position.set(SX - 1.2, 1.55, SZ + 0.7); F.rosto.intensity = 1.2;
+      F.luzes.children[0].intensity = 1.05;
+
+      const cam = new THREE.PerspectiveCamera(40, 1920 / 1080, 0.05, 60);
+      const renderer = Cena.renderer("lv-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+      const ENTRA = V((PX0 + PX1) / 2, 0, -1.1);                          // de onde os agentes entram (lá fora)
+
+      function render() {
+        const t = estado.t;
+        F.cortina.material.uniforms.onda.value = t * 1.3; F.poeira(t);
+        const gi = giro(t), imp = impulso(t);
+        const c = LUZ_CORT.clone(); if (gi.a) c.lerp(new THREE.Color(0x5a7cff), 0.8); else if (gi.v) c.lerp(new THREE.Color(0xff4a4a), 0.8);
+        F.cortina.material.uniforms.luz.value.copy(c);
+        sirene.color.setHex(gi.a ? 0x4a6bff : 0xff3a3a); sirene.intensity = (gi.a || gi.v) ? 3.5 : 0;
+        sirene.position.set(-1.9 + ((t * 0.7) % 1) * 2.8, 2.0, 0.7);
+        // ---- a porta: empurrada (tremores), arrebenta em ARREBENTA e bate na parede ----
+        const ab = cl((t - ARREBENTA) / 0.14), quica = t > ARREBENTA + 0.14 ? Math.exp(-(t - ARREBENTA - 0.14) * 7) * Math.sin((t - ARREBENTA - 0.14) * 30) * 0.12 : 0;
+        F.porta.rotation.y = t < ARREBENTA ? 0.03 * imp * Math.abs(Math.sin(t * 70)) : 1.55 * ab - Math.abs(quica);   // escancarada, rente à parede
+        F.fresta.intensity = 9 * ab; giroPorta.color.setHex(gi.a ? 0x4a6bff : 0xff3a3a); giroPorta.intensity = (gi.a || gi.v) ? 1.4 * ab : 0;
+
+        // ======== o pai ========
+        const joga = S((t - ARREBENTA) / 0.4), volta = S((t - 1.95) / 0.35), empurra = S((t - 2.2) / 1.8);
+        let ppos = PA1.clone().lerp(PJOGA, joga); if (t > 2.2) ppos = PJOGA.clone().lerp(P67, empurra);
+        pai.position.set(ppos.x, 0, ppos.z);
+        pai.rotation.y = t < 1.95 ? 0.35 * joga : lerpA(0.35, PRY, volta);
+        pai.rotation.x = -0.18 * Math.max(0, Math.sin(cl((t - ARREBENTA) / 0.5) * Math.PI));   // o tranco nas costas
+        passo(pai, t, (t > ARREBENTA + 0.05 && t < 1.95) || (t > 2.2 && t < 4.0) ? 1 : 0, 7);
+        if (t < ARREBENTA) { mistura(rp.aL, pTenso[1], pTenso[1], 0); mistura(rp.aR, pTenso[0], pTenso[0], 0); Elenco.mao(pai, "dir", "punho", 1); Elenco.mao(pai, "esq", "punho", 1); }
+        else { mistura(rp.aL, pTenso[1], pEstica, S((t - 2.1) / 0.5)); mistura(rp.aR, pTenso[0], pAgarra, S((t - 2.1) / 0.5)); Elenco.mao(pai, "dir", "aberta", S((t - 2.1) / 0.5)); Elenco.mao(pai, "esq", "segura", S((t - 2.1) / 0.5)); }
+        expr(pai, t < ARREBENTA + 0.1 ? "firme" : (t < C3 ? "raiva" : "grito"));
+        Elenco.cabeca(pai, 0.02 + 0.06 * imp, t > C2 ? -0.3 : 0, Math.sin(t * 6) * 0.03 * (t > 2.2 ? 1 : 0), Math.sin(t * 2 * Math.PI * 0.6) * 0.008);
+
+        // ======== agente 1: entra e segura o pai ========
+        const e1 = S((t - ARREBENTA - 0.1) / 0.6);
+        pai.updateMatrixWorld(true);
+        const alvo1 = pai.localToWorld(V(0.45, 0, 0.4)); alvo1.y = 0;
+        ag1.visible = t > ARREBENTA;
+        ag1.position.copy(ENTRA.clone().lerp(alvo1, e1)); ag1.position.y = 0;
+        ag1.rotation.y = e1 < 0.8 ? Math.atan2(alvo1.x - ENTRA.x, alvo1.z - ENTRA.z) : Math.atan2(pai.position.x - ag1.position.x, pai.position.z - ag1.position.z);
+        passo(ag1, t, (e1 > 0 && e1 < 0.95) || (t > 2.2 && t < 4.0) ? 1 : 0, 8);
+        mistura(ag1.userData.rig.aL, [E(-0.3, 0, -0.1), E(-0.3, 0, 0)], a1D, S((t - 1.9) / 0.3));
+        mistura(ag1.userData.rig.aR, [E(-0.3, 0, 0.1), E(-0.3, 0, 0)], a1E, S((t - 1.9) / 0.3));
+
+        // ======== a mãe: corre (1,6-2,9), senta e abraça (2,9-3,5); arrancada (5,2-6,2) ========
+        const corre = cl((t - 1.6) / 1.3), senta = S((t - 2.9) / 0.35), abraca = S((t - 3.0) / 0.45);
+        const arranca = S((t - 4.4) / 1.1);
+        if (t < 1.6) {
+          mae.position.set(M0.x - 0.1 * S((t - ARREBENTA) / 0.2) * 0, 0, M0.z); mae.rotation.y = M_RY0 + 0.4 * S((t - ARREBENTA) / 0.2); pernas(mae, 0);
+          mistura(rm.aL, mJuntas[0], mJuntas[0], 0); mistura(rm.aR, mJuntas[1], mJuntas[1], 0);
+        } else if (t < 4.4) {
+          const u = S(corre), p = bez(M0, MC, M_PE, u);
+          const s = senta;
+          mae.position.set(lerpA(p.x, M_SENT.x, s), Y_SENT * s, lerpA(p.z, M_SENT.z, s));
+          mae.rotation.y = corre < 1 ? rumo(M0, MC, M_PE, u) + (MRY - rumo(M0, MC, M_PE, u)) * S((corre - 0.75) / 0.25) : MRY;
+          pernas(mae, s); if (s < 0.05) passo(mae, t, corre > 0 && corre < 0.95 ? 1 : 0, 12);
+          mistura(rm.aL, mSoltaD, mAbracoD, abraca); mistura(rm.aR, mSolta, mAbracoE, abraca);
+        } else {
+          mae.position.set(lerpA(M_SENT.x, M67.x, arranca), Y_SENT * (1 - arranca), lerpA(M_SENT.z, M67.z, arranca));
+          mae.rotation.y = lerpA(MRY, MRY67, arranca) + Math.sin(t * 5) * 0.06 * arranca;
+          pernas(mae, 1 - arranca); if (arranca > 0.6) passo(mae, t, 0.35, 6);
+          mistura(rm.aL, mAbracoD, mEstica, S((t - 4.7) / 0.7)); mistura(rm.aR, mAbracoE, mPresa, arranca);
+        }
+        expr(mae, t < 2.9 ? "medo" : (t < 4.6 ? "choro" : "grito"));
+        boca(mae, falando(t, MAE_F) ? "o" : Elenco.EXPR[rm.ficha.expr].boca);
+        Elenco.cabeca(mae, t < 4.4 ? 0.1 * abraca : -0.05, (t < 4.4 ? 0.25 * abraca : 0.1), t < 4.4 ? -0.2 * abraca : 0, Math.sin(t * 2 * Math.PI * 0.6) * 0.01);
+        Elenco.mao(mae, "dir", "aberta", t > 5.0 ? 1 : 0);
+
+        // ======== agente 2: entra, contorna e arranca a mãe ========
+        mae.updateMatrixWorld(true);
+        const rA2 = ag2.userData.rig;
+        if (t < 4.4) {
+          const e2 = S((t - 1.85) / 0.4), chega = cl((t - 3.5) / 0.9);
+          ag2.visible = t > 1.75;
+          const fim2 = V(1.55, 0, 0.75), alvo2 = mae.localToWorld(A2_OFF1.clone()); alvo2.y = 0;
+          const cur = chega > 0 ? fim2.clone().lerp(alvo2, S(chega)) : ENTRA.clone().lerp(V((PX0 + PX1) / 2, 0, 0.1), e2);
+          ag2.position.set(cur.x, 0, cur.z);
+          ag2.rotation.y = chega > 0.85 ? MRY + Math.PI - 0.5 : (chega > 0 ? Math.atan2(alvo2.x - fim2.x, alvo2.z - fim2.z) : 2.6);
+          passo(ag2, t, (e2 > 0 && e2 < 0.95) || (chega > 0 && chega < 0.9) ? 1 : 0, 8);
+          mistura(rA2.aL, [E(-0.3, 0, -0.1), E(-0.3, 0, 0)], a2D1, S((t - 4.1) / 0.3)); mistura(rA2.aR, [E(-0.3, 0, 0.1), E(-0.3, 0, 0)], a2E1, S((t - 4.1) / 0.3));
+        } else {
+          const u = arranca, b = 1 - u;
+          const off = V(b * b * A2_OFF1.x + 2 * b * u * A2_MEIO.x + u * u * A2_OFF.x, 0, b * b * A2_OFF1.z + 2 * b * u * A2_MEIO.z + u * u * A2_OFF.z);
+          const w = mae.localToWorld(off); ag2.position.set(w.x, 0, w.z);
+          ag2.rotation.y = lerpA(MRY + Math.PI - 0.5, mae.rotation.y - 0.3, u);
+          passo(ag2, t, u > 0.05 && u < 0.9 ? 1 : 0, 7);
+          mistura(rA2.aL, a2D1, a2D, u); mistura(rA2.aR, a2E1, a2E, u);
+        }
+
+        // ======== o Gabi: medo; abraça a mãe; puxado pelo braço, levantado (6,0-6,8) e arrastado ========
+        const levanta = S((t - 7.0) / 0.8), arrasta = S((t - C3) / 2.8);
+        const pg = G67.clone().lerp(G67F, arrasta);
+        gabi.position.set(lerpA(G0.x, pg.x, levanta), lerpA(Y_SENT, 0, levanta), lerpA(G0.z, pg.z, levanta));
+        const debate = t > 7.4 ? Math.sin(t * 7.3) * 0.18 + Math.sin(t * 4.1) * 0.1 : 0;
+        gabi.rotation.y = lerpA(GRY0, GRY67, levanta) + debate;
+        gabi.rotation.z = t > 7.4 ? Math.sin(t * 5.2) * 0.05 : 0;
+        pernas(gabi, 1 - levanta); if (levanta > 0.8) passo(gabi, t, 0.6, 6.5);
+        if (t < 4.5) mistura(rg.aR, gEsqColo, gEsqAgarra, abraca); else mistura(rg.aR, gEsqAgarra, gEsqEstica, S((t - 4.6) / 0.7));
+        if (t < 6.5) mistura(rg.aL, gDirPeito, gDirPeito, 0); else if (levanta <= 0) mistura(rg.aL, gDirPeito, gDirPuxadoSent, S((t - 6.5) / 0.3)); else mistura(rg.aL, gDirPuxadoSent, gDirPuxado, levanta);
+        Elenco.mao(gabi, "dir", "punho", 1); Elenco.mao(gabi, "esq", t > 5.0 ? "aberta" : "segura", 1);
+        expr(gabi, t < 3.0 ? "medo" : (t < 5.0 ? "choro" : "grito"));
+        boca(gabi, falando(t, GABI_F, 17) ? "o" : Elenco.EXPR[rg.ficha.expr].boca);
+        const virGabi = t < 3.0 ? -0.15 : (t < 5.0 ? 0.3 : (t < 7.0 ? 0.35 : 0.05 + Math.sin(t * 6.1) * 0.2));
+        Elenco.cabeca(gabi, t < 5.0 ? 0.08 : -0.1, virGabi, t > 7.4 ? Math.sin(t * 4.7) * 0.12 : 0.05, 0.008 * Math.sin(t * 2 * Math.PI * 1.1));
+        Elenco.lagrimas(gabi, S((t - 3.2) / 0.8), t);
+
+        // ======== agente 3: entra, vai até o Gabi, pega o braço (5,4) e arrasta ========
+        gabi.updateMatrixWorld(true);
+        const rA3 = ag3.userData.rig;
+        if (t < 6.8) {
+          const e3 = S((t - 2.0) / 0.8), pega = cl((t - 5.4) / 1.1);
+          ag3.visible = t > 2.0;
+          const fim3 = V(1.85, 0, 0.3), alvo3 = gabi.localToWorld(A3_OFF1.clone()); alvo3.y = 0;
+          const cur = pega > 0 ? fim3.clone().lerp(alvo3, S(pega)) : ENTRA.clone().lerp(fim3, e3);
+          ag3.position.set(cur.x, 0, cur.z);
+          ag3.rotation.y = pega > 0.85 ? GRY0 + Math.PI - 0.4 : Math.atan2(alvo3.x - fim3.x, alvo3.z - fim3.z);
+          passo(ag3, t, (e3 > 0 && e3 < 0.95) || (pega > 0 && pega < 0.95) ? 1 : 0, 8);
+          mistura(rA3.aL, [E(-0.3, 0, -0.1), E(-0.3, 0, 0)], a3D1, S((t - 6.3) / 0.4)); mistura(rA3.aR, [E(-0.3, 0, 0.1), E(-0.3, 0, 0)], a3E1, S((t - 6.3) / 0.4));
+        } else {
+          // o agente acompanha o Gabi: da frente-direita (sentado) para trás dele (arrastando)
+          const u = levanta, b = 1 - u;
+          const off = V(b * b * A3_OFF1.x + 2 * b * u * A3_MEIO.x + u * u * A3_OFF2.x, 0, b * b * A3_OFF1.z + 2 * b * u * A3_MEIO.z + u * u * A3_OFF2.z);
+          const w = gabi.localToWorld(off); ag3.position.set(w.x, 0, w.z);
+          ag3.rotation.y = lerpA(GRY0 + Math.PI - 0.4, GRY67 + 0.1, u) + debate * 0.5;
+          passo(ag3, t, t > C3 ? 0.8 : (u > 0.05 && u < 0.95 ? 1 : 0), 6.5);
+          mistura(rA3.aL, a3D1, a3D2, u); mistura(rA3.aR, a3E1, a3E2, u);
+        }
+
+        // ======== um gesto por plano: só quem age aparece ========
+        const plano = t < C1 ? 0 : t < C2 ? 1 : t < C3A ? 2 : t < C3 ? 3 : 4;
+        rostoGabi.intensity = plano === 4 ? 2.6 : 0;
+        const ve = [[1, 1, 1, 1, 0, 0], [0, 0, 1, 1, 0, 0], [0, 0, 1, 1, 1, 0], [1, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 1]][plano];
+        pai.visible = !!ve[0]; ag1.visible = !!ve[1] && t > ARREBENTA; mae.visible = !!ve[2]; gabi.visible = !!ve[3]; ag2.visible = !!ve[4]; ag3.visible = !!ve[5];
+        if (plano === 0 && t > 1.9) { ag2.visible = true; }                    // o segundo agente aparece na porta
+        // ======== câmeras ========
+        let alvo;
+        if (t < C1) { cam.fov = 42; cam.position.set(-2.2, 2.0, 3.5); alvo = V(1.4, 1.45, 0.9); }
+        else if (t < C2) { const v = S((t - C1) / (C2 - C1)); cam.fov = 36; cam.position.set(-2.1 + 0.25 * v, 1.85, 2.25); alvo = V(2.05, 1.3, 2.2); }
+        else if (t < C3A) { const v = S((t - C2) / (C3A - C2)); cam.fov = 44; cam.position.set(1.0, 1.95, 0.5 + 0.15 * v); alvo = V(1.35, 1.55, 3.2); }   // a mãe arrancada, de frente
+        else if (t < C3) { const v = S((t - C3A) / (C3 - C3A)); cam.fov = 38; cam.position.set(1.6 - 0.1 * v, 2.25, 2.7); alvo = V(0.5, 2.1, 0.6); }    // o pai contido, por cima do ombro do agente
+                else { const v = S((t - C3) / (DUR - C3)); cam.fov = 42; cam.position.set(1.3, 2.25, 3.6 - 0.2 * v); alvo = V(1.6, 1.85, 0.85); }   // o Gabi levado
+        cam.position.x += Math.sin(t * 61) * 0.025 * imp; cam.position.y += Math.sin(t * 47) * 0.02 * imp;
+        cam.updateProjectionMatrix(); cam.lookAt(alvo);
+        // a vinheta avança rápido no fim (67)
+        const fecha = 0;                                                  // usuário: sem escurecer o fim (o fechamento é o plano 70)
+        pos.render(scene, cam, t, { grao: LOOK.grao + 0.1 * Math.min(1, imp) + 0.03 * fecha, fumaca: LOOK.fumaca + 0.12 * fecha, dessat: LOOK.dessat + 0.03 * fecha });   // usuário: filtro do fim estava forte demais
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["levam"] = tl;
+      render();
+    })();
+  </script>
+</template>
