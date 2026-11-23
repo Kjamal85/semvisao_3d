@@ -69,6 +69,7 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
 - **Pico de impacto** (batida, queda): **só o grão sobe** (+0,1); a fumaça fica no padrão 0,15. No corredor
   (2026-11-22) fumaça 0,45 no pico derrubou a luma para 64 ("muito escuro") e até +0,12 ficou "forte demais".
   Medir a luma também no quadro do pico.
+- **Antes do evento (abertura) e modo vidente:** sem filtro nenhum (grão 0, fumaça 0, dessat 0) — pedido do usuário 2026-11-22.
 - **Modo vidente (Duda):** sem fumaça; o escurecimento das bordas dela é outro efeito, a criar.
 - O `grain-overlay` do registro foi descartado: animação CSS em loop, não segue o quadro exato.
 
