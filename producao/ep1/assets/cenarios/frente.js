@@ -112,7 +112,7 @@
       pg.attributes.position.needsUpdate = true;
     }
 
-    return { k, X0, X1, Z1, H, JX0, JX1, JY0, JY1, PX0, PX1, PY1, SX, SZ, SL, SEAT, porta, trinco, cortina, luzes, brilho, fresta, rosto, poeira };
+    return { k, X0, X1, Z1, H, JX0, JX1, JY0, JY1, PX0, PX1, PY1, SX, SZ, SL, SEAT, porta, trinco, cortina, fora, luzes, brilho, fresta, rosto, poeira };
   }
   window.Cenarios = window.Cenarios || {};
   window.Cenarios.frente = frente;
