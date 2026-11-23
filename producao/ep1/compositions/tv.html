@@ -1,0 +1,202 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #tv-stage { position: absolute; inset: 0; z-index: 0; }
+    #tv-stage canvas { display: block; }
+    #tv-dia { position: absolute; left: 60px; top: 50px; z-index: 3; padding: 10px 20px; opacity: 0;
+      background: rgba(8, 10, 16, 0.6); color: #f2f4f8; font-family: "Arial Black", Arial, sans-serif;
+      font-size: 40px; font-weight: 900; letter-spacing: .06em; border-radius: 6px; }
+    #tv-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #tv-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="tv" data-width="1920" data-height="1080">
+    <div id="tv-stage" class="clip" data-start="0" data-duration="21.5" data-track-index="0"></div>
+    <div id="tv-dia" class="clip" data-start="0" data-duration="21.5" data-track-index="1">DIA 1</div>
+    <div id="tv-rotulo" class="clip" data-start="0" data-duration="21.5" data-track-index="2">SEQ 4 — A TV / O VÍRUS<small>levam ao sofá · a TV liga · o plantão · o pai fecha a cortina · planos 32–37</small></div>
+    <audio id="tv-rep1" class="clip" src="voz/audio/c04-reporter-01.wav" data-start="4.6" data-duration="6.73" data-track-index="3" data-volume="0.9"></audio>
+    <audio id="tv-rep2" class="clip" src="voz/audio/c04-reporter-02.wav" data-start="11.7" data-duration="5.9" data-track-index="4" data-volume="0.9"></audio>
+  </div>
+  <script>
+    (function () {
+      const DUR = 21.5, SENTA = 2.2, LIGA = 3.8, R1 = 4.6, R1F = 11.33, R2 = 11.7, R2F = 17.6, CORT = 18.6;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
+      const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z), E = (x, y, z) => new THREE.Euler(x, y, z);
+      const diaEl = document.getElementById("tv-dia");
+      const expr = (g, n) => { if (g.userData.rig.ficha.expr !== n) Elenco.expressao(g, n); };
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+
+      const sala = new THREE.Group();
+      const SL = Cenarios.sala(sala);
+      const { k, X0, Z0, JX0, JX1, JY1, PX0, PX1, TZ, TV_W, TV_H, TV_Y, SX, SZ, SEAT, MX } = SL;
+
+      // ---------- a TV: o plantão numa cena própria (igual à sala aprovada) ----------
+      const TVW = 768, TVH = 432;
+      const alvoTV = new THREE.WebGLRenderTarget(TVW, TVH, { samples: 4 });
+      const estudio = new THREE.Scene();
+      estudio.background = new THREE.Color(0x2a4a7e);
+      estudio.add(new THREE.HemisphereLight(0xdfe8ff, 0x30384a, 3.0));
+      const kE = new THREE.DirectionalLight(0xffffff, 1.6); kE.position.set(2, 4, 5); estudio.add(kE);
+      const kE2 = Cena.kit(estudio, 7);
+      for (let i = 0; i < 7; i++) kE2.box(0.5, 4, 0.05, i % 2 ? 0x31528c : 0x284676, -2.6 + i * 0.75, 2, -2, { contorno: false });
+      kE2.cil(0.9, 0.9, 0.04, 0x2c4c86, 1.25, 2.55, -1.9, { r: [Math.PI / 2, 0, 0], seg: 40, contorno: false });
+      for (let i = 0; i < 5; i++) kE2.box(0.05, 1.6, 0.03, 0x4a6fb0, 1.25 + (i - 2) * 0.32, 2.55, -1.85, { r: [0, 0, 0.1], contorno: false });
+      const reporter = Elenco.build("reporter", { expr: "firme" });
+      reporter.position.set(-0.45, 0, 0); reporter.rotation.y = 0.12; estudio.add(reporter);
+      kE2.box(2.6, 0.9, 0.9, 0x1b2a44, -0.3, 1.25, 0.65);
+      const camE = new THREE.PerspectiveCamera(26, TVW / TVH, 0.1, 30);
+      camE.position.set(0.25, 2.05, 4.0); camE.lookAt(0.25, 1.85, 0);
+      const bocaR = reporter.userData.rosto.bocas;
+      const cv = document.createElement("canvas"); cv.width = TVW; cv.height = TVH; const g2 = cv.getContext("2d");
+      g2.fillStyle = "#c8102e"; g2.fillRect(24, 22, 168, 40);
+      g2.fillStyle = "#fff"; g2.font = "bold 26px sans-serif"; g2.fillText("PLANTÃO", 38, 52);
+      g2.fillStyle = "rgba(0,0,0,0.55)"; g2.fillRect(TVW - 160, 22, 136, 40);
+      g2.fillStyle = "#ff3b3b"; g2.beginPath(); g2.arc(TVW - 140, 42, 9, 0, Math.PI * 2); g2.fill();
+      g2.fillStyle = "#fff"; g2.font = "bold 22px sans-serif"; g2.fillText("AO VIVO", TVW - 124, 50);
+      const cv2 = document.createElement("canvas"); cv2.width = TVW; cv2.height = TVH; const g3 = cv2.getContext("2d");   // a tarja do vírus entra na 2ª fala
+      g3.fillStyle = "#b00d26"; g3.fillRect(0, TVH - 118, TVW, 62);
+      g3.fillStyle = "#fff"; g3.font = "bold 40px sans-serif"; g3.fillText("CEGUEIRA: VÍRUS?", 28, TVH - 72);
+      g3.fillStyle = "#f2f2f2"; g3.fillRect(0, TVH - 56, TVW, 40);
+      g3.fillStyle = "#1a1a1a"; g3.font = "bold 26px sans-serif"; g3.fillText("casos dobram a cada dia · isolamento recomendado", 28, TVH - 27);
+      const texT = (c) => { const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
+      const tela = new THREE.Mesh(new THREE.PlaneGeometry(TV_W, TV_H), new THREE.MeshBasicMaterial({ map: alvoTV.texture, toneMapped: false }));
+      tela.rotation.y = Math.PI / 2; tela.position.set(X0 + 0.165, TV_Y, TZ); sala.add(tela);
+      const preta = new THREE.Mesh(new THREE.PlaneGeometry(TV_W, TV_H), new THREE.MeshBasicMaterial({ color: 0x0b0c10 }));
+      preta.rotation.y = Math.PI / 2; preta.position.set(X0 + 0.17, TV_Y, TZ); sala.add(preta);
+      const plano = (tex, dx) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(TV_W, TV_H), new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false })); m.rotation.y = Math.PI / 2; m.position.set(X0 + dx, TV_Y, TZ); sala.add(m); return m; };
+      const tarjaTopo = plano(texT(cv), 0.168), tarjaVirus = plano(texT(cv2), 0.169);
+
+      // ---------- a cortina que o pai vai fechar (bandas que deslizam dos cantos para o meio) ----------
+      const CZ = Z0 + 0.3, MEIO = (JX0 + JX1) / 2;
+      function banda(xFora, xDentro) {
+        const g = new THREE.Group(); g.position.set(xFora, 0, 0); sala.add(g);
+        const n = Math.round(Math.abs(xDentro - xFora) / 0.11), s = Math.sign(xDentro - xFora);
+        for (let i = 0; i < n; i++) k.cil(0.07, 0.085, JY1 + 0.3, 0xd9c7a3, s * (i + 0.5) * 0.11, (JY1 + 0.3) / 2, CZ + (i % 2) * 0.04, { seg: 10, contorno: i === n - 1, pai: g });
+        return g;
+      }
+      const bE = banda(JX0 - 0.75, MEIO), bD = banda(JX1 + 0.75, MEIO);
+
+      // ---------- a família ----------
+      const gabi = Elenco.build("gabi", { blind: true, expr: "medo" }); sala.add(gabi); const rg = gabi.userData.rig;
+      const mae = Elenco.build("mae", { expr: "triste" }); sala.add(mae); const rm = mae.userData.rig;
+      const pai = Elenco.build("pai", { expr: "medo" }); sala.add(pai); const rp = pai.userData.rig;
+      const PORTA = V((PX0 + PX1) / 2, 0, Z0 + 0.4);
+      const GS = V(SX - 0.05, 0, SZ + 0.55), MS = V(SX - 0.05, 0, SZ - 0.45);                    // lugares no sofá
+      const PT = V(0.1, 0, -1.55), PJ = V(MEIO + 0.1, 0, Z0 + 0.95);                              // pai: com o controle / na janela
+      const sentaY = SEAT + 0.1 - 1.075;
+      function sentar(g, r, lugar, ry, u, dePe) {
+        // de pé na frente do sofá -> sentado (quadril e joelho a 90°, desce e recua)
+        g.position.set(lugar.x - 0.55 * (1 - u), sentaY * u, lugar.z); g.rotation.set(0, ry, 0);
+        for (const l of [r.pL, r.pR]) { l.hip.rotation.set(-Math.PI / 2 * u, 0, 0); l.knee.rotation.set(Math.PI / 2 * u, 0, 0); }
+      }
+      const andar = (r, t, a) => { const p = Math.sin(t * 7) * 0.3 * a; r.pL.hip.rotation.set(p, 0, 0); r.pR.hip.rotation.set(-p, 0, 0); r.pL.knee.rotation.set(Math.max(0, -p), 0, 0); r.pR.knee.rotation.set(Math.max(0, p), 0, 0); };
+      const lerpV = (A, B, u) => A.clone().lerp(B, u);
+      const rumo = (A, B) => Math.atan2(B.x - A.x, B.z - A.z);
+      // pose dos braços (da sala aprovada)
+      const colo = [E(-0.55, 0, 0.05), E(-1.2, 0, 0)], coloE = [E(-0.55, 0, -0.05), E(-1.2, 0, 0)];
+      const soltoD = [E(-0.05, 0, -0.08), E(-0.2, 0, 0)], soltoE = [E(-0.05, 0, 0.08), E(-0.2, 0, 0)];
+      const ombro = [E(-0.45, 0, 1.0), E(-0.4, 0, 0)];
+      const controle = [E(-1.35, 0, -0.1), E(-0.15, 0, 0)];
+      const nuca = [E(-0.55, 0.35, 2.35), E(-2.05, 0, 0)];
+      const cortina = [E(-1.9, 0, -0.2), E(-0.3, 0, 0)], cortinaE = [E(-1.9, 0, 0.2), E(-0.3, 0, 0)];
+      const ctrl = k.box(0.05, 0.03, 0.18, 0x1e1f24, 0, -0.5, 0.08, { pai: rp.aL.el, contorno: false });   // o controle remoto na mão do pai
+
+      // ---------- luz: manhã nublada pela janela (escurece quando a cortina fecha) + o brilho da TV ----------
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1d24);
+      scene.fog = new THREE.Fog(0x8d97a6, 11, 30);
+      scene.add(sala);
+      const amb = new THREE.HemisphereLight(0xa7b4c6, 0x5a4c3e, 2.0); scene.add(amb);
+      const sol = new THREE.DirectionalLight(0xe6e9ef, 2.4);
+      sol.position.set(1.2, 6.5, -11); sol.target.position.set(0.4, 0, 0.5);
+      sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); sol.shadow.bias = -0.0006; sol.shadow.normalBias = 0.03;
+      Object.assign(sol.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 0.5, far: 25 });
+      scene.add(sol); scene.add(sol.target);
+      const brilhoTV = new THREE.SpotLight(0xa9c6ff, 0, 10, 0.95, 0.7, 1.2);
+      brilhoTV.position.set(X0 + 0.3, TV_Y, TZ); brilhoTV.target.position.set(SX + 1, 1.0, TZ);
+      brilhoTV.castShadow = true; brilhoTV.shadow.mapSize.set(1024, 1024); brilhoTV.shadow.bias = -0.002; brilhoTV.shadow.normalBias = 0.04;
+      scene.add(brilhoTV); scene.add(brilhoTV.target);
+
+      const cam = new THREE.PerspectiveCamera(42, 1920 / 1080, 0.1, 60);
+      const renderer = Cena.renderer("tv-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+
+      function render() {
+        const t = estado.t;
+        // ---- a TV: liga em LIGA; a repórter fala nas duas falas ----
+        const ligada = t >= LIGA;
+        preta.visible = !ligada; tarjaTopo.visible = ligada; tarjaVirus.visible = t >= R2 - 0.3;
+        const fala = (t > R1 && t < R1F) || (t > R2 && t < R2F);
+        const abre = fala && (Math.sin(t * 17) + Math.sin(t * 7.3 + 1) > 0.35);
+        bocaR.linha.visible = !abre; bocaR.o.visible = abre;
+        reporter.userData.rig.head.rotation.set(Math.sin(t * 1.3) * 0.04, Math.sin(t * 0.8) * 0.06, 0);
+        if (ligada) { renderer.setRenderTarget(alvoTV); renderer.render(estudio, camE); renderer.setRenderTarget(null); }
+        brilhoTV.intensity = ligada ? (t < LIGA + 0.25 ? 9 * (1 - (t - LIGA) / 0.25) + 5 : 5.2 + 1.1 * Math.sin(t * 3.1) * Math.sin(t * 1.7 + 0.5) + (Math.floor(t * 1.5) % 3 === 0 ? 0.9 : 0)) : 0;
+        diaEl.style.opacity = t < LIGA + 0.2 ? 0 : Math.min(1, (t - LIGA - 0.2) / 0.3);
+        // ---- a cortina fecha; a sala escurece ----
+        const fecha = S((t - CORT) / 1.4);
+        bE.scale.x = bD.scale.x = 0.12 + 0.88 * fecha;
+        sol.intensity = 2.4 - 1.5 * fecha; amb.intensity = 2.0 - 0.6 * fecha;
+
+        // ---- a mãe conduz o Gabi até o sofá; os dois sentam ----
+        const chega = S(t / SENTA), senta = S((t - SENTA) / 0.9);
+        const ry = -Math.PI / 2;
+        if (senta <= 0) {
+          // contorna o sofá pelo lado da janela: porta -> canto (WP) -> frente do sofá
+          const WP = V(0.2, 0, Z0 + 0.6), via = (A, B, C, u) => (u < 0.5 ? lerpV(A, B, u * 2) : lerpV(B, C, (u - 0.5) * 2));
+          const fimG = V(GS.x - 0.55, 0, GS.z), fimM = V(MS.x - 0.55, 0, MS.z), iniM = V(PORTA.x + 0.4, 0, PORTA.z + 0.1);
+          const pG = via(PORTA, WP, fimG, chega), pM = via(iniM, V(WP.x + 0.35, 0, WP.z - 0.05), fimM, chega);
+          gabi.position.copy(pG); gabi.rotation.set(0, chega < 0.5 ? rumo(PORTA, WP) : (chega < 0.95 ? rumo(WP, fimG) : ry), 0);
+          mae.position.copy(pM); mae.rotation.set(0, chega < 0.5 ? rumo(iniM, WP) : (chega < 0.95 ? rumo(WP, fimM) : ry), 0);
+          andar(rg, t, chega < 1 ? 0.7 : 0); andar(rm, t + 0.4, chega < 1 ? 1 : 0);
+        } else { sentar(gabi, rg, GS, ry, senta); sentar(mae, rm, MS, ry + 0.35 * senta, senta); }
+        // braços: ele tateia no caminho e depois mãos no colo; a mãe segura o braço dele e depois a mão no ombro
+        mistura(rg.aL, [E(-0.9, 0, -0.1), E(-0.3, 0, 0)], colo, senta); mistura(rg.aR, [E(-0.6, 0, 0.2), E(-0.4, 0, 0)], coloE, senta);
+        mistura(rm.aR, [E(-0.6, 0, 0.6), E(-0.8, 0, 0)], ombro, S((t - SENTA - 1.2) / 0.6));
+        rm.aL.sh.rotation.set(-0.3, 0, -0.08); rm.aL.el.rotation.set(-0.9, 0, 0);
+        // cabeças e caras: ele de cabeça baixa, virado para longe da TV; chora na 2ª fala
+        expr(gabi, t < R1 + 3 ? "medo" : "choro");
+        Elenco.lagrimas(gabi, S((t - R1 - 3) / 0.8), t);
+        Elenco.cabeca(gabi, 0.22 * senta + Math.max(0, Math.sin(t * 2.6)) * 0.03 * senta, 0.4 * senta, 0.06, Math.sin(t * 2 * Math.PI * 0.32) * 0.008);
+        // 37: os pais se olham assustados
+        const olham = S((t - R2F + 1.4) / 0.6) * (1 - S((t - CORT - 0.2) / 0.5));
+        expr(mae, olham > 0.5 ? "medo" : "triste");
+        Elenco.cabeca(mae, 0.08 - 0.2 * olham, 0.3 + 0.55 * olham, -0.05);
+
+        // ---- o pai: entra na frente, pega o controle, liga a TV; fica de pé (mão na nuca); fecha a cortina ----
+        const vaiTV = S(t / 2.0), vaiJan = S((t - CORT + 1.0) / 1.0);
+        const pP = vaiJan > 0 ? lerpV(PT, PJ, vaiJan) : lerpV(V(PORTA.x - 0.4, 0, PORTA.z + 0.2), PT, vaiTV);
+        pai.position.copy(pP);
+        pai.rotation.set(0, vaiJan > 0.9 ? Math.PI : (vaiJan > 0 ? rumo(PT, PJ) : (vaiTV < 0.95 ? rumo(PORTA, PT) : -Math.PI / 2 + 0.55 * S((t - LIGA - 0.6) / 0.8))), 0);
+        andar(rp, t, (vaiTV > 0 && vaiTV < 1) || (vaiJan > 0 && vaiJan < 1) ? 1 : 0);
+        ctrl.visible = t > 2.2 && t < LIGA + 1.2;
+        if (t < LIGA + 0.8) mistura(rp.aL, soltoD, controle, S((t - 2.6) / 0.5));
+        else if (t < CORT - 1.0) mistura(rp.aL, soltoD, nuca, S((t - LIGA - 1.5) / 0.8));
+        else mistura(rp.aL, nuca, cortina, S((t - CORT + 0.1) / 0.5));
+        mistura(rp.aR, soltoE, cortinaE, S((t - CORT + 0.1) / 0.5));
+        expr(pai, t > R2F - 1.4 ? "medo" : "medo");
+        Elenco.cabeca(pai, 0.1 + 0.15 * olham, -0.1 + Math.sin(t * 0.6) * 0.05 - 0.5 * olham, 0.05, Math.sin(t * 2 * Math.PI * 0.25) * 0.008);
+
+        // ---- planos ----
+        let alvo;
+        if (t < LIGA + 0.6) { cam.fov = 42; const u = S(t / (LIGA + 0.6)); cam.position.set(-2.75 + 0.3 * u, 2.35 - 0.12 * u, 3.6 - 0.4 * u); alvo = V(0.85, 1.15, -0.75); }   // 32-33: plano aberto
+        else if (t < 8.2) { cam.fov = 30; const u = S((t - LIGA - 0.6) / 3.8); cam.position.set(-0.55 - 0.45 * u, 1.5, TZ + 0.25 - 0.1 * u); alvo = V(X0, TV_Y - 0.02, TZ); }  // 34: a TV
+        else if (t < R1F + 0.2) { cam.fov = 40; const u = S((t - 8.2) / 3.3); cam.position.set(-1.55 + 0.2 * u, 1.95, SZ + 0.6 + 0.15 * u); alvo = V(SX - 0.3, 1.35, SZ + 0.05); }   // 35: a família
+        else if (t < 14.6) { cam.fov = 30; const u = S((t - R1F) / 3.3); cam.position.set(-0.75 - 0.35 * u, 1.5, TZ + 0.2); alvo = V(X0, TV_Y - 0.05, TZ); }   // 36: a TV, a tarja do vírus
+        else if (t < CORT - 1.0) { cam.fov = 42; cam.position.set(-1.9, 2.15, SZ + 1.35); alvo = V(0.4, 1.65, -1.1); }          // 37: os pais se olham
+        else { cam.fov = 42; const u = S((t - CORT + 1.0) / 3.5); cam.position.set(-2.6 + 0.3 * u, 2.4, 3.4 - 0.4 * u); alvo = V(0.6, 1.45, -1.5); }   // 37: plano aberto — o pai fecha a cortina, a sala escurece
+        cam.updateProjectionMatrix(); cam.lookAt(alvo);
+        pos.render(scene, cam, t, LOOK);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["tv"] = tl;
+      render();
+    })();
+  </script>
+</template>
