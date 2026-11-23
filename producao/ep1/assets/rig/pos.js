@@ -76,14 +76,21 @@
     const tela = new THREE.Scene();
     tela.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
     const camTela = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    // com o renderer compartilhado (cena.js), o passe inteiro é adiado e feito só pela cena visível;
+    // dentro do passe usa-se o renderer de verdade (r), senão a tela seria adiada de novo
+    const r = renderer.base || renderer;
+    function passe(scene, cam, t, p) {
+      r.setRenderTarget(alvo); r.render(scene, cam); r.setRenderTarget(null);
+      const u = mat.uniforms;
+      u.tempo.value = t; u.quadro.value = Math.floor(t * 30) % 1000;   // 30 fps
+      u.grao.value = p.grao || 0; u.fumaca.value = p.fumaca || 0; u.dessat.value = p.dessat || 0;
+      r.render(tela, camTela);
+    }
     return {
       render(scene, cam, t, p) {
-        p = p || {};
-        renderer.setRenderTarget(alvo); renderer.render(scene, cam); renderer.setRenderTarget(null);
-        const u = mat.uniforms;
-        u.tempo.value = t; u.quadro.value = Math.floor(t * 30) % 1000;   // 30 fps
-        u.grao.value = p.grao || 0; u.fumaca.value = p.fumaca || 0; u.dessat.value = p.dessat || 0;
-        renderer.render(tela, camTela);
+        const q = Object.assign({}, p || {});
+        if (renderer.agendar) return renderer.agendar(() => passe(scene, cam, t, q));
+        passe(scene, cam, t, q);
       },
     };
   }

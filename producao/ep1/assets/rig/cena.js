@@ -59,13 +59,46 @@
     return { M, grad, linha, box, cil, bolha, rnd: prng(seed || 1) };
   }
 
-  // renderer padrão das cenas: 1920x1080, sombras suaves, canvas dentro do palco
+  // renderer padrão das cenas: 1920x1080, sombras suaves, canvas dentro do palco.
+  // UM renderer (um contexto WebGL) para a página inteira: o episódio tem 20+ cenas e o Chrome derruba os
+  // contextos mais antigos depois de ~16 (as primeiras cenas saíam em branco). Cada cena recebe uma "vista"
+  // do renderer compartilhado: só a cena VISÍVEL desenha na tela, e o canvas muda para o palco dela.
+  let compart = null;
   function renderer(palcoId) {
-    const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-    r.setPixelRatio(1); r.setSize(1920, 1080);
-    r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
-    document.getElementById(palcoId).appendChild(r.domElement);
-    return r;
+    if (!compart) {
+      compart = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+      compart.setPixelRatio(1); compart.setSize(1920, 1080);
+      compart.shadowMap.enabled = true; compart.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
+    const palco = document.getElementById(palcoId), base = compart;
+    const ativo = () => !palco.checkVisibility || palco.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+    const vista = Object.create(base);
+    vista.base = base;
+    // O runtime move as timelines e SÓ DEPOIS troca a visibilidade das cenas: o desenho é adiado para uma
+    // microtarefa e feito apenas pela cena que estiver visível nesse momento (o canvas vai para o palco dela).
+    vista.agendar = function (job) { pendentes.set(palco, { job, ativo }); if (!agendado) { agendado = true; queueMicrotask(desenhar); } };
+    vista.render = function (scene, cam) {
+      if (base.getRenderTarget() !== null) return base.render(scene, cam);   // render target: na hora
+      vista.agendar(() => base.render(scene, cam));
+    };
+    if (!base.domElement.parentNode) palco.appendChild(base.domElement);
+    return vista;
+  }
+  const pendentes = new Map(); let agendado = false;
+  function desenhar() {
+    agendado = false;
+    const lista = [...pendentes]; pendentes.clear();
+    let feito = false;
+    for (const [palco, { job, ativo }] of lista) {
+      if (!ativo()) continue;
+      if (compart.domElement.parentNode !== palco) palco.appendChild(compart.domElement);
+      job(); feito = true;
+    }
+    if (!feito && lista.length === 1) {                 // cena sozinha (snapshot de uma composição): desenha
+      const [palco, { job }] = lista[0];
+      if (compart.domElement.parentNode !== palco) palco.appendChild(compart.domElement);
+      job();
+    }
   }
 
   const suave = (u) => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, u))); // sine in-out

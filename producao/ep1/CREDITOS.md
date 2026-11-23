@@ -58,3 +58,7 @@ aqui: nome do arquivo, link da página, autor e licença (CC0).
 
 Criação própria. O canal "E Se?" é estudado só pelo método (ritmo, cortes, medição); nenhuma
 frase, cena ou imagem é copiada.
+
+## Efeitos sonoros
+
+Openverse/Freesound, só CC0 e CC BY — lista completa e obrigações em `assets/sfx/CREDITOS.md` (os CC BY precisam de crédito na descrição do vídeo).

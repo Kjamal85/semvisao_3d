@@ -15,58 +15,127 @@
     <script src="assets/cenarios/rua.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #12151c; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000; }
       #root { width: 100%; height: 100%; position: relative; }
+      /* episódio montado: os rótulos de revisão de cada cena não aparecem */
+      [id$="-rotulo"] { visibility: hidden !important; }
+      /* contraste: o subtítulo do selo da abertura sobre o globo claro (abertura.html aprovada fica igual) */
+      #ab-selo small { color: #e4e9f0 !important; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="211.4" data-width="1920" data-height="1080">
-      <div id="elenco" data-composition-id="elenco" data-composition-src="compositions/elenco.html"
-        data-start="0" data-duration="8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="quarto" data-composition-id="quarto" data-composition-src="compositions/quarto.html"
-        data-start="8" data-duration="8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="sala" data-composition-id="sala" data-composition-src="compositions/sala.html"
-        data-start="16" data-duration="8" data-track-index="2" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="cozinha" data-composition-id="cozinha" data-composition-src="compositions/cozinha.html"
-        data-start="24" data-duration="8" data-track-index="3" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="rua" data-composition-id="rua" data-composition-src="compositions/rua.html"
-        data-start="32" data-duration="8" data-track-index="4" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="portao" data-composition-id="portao" data-composition-src="compositions/portao.html"
-        data-start="40" data-duration="8" data-track-index="5" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="corredor" data-composition-id="corredor" data-composition-src="compositions/corredor.html"
-        data-start="48" data-duration="8" data-track-index="6" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="quintal" data-composition-id="quintal" data-composition-src="compositions/quintal.html"
-        data-start="56" data-duration="8" data-track-index="7" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="van" data-composition-id="van" data-composition-src="compositions/van.html"
-        data-start="64" data-duration="8" data-track-index="8" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+    <!-- EP1 montado na ordem do roteiro (episodios/ep01-protagonista.md). Gerado por montar_ep1.py — editar lá. -->
+    <div id="root" data-composition-id="main" data-start="0" data-duration="195.4" data-width="1920" data-height="1080">
+      <!-- planos 1-11 -->
       <div id="abertura" data-composition-id="abertura" data-composition-src="compositions/abertura.html"
-        data-start="72" data-duration="12" data-track-index="9" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="0" data-duration="12" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 12-16 -->
       <div id="despertar" data-composition-id="despertar" data-composition-src="compositions/despertar.html"
-        data-start="84" data-duration="8" data-track-index="10" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="12" data-duration="8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 17 -->
+      <div id="quarto" data-composition-id="quarto" data-composition-src="compositions/quarto.html"
+        data-start="20" data-duration="8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 18-24 -->
       <div id="queda" data-composition-id="queda" data-composition-src="compositions/queda.html"
-        data-start="92" data-duration="8" data-track-index="11" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="28" data-duration="8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 25-31 -->
       <div id="revolta" data-composition-id="revolta" data-composition-src="compositions/revolta.html"
-        data-start="100" data-duration="10" data-track-index="12" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-      <div id="vizinho" data-composition-id="vizinho" data-composition-src="compositions/vizinho.html"
-        data-start="110" data-duration="10" data-track-index="13" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="36" data-duration="10" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 32-37 -->
       <div id="tv" data-composition-id="tv" data-composition-src="compositions/tv.html"
-        data-start="120" data-duration="21.5" data-track-index="14" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="46" data-duration="21.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 38-41 -->
+      <div id="vizinho" data-composition-id="vizinho" data-composition-src="compositions/vizinho.html"
+        data-start="67.5" data-duration="10" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 42 -->
       <div id="deixa" data-composition-id="deixa" data-composition-src="compositions/deixa.html"
-        data-start="141.5" data-duration="5" data-track-index="15" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="77.5" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 43 -->
+      <div id="cozinha" data-composition-id="cozinha" data-composition-src="compositions/cozinha.html"
+        data-start="82.5" data-duration="8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 44 -->
       <div id="chama" data-composition-id="chama" data-composition-src="compositions/chama.html"
-        data-start="146.5" data-duration="3.4" data-track-index="16" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="90.5" data-duration="3.4" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 45-46 -->
+      <div id="corredor" data-composition-id="corredor" data-composition-src="compositions/corredor.html"
+        data-start="93.9" data-duration="8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 47-48 -->
       <div id="faixa" data-composition-id="faixa" data-composition-src="compositions/faixa.html"
-        data-start="149.9" data-duration="8" data-track-index="17" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="101.9" data-duration="8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 49-51 -->
+      <div id="quintal" data-composition-id="quintal" data-composition-src="compositions/quintal.html"
+        data-start="109.9" data-duration="8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 52-56 -->
       <div id="esperanca" data-composition-id="esperanca" data-composition-src="compositions/esperanca.html"
-        data-start="157.9" data-duration="12" data-track-index="18" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="117.9" data-duration="12" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 57-60 -->
+      <div id="portao" data-composition-id="portao" data-composition-src="compositions/portao.html"
+        data-start="129.9" data-duration="8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 61 -->
       <div id="ouviu" data-composition-id="ouviu" data-composition-src="compositions/ouviu.html"
-        data-start="169.9" data-duration="6" data-track-index="19" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="137.9" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 62-65 -->
       <div id="buscar" data-composition-id="buscar" data-composition-src="compositions/buscar.html"
-        data-start="175.9" data-duration="17" data-track-index="20" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="143.9" data-duration="17" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 66-67 -->
       <div id="levam" data-composition-id="levam" data-composition-src="compositions/levam.html"
-        data-start="192.9" data-duration="11" data-track-index="21" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="160.9" data-duration="11" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 68 -->
+      <div id="rua" data-composition-id="rua" data-composition-src="compositions/rua.html"
+        data-start="171.9" data-duration="8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 69 -->
+      <div id="van" data-composition-id="van" data-composition-src="compositions/van.html"
+        data-start="179.9" data-duration="8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 70-71 -->
       <div id="fim" data-composition-id="fim" data-composition-src="compositions/fim.html"
-        data-start="203.9" data-duration="7.5" data-track-index="22" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+        data-start="187.9" data-duration="7.5" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- efeitos sonoros (assets/sfx, créditos em assets/sfx/CREDITOS.md) -->
+      <audio id="sfx-00" class="clip" src="assets/sfx/cidade-noite.mp3" data-start="0" data-duration="5" data-track-index="10" data-volume="0.35" data-media-start="0.34" data-fade-in="0.8" data-fade-out="0.25"></audio> <!-- cidade à noite (planos 1-5) -->
+      <audio id="sfx-01" class="clip" src="assets/sfx/zumbido-grave.mp3" data-start="2" data-duration="3" data-track-index="11" data-volume="0.5" data-fade-in="1.5" data-fade-out="0.05"></audio> <!-- zumbido grave subliminar (5); some no FLASH -->
+      <audio id="sfx-02" class="clip" src="assets/sfx/boom.mp3" data-start="5.3" data-duration="6" data-track-index="12" data-volume="0.85" data-media-start="0.12" data-fade-out="2"></audio> <!-- BOOM — a onda (7) -->
+      <audio id="sfx-03" class="clip" src="assets/sfx/energia-cai.mp3" data-start="5.6" data-duration="4.39" data-track-index="13" data-volume="0.45" data-fade-out="0.8"></audio> <!-- energia sugada (8) -->
+      <audio id="sfx-04" class="clip" src="assets/sfx/vento-alto.mp3" data-start="8" data-duration="4" data-track-index="14" data-volume="0.3" data-fade-in="1" data-fade-out="1"></audio> <!-- vento de altitude (9-11) -->
+      <audio id="sfx-05" class="clip" src="assets/sfx/respiracao.mp3" data-start="12" data-duration="4.27" data-track-index="15" data-volume="0.35" data-fade-in="0.5" data-fade-out="0.6"></audio> <!-- respiração no preto (12-14) -->
+      <audio id="sfx-06" class="clip" src="assets/sfx/zumbido-ouvido.mp3" data-start="17.4" data-duration="2.6" data-track-index="16" data-volume="0.3" data-fade-in="0.3" data-fade-out="1.2"></audio> <!-- zunido ao revelar os olhos (15-16) -->
+      <audio id="sfx-07" class="clip" src="assets/sfx/respiracao.mp3" data-start="20.4" data-duration="4.27" data-track-index="17" data-volume="0.22" data-fade-in="0.6" data-fade-out="1"></audio> <!-- respiração tateando (17) -->
+      <audio id="sfx-08" class="clip" src="assets/sfx/queda-corpo.mp3" data-start="29.55" data-duration="0.35" data-track-index="18" data-volume="0.9"></audio> <!-- cai (20) -->
+      <audio id="sfx-09" class="clip" src="assets/sfx/vidro.mp3" data-start="29.75" data-duration="3.69" data-track-index="19" data-volume="0.6" data-fade-out="0.5"></audio> <!-- o abajur quebra (20) -->
+      <audio id="sfx-10" class="clip" src="assets/sfx/batimento.mp3" data-start="30.45" data-duration="5.5" data-track-index="20" data-volume="0.4" data-fade-in="0.5" data-fade-out="1"></audio> <!-- batimento começa (21) -->
+      <audio id="sfx-11" class="clip" src="assets/sfx/batimento.mp3" data-start="36" data-duration="2.2" data-track-index="21" data-volume="0.35" data-fade-in="0.2" data-fade-out="0.6"></audio> <!-- batimento sobe (25) -->
+      <audio id="sfx-12" class="clip" src="assets/sfx/mesa-cai.mp3" data-start="36.55" data-duration="2.48" data-track-index="22" data-volume="0.8" data-fade-out="0.3"></audio> <!-- varre a mesa (26) -->
+      <audio id="sfx-13" class="clip" src="assets/sfx/vidro.mp3" data-start="37.15" data-duration="1.6" data-track-index="23" data-volume="0.45" data-fade-out="0.5"></audio> <!-- o vaso na parede (27) -->
+      <audio id="sfx-14" class="clip" src="assets/sfx/baque.mp3" data-start="37.45" data-duration="1" data-track-index="24" data-volume="0.7" data-fade-out="0.3"></audio> <!-- chuta a cadeira (27) -->
+      <audio id="sfx-15" class="clip" src="assets/sfx/interruptor.mp3" data-start="49.75" data-duration="0.23" data-track-index="25" data-volume="0.6" data-media-start="0.13"></audio> <!-- clique do controle (33) -->
+      <audio id="sfx-16" class="clip" src="assets/sfx/tv-liga.mp3" data-start="49.8" data-duration="0.8" data-track-index="26" data-volume="0.3" data-media-start="1.13" data-fade-out="0.3"></audio> <!-- chiado da TV ligando (33) -->
+      <audio id="sfx-17" class="clip" src="assets/sfx/cortina.mp3" data-start="64.6" data-duration="2.5" data-track-index="27" data-volume="0.6" data-fade-out="0.6"></audio> <!-- o pai fecha a cortina (37) -->
+      <audio id="sfx-18" class="clip" src="assets/sfx/passos-pesados.mp3" data-start="69.3" data-duration="2.73" data-track-index="28" data-volume="0.35" data-fade-in="0.2" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:1400}}]}"></audio> <!-- passos na rua, abafados (39) -->
+      <audio id="sfx-19" class="clip" src="assets/sfx/radio-chiado.mp3" data-start="69.6" data-duration="4" data-track-index="29" data-volume="0.12" data-fade-in="0.3" data-fade-out="0.5" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:1800}}]}"></audio> <!-- chiado do rádio por baixo da voz (39) -->
+      <audio id="sfx-20" class="clip" src="assets/sfx/porta-carro.mp3" data-start="72.8" data-duration="0.31" data-track-index="30" data-volume="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:1600}}]}"></audio> <!-- portas da van batem, abafado (39) -->
+      <audio id="sfx-21" class="clip" src="assets/sfx/baque.mp3" data-start="72.8" data-duration="1" data-track-index="31" data-volume="0.3" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:1600}}]}"></audio> <!-- corpo da batida -->
+      <audio id="sfx-22" class="clip" src="assets/sfx/gas.mp3" data-start="90.5" data-duration="1.4" data-track-index="32" data-volume="0.5" data-fade-in="0.15"></audio> <!-- chiado do gás → corte seco (44) -->
+      <audio id="sfx-23" class="clip" src="assets/sfx/baque.mp3" data-start="97.9" data-duration="1.2" data-track-index="33" data-volume="0.8" data-fade-out="0.4"></audio> <!-- bate o ombro na quina (45) -->
+      <audio id="sfx-24" class="clip" src="assets/sfx/grilos.mp3" data-start="109.9" data-duration="8" data-track-index="34" data-volume="0.35" data-fade-in="0.6" data-fade-out="0.6"></audio> <!-- grilos (49-51) -->
+      <audio id="sfx-25" class="clip" src="assets/sfx/portao-batida.mp3" data-start="131.55" data-duration="1.2" data-track-index="35" data-volume="0.6" data-media-start="0.12" data-fade-out="0.2" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:1500}}]}"></audio> <!-- batida no portão de ferro, de fora (57) -->
+      <audio id="sfx-26" class="clip" src="assets/sfx/passos-saindo.mp3" data-start="136.8" data-duration="1.1" data-track-index="36" data-volume="0.3" data-media-start="0.55" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:1200}}]}"></audio> <!-- passos se afastando (60) -->
+      <audio id="sfx-27" class="clip" src="assets/sfx/sirene.mp3" data-start="143.9" data-duration="12.94" data-track-index="37" data-volume="0.4" data-media-start="0.32" data-fade-in="2.5" data-fade-out="2" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:1200}}]}"></audio> <!-- sirene abafada se aproximando (62) -->
+      <audio id="sfx-28" class="clip" src="assets/sfx/motor.mp3" data-start="147.4" data-duration="3.5" data-track-index="38" data-volume="0.45" data-fade-in="0.4" data-fade-out="0.3"></audio> <!-- a van chega (63) -->
+      <audio id="sfx-29" class="clip" src="assets/sfx/radio-chiado.mp3" data-start="149.3" data-duration="1.4" data-track-index="39" data-volume="0.3" data-fade-in="0.05" data-fade-out="0.3"></audio> <!-- rádio da equipe, só chiado (63) -->
+      <audio id="sfx-30" class="clip" src="assets/sfx/passos-pesados.mp3" data-start="149.5" data-duration="1.4" data-track-index="40" data-volume="0.4" data-fade-out="0.3"></audio> <!-- figuras descem (63) -->
+      <audio id="sfx-31" class="clip" src="assets/sfx/baque.mp3" data-start="151.25" data-duration="0.9" data-track-index="41" data-volume="0.85" data-fade-out="0.3"></audio> <!-- TUM (64) -->
+      <audio id="sfx-32" class="clip" src="assets/sfx/baque.mp3" data-start="151.6" data-duration="0.9" data-track-index="42" data-volume="0.85" data-fade-out="0.3"></audio> <!-- TUM -->
+      <audio id="sfx-33" class="clip" src="assets/sfx/baque.mp3" data-start="151.95" data-duration="1.2" data-track-index="43" data-volume="0.85" data-fade-out="0.4"></audio> <!-- TUM -->
+      <audio id="sfx-34" class="clip" src="assets/sfx/baque.mp3" data-start="154.9" data-duration="1" data-track-index="44" data-volume="0.7" data-fade-out="0.4"></audio> <!-- mais uma batida enquanto o agente fala (65) -->
+      <audio id="sfx-35" class="clip" src="assets/sfx/baque.mp3" data-start="161.45" data-duration="0.9" data-track-index="45" data-volume="0.85" data-fade-out="0.3"></audio> <!-- empurram a porta (66) -->
+      <audio id="sfx-36" class="clip" src="assets/sfx/baque.mp3" data-start="161.9" data-duration="0.9" data-track-index="46" data-volume="0.85" data-fade-out="0.3"></audio> <!-- empurram a porta -->
+      <audio id="sfx-37" class="clip" src="assets/sfx/porta-arrombada.mp3" data-start="162.4" data-duration="1.05" data-track-index="47" data-volume="0.9" data-fade-out="0.2"></audio> <!-- a porta arrebenta (66) -->
+      <audio id="sfx-38" class="clip" src="assets/sfx/baque.mp3" data-start="162.4" data-duration="1.2" data-track-index="48" data-volume="0.6" data-fade-out="0.5"></audio> <!-- baque da porta -->
+      <audio id="sfx-39" class="clip" src="assets/sfx/passos-pesados.mp3" data-start="162.6" data-duration="1.4" data-track-index="49" data-volume="0.4" data-fade-out="0.3"></audio> <!-- os agentes entram -->
+      <audio id="sfx-40" class="clip" src="assets/sfx/motor.mp3" data-start="171.9" data-duration="8" data-track-index="50" data-volume="0.3" data-fade-in="0.5" data-fade-out="0.5"></audio> <!-- a van na rua (68) -->
+      <audio id="sfx-41" class="clip" src="assets/sfx/radio-chiado.mp3" data-start="172.5" data-duration="2" data-track-index="51" data-volume="0.15" data-fade-in="0.2" data-fade-out="0.5"></audio> <!-- rádio da equipe -->
+      <audio id="sfx-42" class="clip" src="assets/sfx/porta-carro.mp3" data-start="185.1" data-duration="0.31" data-track-index="52" data-volume="0.9"></audio> <!-- a porta da van bate — clangor (69) -->
+      <audio id="sfx-43" class="clip" src="assets/sfx/baque.mp3" data-start="185.1" data-duration="1.6" data-track-index="53" data-volume="0.7" data-fade-out="0.6"></audio> <!-- clangor metálico -->
+      <audio id="sfx-44" class="clip" src="assets/sfx/motor.mp3" data-start="185.3" data-duration="2.6" data-track-index="54" data-volume="0.3" data-fade-in="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:900}}]}"></audio> <!-- a van sai -->
+      <audio id="sfx-45" class="clip" src="assets/sfx/motor.mp3" data-start="187.9" data-duration="3.6" data-track-index="55" data-volume="0.25" data-fade-out="3" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;abafado&quot;,&quot;params&quot;:{&quot;frequency&quot;:700}}]}"></audio> <!-- tudo abafa (70) -->
     </div>
     <script>
       window.__timelines = window.__timelines || {};

@@ -1,0 +1,262 @@
+{
+ "interruptor": {
+  "arquivo": "interruptor.mp3",
+  "titulo": "Light Switch Turn Off Sound",
+  "autor": "ChrisTutorials",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/ChrisTutorials/sounds/440499",
+  "duracao": 0.36,
+  "busca": "light switch"
+ },
+ "zumbido-grave": {
+  "arquivo": "zumbido-grave.mp3",
+  "titulo": "Low tension buildup.wav",
+  "autor": "juskiddink",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/juskiddink/sounds/117129",
+  "duracao": 28.02,
+  "busca": "low rumble drone"
+ },
+ "boom": {
+  "arquivo": "boom.mp3",
+  "titulo": "Booms.wav",
+  "autor": "studiomandragore",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/studiomandragore/sounds/401630",
+  "duracao": 7.49,
+  "busca": "explosion boom"
+ },
+ "energia-cai": {
+  "arquivo": "energia-cai.mp3",
+  "titulo": "Power Down",
+  "autor": "peepholecircus",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/peepholecircus/sounds/169994",
+  "duracao": 4.4,
+  "busca": "power down"
+ },
+ "vento-alto": {
+  "arquivo": "vento-alto.mp3",
+  "titulo": "Wind Howl 4 inch Pipe.wav",
+  "autor": "Takkyi",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/Takkyi/sounds/543809",
+  "duracao": 7.68,
+  "busca": "wind howling"
+ },
+ "respiracao": {
+  "arquivo": "respiracao.mp3",
+  "titulo": "Heavy Breathing",
+  "autor": "Under7dude",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/Under7dude/sounds/163383",
+  "duracao": 4.27,
+  "busca": "heavy breathing"
+ },
+ "queda-corpo": {
+  "arquivo": "queda-corpo.mp3",
+  "titulo": "Body Fall Over.wav",
+  "autor": "raubana",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/raubana/sounds/82027",
+  "duracao": 0.35,
+  "busca": "body fall"
+ },
+ "mesa-cai": {
+  "arquivo": "mesa-cai.mp3",
+  "titulo": "object falls (5).wav",
+  "autor": "FreqMan",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/FreqMan/sounds/43603",
+  "duracao": 2.48,
+  "busca": "objects falling crash"
+ },
+ "tv-liga": {
+  "arquivo": "tv-liga.mp3",
+  "titulo": "TV Static",
+  "autor": "mrbriandesign",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/mrbriandesign/sounds/160615",
+  "duracao": 9.18,
+  "busca": "tv static"
+ },
+ "cortina": {
+  "arquivo": "cortina.mp3",
+  "titulo": "Curtains Opening or Closing.wav",
+  "autor": "RutgerMuller",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/RutgerMuller/sounds/51137",
+  "duracao": 4.22,
+  "busca": "curtain"
+ },
+ "radio-chiado": {
+  "arquivo": "radio-chiado.mp3",
+  "titulo": "FM Radio Static",
+  "autor": "caculo",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/caculo/sounds/347039",
+  "duracao": 6.75,
+  "busca": "radio static"
+ },
+ "porta-carro": {
+  "arquivo": "porta-carro.mp3",
+  "titulo": "Car Door Slam",
+  "autor": "mandymatz",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/mandymatz/sounds/424031",
+  "duracao": 0.31,
+  "busca": "car door slam"
+ },
+ "baque": {
+  "arquivo": "baque.mp3",
+  "titulo": "thud bassy slam.aiff",
+  "autor": "kyles",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/kyles/sounds/51817",
+  "duracao": 2.04,
+  "busca": "thud"
+ },
+ "passos-saindo": {
+  "arquivo": "passos-saindo.mp3",
+  "titulo": "Footsteps on Wooden Floor.aif",
+  "autor": "ftpalad",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/ftpalad/sounds/119914",
+  "duracao": 5.8,
+  "busca": "footsteps"
+ },
+ "sirene": {
+  "arquivo": "sirene.mp3",
+  "titulo": "Police siren",
+  "autor": "sofialomba",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/sofialomba/sounds/469411",
+  "duracao": 13.26,
+  "busca": "police siren"
+ },
+ "motor": {
+  "arquivo": "motor.mp3",
+  "titulo": "Truck Engine Idle Loops.flac",
+  "autor": "qubodup",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/qubodup/sounds/187564",
+  "duracao": 38.02,
+  "busca": "engine idle"
+ },
+ "porta-arrombada": {
+  "arquivo": "porta-arrombada.mp3",
+  "titulo": "Smash.ogg",
+  "autor": "egomassive",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/egomassive/sounds/536777",
+  "duracao": 1.05,
+  "busca": "door break"
+ },
+ "passos-pesados": {
+  "arquivo": "passos-pesados.mp3",
+  "titulo": "Hiking Boot Footsteps on Gravel",
+  "autor": "Fission9",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/Fission9/sounds/521588",
+  "duracao": 2.73,
+  "busca": "boots footsteps"
+ },
+ "batidas-porta": {
+  "arquivo": "batidas-porta.mp3",
+  "titulo": "wood hammer, gavel, knock, pound, jury, court.mp3",
+  "autor": "JohnsonBrandEditing",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/JohnsonBrandEditing/sounds/173941",
+  "duracao": 3.61,
+  "busca": "pounding"
+ },
+ "cidade-noite": {
+  "arquivo": "cidade-noite.mp3",
+  "titulo": "Night city atmosphere",
+  "autor": "Soundkrampf",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/Soundkrampf/sounds/237329",
+  "duracao": 67.72,
+  "busca": "city"
+ },
+ "grilos": {
+  "arquivo": "grilos.mp3",
+  "titulo": "crickets",
+  "autor": "FreethinkerAnon",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/FreethinkerAnon/sounds/129678",
+  "duracao": 15.59,
+  "busca": "cricket"
+ },
+ "vidro": {
+  "arquivo": "vidro.mp3",
+  "titulo": "Glass Shattering and Falling",
+  "autor": "221Beimesche",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/221Beimesche/sounds/336425",
+  "duracao": 3.7,
+  "busca": "glass shatter"
+ },
+ "zumbido-ouvido": {
+  "arquivo": "zumbido-ouvido.mp3",
+  "titulo": "Tinnitus",
+  "autor": "Klangkobold",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/Klangkobold/sounds/455304",
+  "duracao": 10,
+  "busca": "tinnitus ear ringing"
+ },
+ "batimento": {
+  "arquivo": "batimento.mp3",
+  "titulo": "Heartbeat.",
+  "autor": "urupin",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/urupin/sounds/92036",
+  "duracao": 0.3,
+  "busca": "heartbeat"
+ },
+ "gas": {
+  "arquivo": "gas.mp3",
+  "titulo": "Blow Torch Version_1",
+  "autor": "DRFX",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/DRFX/sounds/347447",
+  "duracao": 5.9,
+  "busca": "gas stove burner ignition"
+ },
+ "portao-batida": {
+  "arquivo": "portao-batida.mp3",
+  "titulo": "Knock knock on gate or door",
+  "autor": "deleted_user_746442",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/deleted_user_746442/sounds/623201",
+  "duracao": 3.8,
+  "busca": "metal gate knocking"
+ }
+}

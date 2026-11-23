@@ -8,3 +8,6 @@ __pycache__/
 
 # vídeos renderizados (saída, regenerável)
 renders/
+
+# ledger/cache do media-use (os efeitos usados ficam em assets/sfx)
+.media/

@@ -260,10 +260,7 @@
       const cam = new THREE.PerspectiveCamera(34, 1920 / 1080, 0.1, 60);
       const CAM_A = [4.6, 2.35, 5.4], CAM_B = [3.4, 2.05, 3.7], ALVO = [-0.9, 1.35, -1.35];
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-      renderer.setPixelRatio(1); renderer.setSize(1920, 1080);
-      renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      document.getElementById("q-stage").appendChild(renderer.domElement);
+      const renderer = Cena.renderer("q-stage");   // mesmo ajuste de antes (1920x1080, sombras suaves), renderer compartilhado
       const pos = Pos.criar(renderer, 1920, 1080);
 
       const estado = { t: 0 };
