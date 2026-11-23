@@ -11,3 +11,7 @@ renders/
 
 # ledger/cache do media-use (os efeitos usados ficam em assets/sfx)
 .media/
+
+# caches do Studio (preview)
+.thumbnails/
+.waveform-cache/
