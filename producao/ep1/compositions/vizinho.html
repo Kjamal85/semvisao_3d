@@ -1,0 +1,193 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #vz-stage { position: absolute; inset: 0; z-index: 0; }
+    #vz-stage canvas { display: block; }
+    /* a fresta: as duas bandas da cortina, bem perto da câmera (fora de foco) */
+    #vz-fresta { position: absolute; inset: -40px; z-index: 1; opacity: 0; filter: blur(14px); }
+    #vz-fresta .banda { position: absolute; top: 0; bottom: 0;
+      background: repeating-linear-gradient(90deg, #8a7b60 0 70px, #625743 70px 120px, #7a6c54 120px 170px); }
+    #vz-fresta .esq { left: 0; width: 34%; box-shadow: 30px 0 40px rgba(0,0,0,.55); }
+    #vz-fresta .dir { right: 0; width: 34%; box-shadow: -30px 0 40px rgba(0,0,0,.55); }
+    #vz-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #vz-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="vizinho" data-width="1920" data-height="1080">
+    <div id="vz-stage" class="clip" data-start="0" data-duration="10" data-track-index="0"></div>
+    <div id="vz-fresta" class="clip" data-start="0" data-duration="10" data-track-index="1"><div class="banda esq"></div><div class="banda dir"></div></div>
+    <div id="vz-rotulo" class="clip" data-start="0" data-duration="10" data-track-index="2">CENA — O VIZINHO<small>o pai espia pela fresta · a van leva o vizinho · o rádio · planos 38–41</small></div>
+    <audio id="vz-radio" class="clip" src="voz/audio/c05-radio-01.wav" data-start="2.2" data-duration="3.79" data-track-index="3" data-volume="0.8"></audio>
+  </div>
+  <script>
+    (function () {
+      const DUR = 10, C1 = 1.6, C2 = 6.2, C3 = 7.8, BATE = 5.3;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
+      const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z), E = (x, y, z) => new THREE.Euler(x, y, z);
+      const frestaEl = document.getElementById("vz-fresta");
+      const [bandaE, bandaD] = frestaEl.querySelectorAll(".banda");
+      const expr = (g, n) => { if (g.userData.rig.ficha.expr !== n) Elenco.expressao(g, n); };
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+
+      // ======================= SALA (cortina fechada; TV desligada) =======================
+      const sala = new THREE.Group();
+      const SL = Cenarios.sala(sala);
+      const { k, Z0, JX0, JX1, JY1, SX, SZ, SEAT } = SL;
+      // cortina FECHADA na frente da janela (o pai a fechou no plano 37), com a fresta em x = GX
+      const GX = 1.25, CZ = Z0 + 0.3;
+      const banda = (x0, x1) => { const g = new THREE.Group(); sala.add(g); for (let x = x0; x < x1; x += 0.11) k.cil(0.07, 0.085, JY1 + 0.3, 0xd9c7a3, x + 0.055, (JY1 + 0.3) / 2, CZ + (Math.round(x * 9) % 2) * 0.04, { seg: 10, contorno: false, pai: g }); return g; };
+      banda(JX0 - 0.75, GX - 0.02);
+      const bandaDir = banda(GX + 0.02, JX1 + 0.75);
+      // o pai na janela, a mão abrindo a fresta
+      const pai = Elenco.build("pai", { expr: "medo" }); sala.add(pai); const rp = pai.userData.rig;
+      pai.position.set(GX + 0.3, 0, Z0 + 0.95); pai.rotation.set(0, Math.PI + 0.3, 0);   // meio virado para a câmera, do lado da cortina
+      sala.updateMatrixWorld(true);
+      const solto = guarda(rp.aL);
+      Elenco.alcancar(pai, "dir", V(GX + 0.08, 1.95, CZ + 0.08), { foraDoCorpo: true }); const puxa = guarda(rp.aL);
+      rp.aR.sh.rotation.set(-0.1, 0, 0.12); rp.aR.el.rotation.set(-0.3, 0, 0);
+      // o Gabi no sofá (de frente para a TV desligada)
+      const gabi = Elenco.build("gabi", { blind: true, expr: "triste", pose: "sentado" });
+      gabi.position.set(SX - 0.05, SEAT + 0.1 - 1.075, SZ + 0.55); gabi.rotation.y = -Math.PI / 2; sala.add(gabi);
+      const rg = gabi.userData.rig;
+      rg.aL.sh.rotation.set(-0.55, 0, 0.05); rg.aL.el.rotation.x = -1.2; rg.aR.sh.rotation.set(-0.55, 0, -0.05); rg.aR.el.rotation.x = -1.2;
+      Elenco.cabeca(gabi, 0.18, 0.3, 0.05);
+
+      const cenaSala = new THREE.Scene();
+      cenaSala.background = new THREE.Color(0x1a1d24);
+      cenaSala.fog = new THREE.Fog(0x6d7684, 11, 30);
+      cenaSala.add(sala);
+      cenaSala.add(new THREE.HemisphereLight(0xa7b4c6, 0x5a4c3e, 1.35));
+      const filtro = new THREE.DirectionalLight(0xe6e9ef, 0.9); filtro.position.set(1.2, 6.5, -11); cenaSala.add(filtro);   // luz coada pela cortina
+      // a faixa de luz da fresta: um feixe estreito que corta o rosto do pai
+      const faixa = new THREE.SpotLight(0xf2f4f8, 0, 9, 0.05, 0.3, 1.0);
+      faixa.position.set(GX, 2.3, Z0 - 3.0); faixa.target.position.set(GX + 0.1, 2.15, Z0 + 1.0);
+      cenaSala.add(faixa); cenaSala.add(faixa.target);
+      const preench = new THREE.PointLight(0xdfe4ee, 1.2, 4, 1.5); preench.position.set(GX + 1.0, 2.6, Z0 + 1.6); cenaSala.add(preench);
+
+      // ======================= RUA, vista da fresta (escala real) =======================
+      const rua = new THREE.Group();
+      const kr = Cena.kit(rua, 38039);
+      const luzM = (c) => new THREE.MeshBasicMaterial({ color: c });
+      kr.box(60, 0.06, 6, 0x34363c, 0, -0.03, -8.5, { contorno: false, sombra: false });                 // asfalto
+      for (let i = -8; i <= 8; i++) kr.box(1.2, 0.01, 0.12, 0xd9d2b0, i * 2.6, 0.005, -8.5, { contorno: false, sombra: false });
+      for (const [z0, z1] of [[-5.5, -3.5], [-12.6, -11.5]]) kr.box(60, 0.16, z1 - z0, 0xa9a59c, 0, 0.08, (z0 + z1) / 2, { contorno: false });
+      kr.box(60, 0.04, 4, 0x56664a, 0, -0.05, -1.6, { contorno: false, sombra: false });                // nosso quintal
+      kr.box(60, 1.25, 0.2, 0xd8d2c6, 0, 0.62, -3.5, { contorno: false });                              // nosso muro baixo
+      kr.box(60, 0.04, 30, 0x3e4a36, 0, -0.07, -25, { contorno: false, sombra: false });
+      // casas do outro lado; a do vizinho no meio, porta e portão abertos
+      const PAREDES = [0xd9c7a3, 0xa9c2b5, 0xe2d6b8, 0xc98f7a, 0xb8b9c9];
+      function casa(x, cor, aberta) {
+        const g = new THREE.Group(); g.position.set(x, 0, -15.5); rua.add(g);
+        kr.box(5.6, 3.2, 5, cor, 0, 1.6, -2.5, { pai: g });
+        for (const s of [-1, 1]) kr.box(6.1, 0.15, 3.1, 0x8e4b3c, 0, 3.75, -2.5 + s * 1.35, { pai: g, r: [s * 0.42, 0, 0] });
+        kr.box(0.95, 2.1, 0.08, aberta ? 0x1a1a1e : 0x5a3d2c, -1.2, 1.05, 0.02, { pai: g });
+        kr.box(1.3, 1.0, 0.06, 0x2c3442, 1.3, 1.75, 0.03, { pai: g });
+        kr.box(5.6 / 2 - 0.6, 1.25, 0.2, cor, -2.8 + (5.6 / 2 - 0.6) / 2 - 0.55 + 0.6 - 0.6, 0.62, 2.9, { pai: g });
+        kr.box(5.6 / 2 - 0.65, 1.25, 0.2, cor, 1.2 + 0.35, 0.62, 2.9, { pai: g });
+        const portao = new THREE.Group(); portao.position.set(-1.75, 0, 2.9); portao.rotation.y = aberta ? 1.3 : 0; g.add(portao);
+        for (let i = 0; i < 8; i++) kr.box(0.03, 1.05, 0.03, 0x22242a, 0.08 + i * 0.135, 0.65, 0, { pai: portao, contorno: false });
+        kr.box(1.1, 0.05, 0.05, 0x22242a, 0.55, 1.15, 0, { pai: portao, contorno: false });
+        for (let i = 0; i < 3; i++) kr.bolha(0.4, 0x3f6a3a, 1.2 + i * 0.7, 0.35, 1.5, [1, 0.8, 1], { pai: g });
+      }
+      casa(-6.4, PAREDES[1], false); casa(0, PAREDES[3], true); casa(6.4, PAREDES[2], false); casa(12.8, PAREDES[4], false); casa(-12.8, PAREDES[0], false);
+      // a van da quarentena, parada do lado de lá, portas de trás abertas
+      const van = new THREE.Group(); van.position.set(-5.7, 0, -10.2); van.rotation.y = Math.PI; rua.add(van);   // traseira virada para o portão do vizinho
+      const BR = 0xeef0ee;
+      kr.box(5.0, 2.1, 2.1, BR, 0, 1.45, 0, { pai: van }); kr.box(1.3, 1.5, 2.05, BR, 3.05, 1.15, 0, { pai: van });
+      kr.box(0.6, 0.75, 1.9, 0x2a3442, 3.45, 1.55, 0, { pai: van, contorno: false, r: [0, 0, -0.35] });
+      for (const [sx, sz] of [[-1.7, -1.0], [1.7, -1.0], [-1.7, 1.0], [2.9, 1.0], [2.9, -1.0]]) kr.cil(0.42, 0.42, 0.25, 0x18181c, sx, 0.42, sz, { pai: van, r: [Math.PI / 2, 0, 0], seg: 16 });
+      for (let i = 0; i < 10; i++) kr.box(0.5, 0.25, 0.02, i % 2 ? 0x1b1b20 : 0xe8b923, -2.25 + i * 0.5, 0.75, 1.06, { pai: van, contorno: false, r: [0, 0, 0.5] });
+      const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 256; const g2 = cv.getContext("2d");
+      g2.fillStyle = "#c8102e"; g2.fillRect(0, 0, 1024, 256); g2.fillStyle = "#fff"; g2.font = "bold 120px sans-serif"; g2.fillText("ISOLAMENTO", 60, 170);
+      const placa = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.9), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv) }));
+      placa.material.map.colorSpace = THREE.SRGBColorSpace; placa.position.set(0, 1.85, 1.06); van.add(placa);
+      kr.box(0.05, 1.9, 2.0, 0x0b0c10, -2.5, 1.45, 0, { pai: van, contorno: false });
+      const portasVan = [];
+      for (const s of [-1, 1]) { const pt = new THREE.Group(); pt.position.set(-2.52, 0, s * 1.0); van.add(pt); kr.box(0.06, 1.95, 1.0, BR, 0, 1.45, -s * 0.5, { pai: pt }); portasVan.push({ pt, s }); }
+      const giroA = kr.box(0.5, 0.18, 0.4, 0, 2.6, 2.65, -0.45, { pai: van, mat: luzM(0x3a6bff) });
+      const giroV = kr.box(0.5, 0.18, 0.4, 0, 2.6, 2.65, 0.45, { pai: van, mat: luzM(0xff2a2a) });
+      // o vizinho (cego, de pijama) arrastado por dois agentes; um terceiro na porta da van
+      const viz = Elenco.build("pai", { nome: "Vizinho", alt: 1.0, larg: 1.05, pele: 0xd9b08c, cabelo: 0xb9b6b0, cabeloEstilo: "crespo", barba: false, roupa: 0x7c6a9a, calca: 0x7c6a9a, sapato: 0x8a7a6a, blind: true, expr: "grito" });
+      rua.add(viz); const rv = viz.userData.rig;
+      const ag1 = Elenco.build("agente"); rua.add(ag1);
+      const ag2 = Elenco.build("agente"); rua.add(ag2);
+      const ag3 = Elenco.build("agente"); ag3.position.set(-2.7, 0, -9.0); ag3.rotation.y = 2.4; rua.add(ag3);
+      const P0 = V(-1.25, 0.16, -12.7), P1 = V(-2.6, 0, -10.5);          // do portão dele até a traseira da van
+      const cenaRua = new THREE.Scene();
+      cenaRua.background = new THREE.Color(0xc9d3de);
+      cenaRua.fog = new THREE.Fog(0xb9c3ce, 14, 42);
+      cenaRua.add(rua);
+      cenaRua.add(new THREE.HemisphereLight(0xdfe6ef, 0x5a5044, 2.2));
+      const solR = new THREE.DirectionalLight(0xf2f2ee, 1.8); solR.position.set(-8, 14, 6); solR.castShadow = true; solR.shadow.mapSize.set(2048, 2048); solR.shadow.bias = -0.0008;
+      Object.assign(solR.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 50 }); cenaRua.add(solR);
+
+      const cam = new THREE.PerspectiveCamera(36, 1920 / 1080, 0.05, 120);
+      const renderer = Cena.renderer("vz-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+
+      function render() {
+        const t = estado.t;
+        // a fresta: abre em C1-0,3 e fecha em C2+0,9 (quando o pai solta a cortina)
+        const abre = S((t - 0.6) / 0.6) * (1 - S((t - C2 - 0.7) / 0.5));
+        bandaDir.position.x = 0.14 * abre;
+        mistura(rp.aL, solto, puxa, S((t - 0.2) / 0.5) * (1 - S((t - C2 - 0.7) / 0.5)));
+        faixa.intensity = 22 * abre;
+        Elenco.mao(pai, "dir", "segura", S((t - 0.4) / 0.4) * (1 - S((t - C2 - 0.7) / 0.5)));
+        expr(pai, t < C2 + 0.4 ? "medo" : "firme");                         // o rosto se fecha
+        const olhaGabi = S((t - C3 - 0.2) / 0.8);
+        Elenco.cabeca(pai, 0.04, -0.15 + 1.15 * olhaGabi, 0, Math.sin(t * 2 * Math.PI * 0.4) * 0.008);
+        Elenco.cabeca(gabi, 0.1, 0.3 - 1.2 * S((t - C3 - 0.4) / 0.8), 0.05, Math.sin(t * 2 * Math.PI * 0.3) * 0.008);   // vira para o som do pai
+        frestaEl.style.opacity = t >= C1 && t < C2 ? 1 : 0;
+        let cena, alvo;
+        if (t >= C1 && t < C2) {
+          // ---- POV pela fresta ----
+          const u = (t - C1) / (C2 - C1), arr = S((t - C1 - 0.2) / 2.6), entra = S((t - 4.4) / 0.5);
+          const pos3 = P0.clone().lerp(P1, arr);
+          viz.position.set(pos3.x - 0.7 * entra, 0.16 * (1 - arr), pos3.z + 0.1 * entra);
+          viz.rotation.set(-0.25, -0.6 + Math.sin(t * 6) * 0.15, 0);                 // puxado de costas, se debatendo
+          viz.visible = t < 4.9;
+          rv.pL.hip.rotation.set(-0.5 + Math.sin(t * 7) * 0.3, 0, 0); rv.pR.hip.rotation.set(0.3 - Math.sin(t * 7) * 0.3, 0, 0);
+          rv.pL.knee.rotation.set(0.5, 0, 0); rv.pR.knee.rotation.set(0.7, 0, 0);
+          rv.aL.sh.rotation.set(-0.6, 0, -0.6); rv.aR.sh.rotation.set(-0.6, 0, 0.6);
+          Elenco.cabeca(viz, -0.15 + Math.sin(t * 5) * 0.08, Math.sin(t * 3.3) * 0.4, 0);
+          for (const [ag, s] of [[ag1, 1], [ag2, -1]]) {
+            ag.visible = t < 4.95;
+            ag.position.set(viz.position.x + s * 0.75, 0.16 * (1 - arr), viz.position.z + 0.35);
+            ag.rotation.y = -2.3 + s * 0.3;
+            const r = ag.userData.rig; r.aL.sh.rotation.set(-1.2, 0, s * 0.5); r.aR.sh.rotation.set(-1.2, 0, -s * 0.5);
+            const passo = Math.sin(t * 8 + s) * 0.35; r.pL.hip.rotation.set(passo, 0, 0); r.pR.hip.rotation.set(-passo, 0, 0);
+          }
+          // portas da van: abertas; batem em BATE
+          const fecha = S((t - BATE + 0.25) / 0.25);
+          for (const { pt, s } of portasVan) pt.rotation.y = s * 2.75 * (1 - fecha);
+          ag3.visible = true;
+          const fase = (t * 2.2) % 1, azul = (Math.floor(t * 2.2) % 2) === 0, pisca = fase < 0.18 || (fase > 0.3 && fase < 0.46);
+          giroA.material.color.setHex(azul && pisca ? 0x6f95ff : 0x1a2650); giroV.material.color.setHex(!azul && pisca ? 0xff5a5a : 0x501a1a);
+          // a fresta treme com a mão dele
+          const tx = Math.sin(t * 13) * 6 + Math.sin(t * 7.1) * 4;
+          bandaE.style.transform = `translateX(${tx}px)`; bandaD.style.transform = `translateX(${tx * 0.6}px)`;
+          cam.fov = 30; cam.position.set(1.0 + Math.sin(t * 0.9) * 0.03, 2.1, 0.4); alvo = V(-2.7, 1.25, -11.0);
+          cena = cenaRua;
+        } else {
+          cena = cenaSala;
+          if (t < C1) { cam.fov = 48; cam.position.set(-0.25, 2.4, Z0 + 0.38); alvo = V(GX + 0.2, 2.2, Z0 + 0.85); }
+          else if (t < C3) { cam.fov = 46; const v = S((t - C2) / 1.6); cam.position.set(-0.45 + 0.15 * v, 2.5, Z0 + 0.36); alvo = V(GX + 0.3, 2.35, Z0 + 0.95); }
+          else { cam.fov = 38; cam.position.set(-0.35, 2.35, Z0 + 1.4); alvo = V(SX - 0.1, 1.55, SZ + 0.55); }   // quase o olhar do pai: o Gabi vira para ele
+        }
+        cam.updateProjectionMatrix(); cam.lookAt(alvo);
+        const pico = Math.max(0, 1 - Math.abs(t - BATE) / 0.3);
+        pos.render(cena, cam, t, { grao: LOOK.grao + 0.1 * pico, fumaca: LOOK.fumaca, dessat: LOOK.dessat });
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["vizinho"] = tl;
+      render();
+    })();
+  </script>
+</template>
