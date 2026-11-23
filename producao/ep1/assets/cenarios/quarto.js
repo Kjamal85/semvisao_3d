@@ -64,9 +64,11 @@
       box(0.9, 0.95, 0.75, 0x6e4c37, NX, 0.475, NZ);
       box(0.82, 0.02, 0.02, 0x3a271c, NX, 0.62, NZ + 0.38, { contorno: false });
       cil(0.03, 0.03, 0.02, 0xc9a86a, NX, 0.75, NZ + 0.39, { r: [Math.PI / 2, 0, 0], contorno: false, seg: 10 });
-      cil(0.12, 0.15, 0.06, 0x2e3036, NX - 0.22, 0.98, NZ - 0.08);                              // abajur: base
-      cil(0.02, 0.02, 0.5, 0x2e3036, NX - 0.22, 1.25, NZ - 0.08, { seg: 8 });
-      cil(0.14, 0.26, 0.3, 0xe7dcc4, NX - 0.22, 1.55, NZ - 0.08);                               // cúpula (apagada)
+      // abajur em grupo (pivô na base) para poder cair; mesma forma e posição do quarto aprovado
+      const abajur = new THREE.Group(); abajur.position.set(NX - 0.22, 0.95, NZ - 0.08); raiz.add(abajur);
+      cil(0.12, 0.15, 0.06, 0x2e3036, 0, 0.03, 0, { pai: abajur });                              // abajur: base
+      cil(0.02, 0.02, 0.5, 0x2e3036, 0, 0.3, 0, { seg: 8, pai: abajur });
+      cil(0.14, 0.26, 0.3, 0xe7dcc4, 0, 0.6, 0, { pai: abajur });                                // cúpula (apagada)
       const vidro = new THREE.MeshToonMaterial({ color: 0xcfe3ef, gradientMap: k.grad, transparent: true, opacity: 0.55 });
       cil(0.06, 0.05, 0.2, 0, NX + 0.12, 1.05, NZ + 0.18, { mat: vidro });                       // copo d'água
       const agua = new THREE.MeshToonMaterial({ color: 0x8fb4cf, gradientMap: k.grad, transparent: true, opacity: 0.6 });
@@ -157,7 +159,7 @@
       box(0.75, 3.2, 1.6, 0x7d5d44, X0 + 0.4, 1.6, 1.65);
       box(0.02, 3.0, 0.02, 0x3a271c, X0 + 0.785, 1.6, 1.65, { contorno: false });
       for (const s of [-1, 1]) box(0.04, 0.3, 0.04, 0xc9a86a, X0 + 0.8, 1.6, 1.65 + s * 0.1, { contorno: false });
-    return { k, X0, X1, Z0, Z1, H, WZ0, WZ1, WY0, WY1, BX, BZ0, BZ1, BW, MT, BZ, NX, NZ, visor, brilhoR, fone, rnd };
+    return { k, X0, X1, Z0, Z1, H, WZ0, WZ1, WY0, WY1, BX, BZ0, BZ1, BW, MT, BZ, NX, NZ, visor, brilhoR, fone, abajur, rnd };
   }
   window.Cenarios = Object.assign(window.Cenarios || {}, { quarto });
 })();

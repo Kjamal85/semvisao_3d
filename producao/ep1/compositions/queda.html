@@ -1,0 +1,186 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #qd-stage { position: absolute; inset: 0; z-index: 0; }
+    #qd-stage canvas { display: block; }
+    #qd-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #qd-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="queda" data-width="1920" data-height="1080">
+    <div id="qd-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+    <div id="qd-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">CENA — A QUEDA<small>tropeça no lençol · o abajur quebra · o fone · "Gabi!" · planos 18–22</small></div>
+    <audio id="qd-mae" class="clip" src="voz/audio/c02-mae-01.wav" data-start="4.3" data-duration="0.73" data-track-index="2" data-volume="1"></audio>
+  </div>
+  <script>
+    (function () {
+      const DUR = 8, TROPECA = 1.35, CORTE = 2.45, ACHA = 3.0, CHEGA = 4.1, SEGURA = 5.1, AGARRA = 5.9;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
+      const S = Cena.suave;
+      const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+      const sala = new THREE.Group();
+      const Q = Cenarios.quarto(sala);
+      const { k, X0, BX, BW, BZ0, MT, NX, NZ, abajur, fone } = Q;
+      const LADO = BX + BW / 2;                                  // lateral da cama (x = -0,75)
+
+      // ---------- abajur quebrado no chão (aparece depois do corte) ----------
+      const quebrado = new THREE.Group(); sala.add(quebrado);
+      const cup = k.cil(0.14, 0.26, 0.3, 0xe7dcc4, 0.42, 0.2, -1.55, { pai: quebrado, r: [0, 0.4, 1.35] });   // cúpula tombada
+      k.cil(0.12, 0.15, 0.06, 0x2e3036, 0.75, 0.08, -1.85, { pai: quebrado, r: [1.2, 0, 0.3] });               // base
+      k.cil(0.02, 0.02, 0.5, 0x2e3036, 0.62, 0.03, -1.72, { pai: quebrado, r: [0, 0.9, Math.PI / 2], seg: 8 });
+      const cacos = Cena.prng(18);
+      for (let i = 0; i < 14; i++) {                                                                         // cacos da lâmpada
+        const a = cacos() * Math.PI * 2, r = 0.15 + cacos() * 0.45;
+        k.box(0.03 + cacos() * 0.05, 0.01, 0.02 + cacos() * 0.04, 0xdfe9ee, 0.5 + Math.cos(a) * r, 0.006, -1.6 + Math.sin(a) * r * 0.7, { pai: quebrado, r: [0, cacos() * 3, 0], contorno: false, sombra: false });
+      }
+      // ---------- o lençol enrolado nos pés (plano 1) ----------
+      const lencol = new THREE.Group(); sala.add(lencol);
+      k.bolha(0.32, 0xd8d4cb, LADO - 0.15, MT - 0.05, -0.75, [1.2, 0.35, 1.0], { pai: lencol, r: [0, 0, 0.6] });   // escorre da cama
+      const laco = k.bolha(0.24, 0xd8d4cb, 0, 0.12, 0, [1.3, 0.55, 1.1], { pai: lencol });                         // nos tornozelos
+
+      // ---------- o Gabi ----------
+      const gabi = Elenco.build("gabi", { blind: true, expr: "medo" });
+      gabi.rotation.order = "YXZ";
+      sala.add(gabi);
+      const rg = gabi.userData.rig;
+      const P0 = V(-0.3, 0, -0.55), RY = Math.atan2(NX - 0.22 - P0.x, NZ - P0.z);   // virado para o criado-mudo
+      // plano 2: sentado no chão, encostado na lateral da cama, pernas esticadas, virado para +x
+      const CH = V(LADO + 0.33, 0.12 - 1.075, -0.95);
+      // ---------- a mãe e o pai ----------
+      const mae = Elenco.build("mae", { expr: "grito" }); sala.add(mae); const rm = mae.userData.rig;
+      const pai = Elenco.build("pai", { expr: "medo" }); sala.add(pai); const rp = pai.userData.rig;
+      const MK = V(CH.x + 1.05, 0, CH.z + 0.1);                 // onde ela ajoelha, de frente para ele
+
+      // poses calculadas com todos já no lugar final do plano 2
+      function noChao() {
+        gabi.position.copy(CH); gabi.rotation.set(0, Math.PI / 2, 0);
+        for (const l of [rg.pL, rg.pR]) { l.hip.rotation.set(-Math.PI / 2, 0, 0); l.knee.rotation.set(0, 0, 0); }
+        mae.position.set(MK.x, -0.5, MK.z); mae.rotation.set(0, -Math.PI / 2, 0);
+        for (const l of [rm.pL, rm.pR]) { l.hip.rotation.set(0, 0, 0); l.knee.rotation.set(Math.PI / 2, 0, 0); }   // ajoelhada
+      }
+      noChao(); sala.updateMatrixWorld(true);
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      // fone apertado no peito (as duas mãos)
+      const foneNoPeito = { pos: V(0, 1.5, 0.38), rot: new THREE.Euler(-0.25, 0, 0) };
+      Elenco.alcancar(gabi, "esq", gabi.localToWorld(V(0.18, 1.42, 0.44)), { foraDoCorpo: true }); const gE = guarda(rg.aR);
+      Elenco.alcancar(gabi, "dir", gabi.localToWorld(V(-0.18, 1.42, 0.44)), { foraDoCorpo: true }); const gD = guarda(rg.aL);
+      // a mãe segura o rosto dele (boca dele à mostra)
+      Elenco.cabeca(gabi, -0.08, -0.35, 0); Elenco.cabeca(mae, 0.15, 0.3, 0); sala.updateMatrixWorld(true);   // os dois viram um pouco para a câmera
+      // uma mão na bochecha do lado de lá (não tapa o rosto), a outra no ombro dele do lado da câmera
+      Elenco.alcancar(mae, "dir", rg.head.localToWorld(V(0.4, -0.14, 0.12)), { foraDoCorpo: true }); const mD = guarda(rm.aL);
+      Elenco.alcancar(mae, "esq", gabi.localToWorld(V(-0.3, 1.66, 0.12)), { foraDoCorpo: true }); const mE = guarda(rm.aR);
+      // ele larga o fone com a mão direita e agarra o antebraço dela
+      sala.updateMatrixWorld(true);
+      const antebraco = V(); rm.aR.el.localToWorld(antebraco.set(0, -0.2, 0));
+      Elenco.alcancar(gabi, "dir", antebraco, { foraDoCorpo: true }); const gAgarra = guarda(rg.aL);
+      const soltoM = [[new THREE.Euler(-0.2, 0, 0.1), new THREE.Euler(-0.3, 0, 0)], [new THREE.Euler(-0.2, 0, -0.1), new THREE.Euler(-0.3, 0, 0)]];
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+      // o fone: na mesinha no plano 1; no plano 2, no peito dele
+      const foneMesa = { parent: fone.parent, pos: fone.position.clone(), rot: fone.rotation.clone() };
+      const abajurBase = { pos: abajur.position.clone() };
+
+      // ---------- luz: a mesma do quarto ----------
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x12151c);
+      scene.fog = new THREE.Fog(0x283044, 9, 24);
+      scene.add(sala);
+      scene.add(new THREE.HemisphereLight(0x95a7c8, 0x4a3e34, 3.1));
+      const sol = new THREE.DirectionalLight(0xd8e2f2, 3.2);
+      sol.position.set(X0 - 6, 6.2, -0.3); sol.target.position.set(-0.6, 0, -0.9);
+      sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); sol.shadow.bias = -0.0006;
+      Object.assign(sol.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 20 });
+      scene.add(sol); scene.add(sol.target);
+      const rosto = new THREE.PointLight(0xa9b8d6, 1.4, 4.5, 1.5); scene.add(rosto);
+
+      const camA = new THREE.PerspectiveCamera(50, 1920 / 1080, 0.1, 60);
+      const camB = new THREE.PerspectiveCamera(36, 1920 / 1080, 0.1, 60);
+      const renderer = Cena.renderer("qd-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+
+      function render() {
+        const t = estado.t;
+        let cam;
+        if (t < CORTE) {
+          // ---- plano 1: tropeça no lençol e cai sobre o criado-mudo ----
+          gabi.visible = true; mae.visible = pai.visible = false; quebrado.visible = false; lencol.visible = true;
+          if (fone.parent !== foneMesa.parent) foneMesa.parent.add(fone);
+          fone.position.copy(foneMesa.pos); fone.rotation.copy(foneMesa.rot);
+          const anda = S(t / TROPECA), cai = S((t - TROPECA) / (CORTE - TROPECA + 0.1));
+          gabi.position.set(P0.x + Math.sin(RY) * 0.35 * anda, 0, P0.z + Math.cos(RY) * 0.35 * anda);
+          gabi.rotation.set(0.85 * cai * cai, RY, 0.12 * cai);
+          const passo = t < TROPECA ? Math.sin(t * 6) * 0.25 : 0;
+          rg.pL.hip.rotation.set(passo - 0.4 * cai, 0, 0); rg.pR.hip.rotation.set(-passo + 0.25 * cai, 0, 0);
+          rg.pL.knee.rotation.set(0.6 * cai, 0, 0); rg.pR.knee.rotation.set(0.2 * cai, 0, 0);
+          // braços: tateando à frente; na queda se jogam para amortecer (o direito varre o abajur)
+          rg.aL.sh.rotation.set(-1.0 - 0.7 * cai, 0, -0.15); rg.aL.el.rotation.set(-0.3, 0, 0);
+          rg.aR.sh.rotation.set(-0.8 - 0.9 * cai, 0, 0.2); rg.aR.el.rotation.set(-0.4 + 0.2 * cai, 0, 0);
+          Elenco.mao(gabi, "dir", "aberta", 1); Elenco.mao(gabi, "esq", "aberta", 1);
+          Elenco.cabeca(gabi, -0.1 * cai, Math.sin(t * 2.2) * 0.25 * (1 - cai), 0);
+          laco.position.set(gabi.position.x, 0.12, gabi.position.z);
+          // o abajur tomba quando a mão bate (2,0 s) e cai do criado-mudo
+          const tomba = S((t - 1.75) / 0.45);
+          abajur.visible = true; abajur.position.set(abajurBase.pos.x - 0.25 * tomba, abajurBase.pos.y - 0.7 * tomba * tomba, abajurBase.pos.z + 0.35 * tomba);
+          abajur.rotation.set(0.6 * tomba, 0, 1.2 * tomba);
+          const v = S(t / CORTE);
+          camA.position.set(3.1 - 0.1 * v, 2.45, -1.05 + 0.1 * v); camA.lookAt(-0.1, 1.15 - 0.2 * cai, -0.8);
+          if (t > CORTE - 0.25) camA.position.y += Math.sin(t * 90) * 0.02;
+          cam = camA;
+        } else {
+          // ---- plano 2: no chão, o fone no peito; a mãe chega, ajoelha e segura o rosto dele ----
+          noChao(); lencol.visible = false; abajur.visible = false; quebrado.visible = true;
+          // o fone no peito
+          if (fone.parent !== gabi) gabi.add(fone);
+          fone.position.copy(foneNoPeito.pos); fone.rotation.copy(foneNoPeito.rot);
+          const acha = S((t - ACHA) / 0.6);
+          fone.visible = t >= ACHA - 0.2;
+          // braços dele: tateando o chão -> fone no peito -> a direita agarra o braço dela
+          mistura(rg.aR, [new THREE.Euler(-0.5, 0, 0.3), new THREE.Euler(-0.2, 0, 0)], gE, acha);
+          mistura(rg.aL, [new THREE.Euler(-0.4, 0, -0.35), new THREE.Euler(-0.2, 0, 0)], gD, acha);
+          const agarra = S((t - AGARRA) / 0.5);
+          if (agarra > 0) mistura(rg.aL, gD, gAgarra, agarra);
+          Elenco.mao(gabi, "esq", "segura", acha); Elenco.mao(gabi, "dir", agarra > 0.3 ? "segura" : "segura", acha);
+          if (t > CHEGA + 0.6 && rg.ficha.expr !== "choro") Elenco.expressao(gabi, "choro");
+          if (t <= CHEGA + 0.6 && rg.ficha.expr !== "medo") Elenco.expressao(gabi, "medo");
+          Elenco.lagrimas(gabi, S((t - CHEGA - 0.6) / 0.6), t);
+          const resp = Math.sin(t * 2 * Math.PI * 0.8) * 0.012;
+          Elenco.cabeca(gabi, -0.08, -0.35 + Math.sin(t * 1.7) * 0.1 * (1 - S((t - SEGURA) / 0.4)), 0, resp);
+          // a mãe: entra correndo pela direita, ajoelha, segura o rosto
+          const entra = S((t - CHEGA) / 0.9), ajoelha = S((t - CHEGA - 0.6) / 0.5);
+          mae.visible = t > CHEGA;
+          mae.position.set(MK.x + 2.4 * (1 - entra), -0.5 * ajoelha, MK.z + 1.2 * (1 - entra));
+          for (const l of [rm.pL, rm.pR]) { l.hip.rotation.set(0, 0, 0); l.knee.rotation.set(Math.PI / 2 * ajoelha, 0, 0); }
+          const corre = entra < 1 ? Math.sin(t * 11) * 0.5 * (1 - ajoelha) : 0;
+          rm.pL.hip.rotation.x += corre; rm.pR.hip.rotation.x -= corre;
+          const segura = S((t - SEGURA) / 0.5);
+          mistura(rm.aR, soltoM[0], mE, segura); mistura(rm.aL, soltoM[1], mD, segura);
+          Elenco.mao(mae, "esq", "aberta", segura); Elenco.mao(mae, "dir", "aberta", segura);
+          if (t > SEGURA + 0.3 && rm.ficha.expr !== "triste") Elenco.expressao(mae, "triste");
+          if (t <= SEGURA + 0.3 && rm.ficha.expr !== "grito") Elenco.expressao(mae, "grito");
+          Elenco.cabeca(mae, 0.15, 0.3 * S((t - SEGURA + 0.4) / 0.4), 0, Math.sin(t * 2 * Math.PI * 0.9) * 0.01);
+          // o pai: chega logo atrás, de pé
+          pai.visible = t > CHEGA + 0.5;
+          const paiE = S((t - CHEGA - 0.5) / 1.0);
+          pai.position.set(MK.x + 1.0 + 1.6 * (1 - paiE), 0, MK.z - 0.9 + 0.8 * (1 - paiE)); pai.rotation.set(0, -Math.PI / 2 - 0.35, 0);
+          rp.aL.sh.rotation.set(-0.3, 0, -0.1); rp.aL.el.rotation.set(-0.4, 0, 0);
+          rp.aR.sh.rotation.set(-0.3, 0, 0.1); rp.aR.el.rotation.set(-0.4, 0, 0);
+          Elenco.cabeca(pai, 0.18, 0.1, 0);
+          rosto.position.set(CH.x + 1.3, 1.9, CH.z + 1.6);
+          const v = S((t - CORTE) / (DUR - CORTE));
+          camB.position.set(0.25 + 0.05 * v, 1.8, 2.15 - 0.15 * v); camB.lookAt(CH.x + 0.65, 1.55, CH.z);
+          cam = camB;
+        }
+        pos.render(scene, cam, t, LOOK);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["queda"] = tl;
+      render();
+    })();
+  </script>
+</template>
