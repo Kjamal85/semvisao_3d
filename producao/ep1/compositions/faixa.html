@@ -1,0 +1,94 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #fx-stage { position: absolute; inset: 0; z-index: 0; }
+    #fx-stage canvas { display: block; }
+    #fx-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #fx-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="faixa" data-width="1920" data-height="1080">
+    <div id="fx-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+    <div id="fx-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">C06 — A FAIXA<small>a mãe enfaixa a mão dele, em silêncio · o fone na mesa · planos 47–48</small></div>
+  </div>
+  <script>
+    (function () {
+      const DUR = 8, CORTE = 4.6;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };
+      const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z);
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      const raiz = new THREE.Group();
+      const K = Cenarios.cozinha(raiz);
+      const { k, MX, MZ } = K;
+      // os dois sentados lado a lado na mesa (as cadeiras da cozinha aprovada)
+      const sentY = 0.745 - 1.075;
+      const gabi = Elenco.build("gabi", { blind: true, expr: "triste", pose: "sentado" });
+      gabi.position.set(MX - 0.45, sentY, MZ - 0.95); gabi.rotation.y = 0.1; raiz.add(gabi);   // um pouco afastado: o colo fica fora da toalha
+      const rg = gabi.userData.rig;
+      const mae = Elenco.build("mae", { expr: "triste", pose: "sentado" });
+      mae.position.set(MX + 0.5, sentY, MZ - 0.6); mae.rotation.y = -0.75; raiz.add(mae);
+      const rm = mae.userData.rig;
+      Elenco.cabeca(gabi, 0.2, 0.15, 0.04); Elenco.cabeca(mae, 0.28, -0.1, 0);
+      raiz.updateMatrixWorld(true);
+      // a mão esquerda dele estendida na mesa, para ela
+      const MAO = V(MX + 0.02, 1.1, MZ - 0.28);
+      Elenco.alcancar(gabi, "esq", MAO, { foraDoCorpo: true });
+      raiz.updateMatrixWorld(true);
+      // as mãos dela em volta da mão dele (enrolando a faixa)
+      Elenco.alcancar(mae, "dir", MAO.clone().add(V(0.02, 0.13, 0.16)), { foraDoCorpo: true }); const mD = guarda(rm.aL);
+      Elenco.alcancar(mae, "esq", MAO.clone().add(V(0.2, 0.04, 0.02)), { foraDoCorpo: true }); const mE = guarda(rm.aR);
+      // a faixa: camadas brancas que crescem em volta da mão dele; o rolo na mão dela
+      const gaze = new THREE.MeshToonMaterial({ color: 0xf6f3ea, gradientMap: k.grad });
+      const maoG = rg.aR.mao.g;
+      const faixa = new THREE.Mesh(new THREE.CylinderGeometry(0.082, 0.082, 0.15, 16), gaze); faixa.position.set(0, -0.06, 0); maoG.add(faixa);
+      const faixaL = new THREE.Mesh(new THREE.CylinderGeometry(0.082, 0.082, 0.15, 16), k.linha); faixaL.scale.setScalar(1.06); faixa.add(faixaL);
+      const rolo = k.cil(0.035, 0.035, 0.07, 0xf6f3ea, 0, -0.5, 0.05, { pai: rm.aR.el, r: [0, 0, Math.PI / 2] });
+      // o fone no colo dele, a mão direita em cima
+      // o fone em cima da mesa, debaixo da mão livre dele (no colo ficava escondido pela toalha)
+      const fone = new THREE.Group(); raiz.add(fone); fone.position.set(MX - 0.62, 1.07, MZ - 0.3); fone.rotation.set(-Math.PI / 2, 0, 0.4);
+      fone.add(new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.03, 8, 20, Math.PI), k.M(0x24242a)));
+      for (const s of [-1, 1]) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.06, 14), k.M(0x24242a)); c.rotation.z = Math.PI / 2; c.position.set(s * 0.17, 0, 0); fone.add(c); }
+      raiz.updateMatrixWorld(true);
+      Elenco.alcancar(gabi, "dir", V(MX - 0.62, 1.14, MZ - 0.3), { foraDoCorpo: true });
+      Elenco.mao(gabi, "dir", "segura", 0.5);
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1d24);
+      scene.fog = new THREE.Fog(0xd9cdb4, 12, 30);
+      scene.add(raiz);
+      scene.add(new THREE.HemisphereLight(0xe2d6be, 0x5a4c3e, 1.35));
+      const sol = new THREE.DirectionalLight(0xffd6a0, 2.4);
+      sol.position.set(1.6, 4.6, -9); sol.target.position.set(0.6, 0.6, 0.8);
+      sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); sol.shadow.bias = -0.0006; sol.shadow.normalBias = 0.03;
+      Object.assign(sol.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 0.5, far: 25 });
+      scene.add(sol); scene.add(sol.target);
+      const rosto = new THREE.PointLight(0xe8dccb, 1.3, 4, 1.6); rosto.position.set(MX, 2.4, MZ + 1.6); raiz.add(rosto);
+      const cam = new THREE.PerspectiveCamera(40, 1920 / 1080, 0.05, 60);
+      const renderer = Cena.renderer("fx-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+
+      function render() {
+        const t = estado.t;
+        // enrolando: as mãos dela giram em volta da mão dele; a faixa engrossa e cobre mais
+        const volta = Math.sin(t * 4.2), cobre = S(t / (DUR - 0.5));
+        rm.aL.sh.rotation.set(mD[0].x + 0.06 * volta, mD[0].y, mD[0].z + 0.05 * Math.cos(t * 4.2)); rm.aL.el.rotation.copy(mD[1]);
+        rm.aR.sh.rotation.set(mE[0].x - 0.05 * volta, mE[0].y, mE[0].z); rm.aR.el.rotation.set(mE[1].x + 0.06 * Math.cos(t * 4.2), 0, 0);
+        Elenco.mao(mae, "esq", "segura", 1); Elenco.mao(mae, "dir", "aberta", 0.6);
+        faixa.scale.set(0.95 + 0.2 * cobre, 0.6 + 0.55 * cobre, 0.95 + 0.2 * cobre);
+        rolo.scale.setScalar(1 - 0.35 * cobre);
+        Elenco.cabeca(gabi, 0.2, 0.15, 0.04, Math.sin(t * 2 * Math.PI * 0.3) * 0.008);
+        Elenco.cabeca(mae, 0.28, -0.1 + Math.sin(t * 0.7) * 0.04, 0, Math.sin(t * 2 * Math.PI * 0.28) * 0.008);
+        if (t < CORTE) { cam.fov = 40; const u = S(t / CORTE); cam.position.set(MX + 0.1, 2.05 - 0.05 * u, MZ + 2.9 - 0.3 * u); cam.lookAt(MX - 0.05, 1.45, MZ - 0.45); }
+        else { cam.fov = 38; const u = S((t - CORTE) / (DUR - CORTE)); cam.position.set(MX - 0.3, 1.75 - 0.05 * u, MZ + 0.55 - 0.1 * u); cam.lookAt(MX - 0.3, 1.05, MZ - 0.32); }   // close: a faixa e o fone
+        cam.updateProjectionMatrix();
+        pos.render(scene, cam, t, LOOK);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["faixa"] = tl;
+      render();
+    })();
+  </script>
+</template>

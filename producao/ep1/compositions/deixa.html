@@ -1,0 +1,95 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dx-stage { position: absolute; inset: 0; z-index: 0; }
+    #dx-stage canvas { display: block; }
+    #dx-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #dx-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="deixa" data-width="1920" data-height="1080">
+    <div id="dx-stage" class="clip" data-start="0" data-duration="5" data-track-index="0"></div>
+    <div id="dx-rotulo" class="clip" data-start="0" data-duration="5" data-track-index="1">C06 — "DEIXA, MÃE"<small>a mãe vem ajudar · "Deixa, mãe. Eu consigo." · plano 42</small></div>
+    <audio id="dx-fala" class="clip" src="voz/audio/c06-gabi-04.wav" data-start="1.8" data-duration="1.75" data-track-index="2" data-volume="1"></audio>
+  </div>
+  <script>
+    (function () {
+      const DUR = 5, FALA = 1.8, FALAF = 3.55;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };
+      const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z), E = (x, y, z) => new THREE.Euler(x, y, z);
+      const expr = (g, n) => { if (g.userData.rig.ficha.expr !== n) Elenco.expressao(g, n); };
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+      const raiz = new THREE.Group();
+      const K = Cenarios.cozinha(raiz);
+      const { k, X0, PZ0, PZ1, BZ, BH, PX } = K;
+      // copo vazio na cuba (ele vai enchê-lo no plano 43)
+      const vidro = new THREE.MeshToonMaterial({ color: 0xd8ecf6, gradientMap: k.grad, transparent: true, opacity: 0.45 });
+      const COPO = V(PX, BH + 0.03, BZ + 0.03);
+      k.cil(0.065, 0.055, 0.2, 0, COPO.x, COPO.y + 0.1, COPO.z, { mat: vidro, seg: 16 });
+      // o Gabi na pia (mesma posição da cozinha aprovada)
+      const gabi = Elenco.build("gabi", { blind: true, expr: "firme" });
+      gabi.position.set(0.62, 0, BZ + 0.92); gabi.rotation.y = Math.PI - 0.6; raiz.add(gabi);
+      const rg = gabi.userData.rig;
+      raiz.updateMatrixWorld(true);
+      Elenco.alcancar(gabi, "esq", V(COPO.x + 0.07, COPO.y + 0.1, COPO.z + 0.06), { foraDoCorpo: true });
+      Elenco.alcancar(gabi, "dir", V(0.95, BH + 0.1, BZ + 0.36), { foraDoCorpo: true });
+      // a mãe: vem da porta com a mão estendida para o ombro dele, para e recua
+      const mae = Elenco.build("mae", { expr: "triste" }); raiz.add(mae); const rm = mae.userData.rig;
+      const M0 = V(X0 + 0.35, 0, (PZ0 + PZ1) / 2), M1 = V(0.0, 0, BZ + 1.6);   // para à esquerda dele, à vista
+      mae.position.copy(M1); mae.rotation.y = Math.atan2(0.62 - M1.x, BZ + 0.92 - M1.z); raiz.updateMatrixWorld(true);
+      Elenco.alcancar(mae, "dir", gabi.localToWorld(V(-0.32, 1.72, 0.05)).add(V(0.12, 0, 0.18)), { foraDoCorpo: true }); const estende = guarda(rm.aL);
+      const solto = [E(-0.1, 0, -0.08), E(-0.25, 0, 0)], peito = [E(-0.3, 0, -0.05), E(-1.4, 0, 0)];
+      rm.aR.sh.rotation.set(-0.1, 0, 0.08); rm.aR.el.rotation.set(-0.3, 0, 0);
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1d24);
+      scene.fog = new THREE.Fog(0xd9cdb4, 12, 30);
+      scene.add(raiz);
+      scene.add(new THREE.HemisphereLight(0xe2d6be, 0x5a4c3e, 1.35));
+      const sol = new THREE.DirectionalLight(0xffd6a0, 2.7);
+      sol.position.set(1.6, 4.6, -9); sol.target.position.set(0.0, 0.6, 0.8);
+      sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); sol.shadow.bias = -0.0006; sol.shadow.normalBias = 0.03;
+      Object.assign(sol.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 0.5, far: 25 });
+      scene.add(sol); scene.add(sol.target);
+      const cam = new THREE.PerspectiveCamera(44, 1920 / 1080, 0.1, 60);
+      const renderer = Cena.renderer("dx-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+
+      function render() {
+        const t = estado.t;
+        // a mãe chega (0-1,5), estende a mão (1,0-1,6), ouve, recolhe (3,6-4,1) e volta um passo
+        const vem = S(t / 1.5), volta = S((t - 3.9) / 1.0);
+        const p = M0.clone().lerp(M1, vem).lerp(M0, volta * 0.45);
+        mae.position.copy(p);
+        mae.rotation.y = vem < 0.95 ? Math.atan2(M1.x - M0.x, M1.z - M0.z) : Math.atan2(0.62 - p.x, BZ + 0.92 - p.z);
+        const passo = (vem > 0 && vem < 1) || (volta > 0 && volta < 1) ? Math.sin(t * 7) * 0.3 : 0;
+        rm.pL.hip.rotation.set(passo, 0, 0); rm.pR.hip.rotation.set(-passo, 0, 0);
+        const mao = S((t - 1.0) / 0.6) * (1 - S((t - 3.6) / 0.5));
+        mistura(rm.aL, solto, estende, mao);
+        if (t > 3.6) mistura(rm.aL, solto, peito, S((t - 3.6) / 0.5));
+        Elenco.mao(mae, "dir", "aberta", mao);
+        expr(mae, t < 3.6 ? "medo" : "triste");
+        Elenco.cabeca(mae, 0.1, 0.1, 0, Math.sin(t * 2 * Math.PI * 0.4) * 0.008);
+        // o Gabi: sente a mão chegando, vira a cabeça para ela e corta — firme, orgulho ferido
+        const vira = S((t - 1.4) / 0.4);
+        Elenco.cabeca(gabi, 0.12 - 0.08 * vira, -0.3 + 0.6 * vira, 0, Math.sin(t * 2 * Math.PI * 0.5) * 0.008);
+        expr(gabi, "firme");
+        const bocas = gabi.userData.rosto.bocas, fala = t > FALA && t < FALAF && Math.sin(t * 15) + Math.sin(t * 6.1) > 0.2;
+        for (const n in bocas) bocas[n].visible = n === (fala ? "o" : "linha");
+        const u = S(t / DUR);
+        cam.position.set(3.45 - 0.25 * u, 2.2, -1.75 - 0.15 * u); cam.lookAt(-0.05, 1.7, BZ + 1.15);
+        pos.render(scene, cam, t, LOOK);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["deixa"] = tl;
+      render();
+    })();
+  </script>
+</template>
