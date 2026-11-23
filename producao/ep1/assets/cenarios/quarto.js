@@ -92,12 +92,15 @@
       const DX = 2.35, DZ = -2.15;
       box(1.9, 0.08, 0.85, 0x7b5a41, DX, 1.15, DZ);
       for (const [sx, sz] of [[-0.88, -0.36], [0.88, -0.36], [-0.88, 0.36], [0.88, 0.36]]) box(0.07, 1.11, 0.07, 0x5f4432, DX + sx, 0.555, DZ + sz);
-      box(0.75, 0.04, 0.52, 0x2c2f36, DX - 0.35, 1.21, DZ + 0.05, { r: [0, 0.12, 0] });           // notebook fechado
-      for (let i = 0; i < 5; i++) box(0.5 - i * 0.03, 0.07, 0.36, [0x9c4a3e, 0x3e6a5a, 0xc2a25a, 0x4a5a8a, 0x7a7d84][i], DX + 0.55, 1.225 + i * 0.075, DZ - 0.12, { r: [0, 0.1 * (i % 2 ? 1 : -1), 0] });
-      cil(0.07, 0.06, 0.2, 0x3f6d8c, DX + 0.15, 1.29, DZ - 0.25);                                // porta-lápis
-      for (let i = 0; i < 3; i++) cil(0.008, 0.008, 0.28, [0xd9b44a, 0xc94a3e, 0x2e3036][i], DX + 0.13 + i * 0.02, 1.4, DZ - 0.25, { r: [0, 0, (i - 1) * 0.2], seg: 6, contorno: false });
-      cil(0.08, 0.07, 0.14, 0xb5653f, DX + 0.82, 1.26, DZ + 0.2);                                // vaso
-      for (let i = 0; i < 5; i++) bolha(0.07, 0x4f7a4a, DX + 0.82 + Math.cos(i * 1.3) * 0.06, 1.4 + i * 0.03, DZ + 0.2 + Math.sin(i * 1.3) * 0.06, [1, 1.4, 0.6], { r: [0, i, 0.4] });
+      // itens da escrivaninha em grupos (podem voar na revolta); mesma forma e posição
+      const grupo = () => { const g = new THREE.Group(); raiz.add(g); return g; };
+      const mesa = { note: grupo(), livros: grupo(), lapis: grupo(), vaso: grupo() };
+      box(0.75, 0.04, 0.52, 0x2c2f36, DX - 0.35, 1.21, DZ + 0.05, { r: [0, 0.12, 0], pai: mesa.note });           // notebook fechado
+      for (let i = 0; i < 5; i++) box(0.5 - i * 0.03, 0.07, 0.36, [0x9c4a3e, 0x3e6a5a, 0xc2a25a, 0x4a5a8a, 0x7a7d84][i], DX + 0.55, 1.225 + i * 0.075, DZ - 0.12, { r: [0, 0.1 * (i % 2 ? 1 : -1), 0], pai: mesa.livros });
+      cil(0.07, 0.06, 0.2, 0x3f6d8c, DX + 0.15, 1.29, DZ - 0.25, { pai: mesa.lapis });           // porta-lápis
+      for (let i = 0; i < 3; i++) cil(0.008, 0.008, 0.28, [0xd9b44a, 0xc94a3e, 0x2e3036][i], DX + 0.13 + i * 0.02, 1.4, DZ - 0.25, { r: [0, 0, (i - 1) * 0.2], seg: 6, contorno: false, pai: mesa.lapis });
+      cil(0.08, 0.07, 0.14, 0xb5653f, DX + 0.82, 1.26, DZ + 0.2, { pai: mesa.vaso });            // vaso
+      for (let i = 0; i < 5; i++) bolha(0.07, 0x4f7a4a, DX + 0.82 + Math.cos(i * 1.3) * 0.06, 1.4 + i * 0.03, DZ + 0.2 + Math.sin(i * 1.3) * 0.06, [1, 1.4, 0.6], { r: [0, i, 0.4], pai: mesa.vaso });
       // cadeira virada, com o moletom de ontem jogado no encosto
       const cad = new THREE.Group(); cad.position.set(DX - 0.3, 0, DZ + 1.0); cad.rotation.y = 0.5; raiz.add(cad);
       box(0.62, 0.07, 0.6, 0x3b3e46, 0, 0.72, 0, { pai: cad });
@@ -159,7 +162,7 @@
       box(0.75, 3.2, 1.6, 0x7d5d44, X0 + 0.4, 1.6, 1.65);
       box(0.02, 3.0, 0.02, 0x3a271c, X0 + 0.785, 1.6, 1.65, { contorno: false });
       for (const s of [-1, 1]) box(0.04, 0.3, 0.04, 0xc9a86a, X0 + 0.8, 1.6, 1.65 + s * 0.1, { contorno: false });
-    return { k, X0, X1, Z0, Z1, H, WZ0, WZ1, WY0, WY1, BX, BZ0, BZ1, BW, MT, BZ, NX, NZ, visor, brilhoR, fone, abajur, rnd };
+    return { k, X0, X1, Z0, Z1, H, WZ0, WZ1, WY0, WY1, BX, BZ0, BZ1, BW, MT, BZ, NX, NZ, visor, brilhoR, fone, abajur, mesa, cad, DX, DZ, rnd };
   }
   window.Cenarios = Object.assign(window.Cenarios || {}, { quarto });
 })();
