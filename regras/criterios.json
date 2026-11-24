@@ -1,0 +1,30 @@
+{
+  "_leia_antes": "Critérios de revisão por portão para o revisor (subagente ou humano). Cada item: id curto, texto verificável (olhando o roteiro, os quadros ou uma medida), e bloqueante (se true, sem ele nunca há aprovação automática). Fontes: briefing/minimundo.md, briefing/serie-biblia.md, briefing/linguagem-visual.md, aprendizado/padrao-de-qualidade.md, regras/canal-semvisao-3d.md, producao/ep1/assets/rig/elenco.js. Em dúvida, as fontes mandam, não este arquivo.",
+  "roteiro": [
+    { "id": "rot-minimundo", "texto": "O roteiro respeita minimundo.md: mostra em vez de explicar — tem pelo menos um sinal de mundo vivo ou um dos ofícios (silêncio, corpo antes da boca, som íntimo, câmera que sente, subtexto).", "bloqueante": true },
+    { "id": "rot-personagens", "texto": "Cada personagem age conforme a ficha em personagens/*.md (cego ou vidente, que dia, o que já foi revelado) — nenhuma continuidade nova sem checar esses arquivos.", "bloqueante": true },
+    { "id": "rot-tom", "texto": "Tom de thriller social de colapso gradual: sem comédia/deboche, sem herói salvador, sem resolução limpa.", "bloqueante": true },
+    { "id": "rot-sem-legenda", "texto": "Nenhuma fala ou narração sai como texto na tela — a série não usa legenda.", "bloqueante": true },
+    { "id": "rot-narrador", "texto": "O narrador (3ª pessoa) só fala onde nenhum personagem está falando — nunca por cima de diálogo.", "bloqueante": true },
+    { "id": "rot-fatos-continuidade", "texto": "Nenhum fato de continuidade (estado cego/vidente, dia, o que foi revelado) inventado fora de personagens/*.md; se faltar fonte, o roteiro marca a dúvida em vez de inventar cânone novo.", "bloqueante": true },
+    { "id": "rot-ritmo-falas", "texto": "Depois de um susto, a próxima fala tem um tempo de reação (respiração, olhar, silêncio) antes de vir — não cola na anterior.", "bloqueante": false }
+  ],
+  "previa": [
+    { "id": "prev-anatomia", "texto": "Nada atravessa nada (mão no corpo, pé no chão/lençol, personagem em móvel); cabeça inclina pelo pescoço, nunca pelo centro; cotovelo nunca dentro do tronco.", "bloqueante": true },
+    { "id": "prev-boca", "texto": "A boca do personagem está sempre visível (nunca escondida por mão, objeto ou capuz) e só se move durante a fala.", "bloqueante": true },
+    { "id": "prev-proporcao", "texto": "Proporções vêm só de Elenco.build (fichas fixas) — ninguém muda de tamanho entre cenas ou planos.", "bloqueante": true },
+    { "id": "prev-paleta", "texto": "Cores exatas de producao/ep1/assets/rig/elenco.js (FICHAS) — a paleta em prosa de linguagem-visual.md é só proposta inicial, o rig manda.", "bloqueante": true },
+    { "id": "prev-areas-seguras", "texto": "Texto de leitura (selo DIA X, títulos) nunca abaixo de ~28px em 1920×1080; nenhuma legenda de diálogo na tela.", "bloqueante": true },
+    { "id": "prev-vinheta", "texto": "A vinheta 'olho se fechando' é sombra esfumaçada orgânica (nunca um oval sólido duro); avança no pânico e recua na calma.", "bloqueante": true },
+    { "id": "prev-respiracao", "texto": "Personagem parado ainda vive: respiração e algum micro-movimento visíveis (minimundo.md).", "bloqueante": false },
+    { "id": "prev-camera", "texto": "Câmera majoritariamente fixa; câmera na mão só em pânico; corte seco, sem dissolve (exceto passagem de tempo entre dias).", "bloqueante": false },
+    { "id": "prev-luma", "texto": "Luma mediana do episódio entre 85–95 (medir_luma.py); cena noturna/apagão pode cair a ~65–80, nunca abaixo de ~55.", "bloqueante": false }
+  ],
+  "final": [
+    { "id": "final-formato", "texto": "1920×1080, 16:9, 30 fps.", "bloqueante": true },
+    { "id": "final-audio-completo", "texto": "Áudio presente e sincronizado (voz, SFX, música); cruzado fala por fala e SFX por SFX contra o roteiro — nenhuma fala gravada ficou fora do vídeo.", "bloqueante": true },
+    { "id": "final-igual-previa", "texto": "O conteúdo é o mesmo aprovado na prévia — nenhuma mudança entrou sem revisão.", "bloqueante": true },
+    { "id": "final-sem-segredo", "texto": "Nenhum segredo (.env, chave) exposto no arquivo final, nos logs ou em algum commit.", "bloqueante": true },
+    { "id": "final-metadados", "texto": "Título, descrição e tags coerentes com o episódio e o tom de thriller da série.", "bloqueante": false }
+  ]
+}
