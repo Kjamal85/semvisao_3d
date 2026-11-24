@@ -9,9 +9,10 @@
     #dx-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="deixa" data-width="1920" data-height="1080">
-    <div id="dx-stage" class="clip" data-start="0" data-duration="5" data-track-index="0"></div>
-    <div id="dx-rotulo" class="clip" data-start="0" data-duration="5" data-track-index="1">C06 — "DEIXA, MÃE"<small>a mãe vem ajudar · "Deixa, mãe. Eu consigo." · plano 42</small></div>
-    <audio id="dx-fala" class="clip" src="voz/audio/c06-gabi-04.wav" data-start="1.8" data-duration="1.75" data-track-index="2" data-volume="1"></audio>
+    <div id="dx-stage" class="clip" data-start="0" data-duration="10.2" data-track-index="0"></div>
+    <div id="dx-rotulo" class="clip" data-start="0" data-duration="10.2" data-track-index="1">C06 — "DEIXA, MÃE"<small>a mãe vem ajudar · "Deixa, mãe. Eu consigo." · plano 42</small></div>
+    <audio id="dx-mae" class="clip" src="voz/audio/c06-mae-10.wav" data-start="4.75" data-duration="1.78" data-track-index="3" data-volume="1"></audio>
+    <audio id="dx-fala" class="clip" src="voz/audio/c06-gabi-04.wav" data-start="7.0" data-duration="1.75" data-track-index="2" data-volume="1"></audio>
   </div>
   <script>
     (function () {
@@ -61,8 +62,11 @@
       const pos = Pos.criar(renderer, 1920, 1080);
       const estado = { t: 0 };
 
+      // montagem: tempo remapeado (tau da montagem -> t da animação aprovada)
+      const __K = [[0,0],[4.6,0.8],[6.7,1.5]];
+      const __remap = (x) => { for (let i = 1; i < __K.length; i++) if (x <= __K[i][0]) { const [a0, b0] = __K[i - 1], [a1, b1] = __K[i]; return b0 + (b1 - b0) * (x - a0) / (a1 - a0); } const [a, b] = __K[__K.length - 1]; return b + (x - a); };
       function render() {
-        const t = estado.t;
+        const t = __remap(estado.t);
         // a mãe chega (0-1,5), estende a mão (1,0-1,6), ouve, recolhe (3,6-4,1) e volta um passo
         const vem = S(t / 1.5), volta = S((t - 3.9) / 1.0);
         const p = M0.clone().lerp(M1, vem).lerp(M0, volta * 0.45);
@@ -76,6 +80,8 @@
         Elenco.mao(mae, "dir", "aberta", mao);
         expr(mae, t < 3.6 ? "medo" : "triste");
         Elenco.cabeca(mae, 0.1, 0.1, 0, Math.sin(t * 2 * Math.PI * 0.4) * 0.008);
+        { const bm = mae.userData.rosto.bocas, tau = estado.t, fala = tau > 4.75 && tau < 6.53 && Math.sin(tau * 15) + Math.sin(tau * 6.1) > 0.2;   // a boca dela mexe na fala (c06-mae-10)
+          const base = Elenco.EXPR[mae.userData.rig.ficha.expr].boca; for (const n in bm) bm[n].visible = n === (fala ? (base === "o" ? "linha" : "o") : base); }
         // o Gabi: sente a mão chegando, vira a cabeça para ela e corta — firme, orgulho ferido
         const vira = S((t - 1.4) / 0.4);
         Elenco.cabeca(gabi, 0.12 - 0.08 * vira, -0.3 + 0.6 * vira, 0, Math.sin(t * 2 * Math.PI * 0.5) * 0.008);
@@ -87,7 +93,7 @@
         pos.render(scene, cam, t, LOOK);
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
-      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      tl.fromTo(estado, { t: 0 }, { t: 10.2, duration: 10.2, ease: "none" }, 0);
       window.__timelines["deixa"] = tl;
       render();
     })();

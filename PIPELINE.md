@@ -44,7 +44,7 @@ Quem (humano ou IA) for trabalhar num episódio começa lendo este arquivo.
 
 ## Como rodar UM episódio (checklist)
 
-1. **Ler o cânone** — `briefing/serie-biblia.md` e `briefing/linguagem-visual.md`.
+1. **Ler o cânone** — `briefing/minimundo.md` (a alma: mundo vivo, personagens que respiram — essencial, ler sempre), `briefing/serie-biblia.md` e `briefing/linguagem-visual.md`.
 2. **Ler o estado dos personagens** — `personagens/*.md`. Quem está onde, cego ou vidente, no dia quantos, o que já foi revelado.
 3. **Ler o último aprendizado** — `aprendizado/registro.md` (a entrada mais recente). Aplicar os ajustes que a série já descobriu.
 4. **Escrever o roteiro** — copiar `episodios/_modelo.md`, preencher beats, metas de métrica e setups/payoffs.

@@ -9,14 +9,14 @@
     #es-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="esperanca" data-width="1920" data-height="1080">
-    <div id="es-stage" class="clip" data-start="0" data-duration="12" data-track-index="0"></div>
-    <div id="es-rotulo" class="clip" data-start="0" data-duration="12" data-track-index="1">C08 — ESPERANÇA FRÁGIL<small>"Sente a borda primeiro. Devagar." · bebe sem derramar · o fone · planos 52–56</small></div>
+    <div id="es-stage" class="clip" data-start="0" data-duration="15.5" data-track-index="0"></div>
+    <div id="es-rotulo" class="clip" data-start="0" data-duration="15.5" data-track-index="1">C08 — ESPERANÇA FRÁGIL<small>"Sente a borda primeiro. Devagar." · o copo escapa e quebra · raiva · o fone e a música · planos 52–56</small></div>
     <audio id="es-mae" class="clip" src="voz/audio/c08-mae-02.wav" data-start="0.6" data-duration="3.22" data-track-index="2" data-volume="1"></audio>
   </div>
   <script>
     (function () {
-      const DUR = 12, C1 = 4.0, C2 = 7.5, C3 = 10.0;
-      const PEGA = 4.3, BEBE = 5.2, BAIXA = 6.6, FONE = 8.3;
+      const DUR = 15.5, C1 = 4.0, C2 = 8.6, C3 = 12.9;
+      const PEGA = 4.3, SOLTA = 5.1, U_SOLTA = 0.45, SOCO = 6.6, FONE = 9.4;   // montagem: o copo escapa em SOLTA; soco na mesa; o fone
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };
       const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z), E = (x, y, z) => new THREE.Euler(x, y, z);
       const expr = (g, n) => { if (g.userData.rig.ficha.expr !== n) Elenco.expressao(g, n); };
@@ -88,45 +88,71 @@
       const estado = { t: 0 };
       const _m = new THREE.Matrix4(), _p = V(), _q = new THREE.Quaternion(), _s = V();
 
+      // ---------- montagem (nova ordem): o copo ESCORREGA e quebra no chão -> raiva -> o fone e a música ----------
+      // o ponto onde o copo escapa: a mão a caminho da boca, no instante SOLTA
+      mistura(rg.aL, dirCopo, dirBebe, U_SOLTA); raiz.updateMatrixWorld(true);
+      rg.aL.mao.g.getWorldPosition(_p); const P0 = V(_p.x + 0.07, _p.y - 0.06, _p.z + 0.05);
+      const VEL = V(-1.7, 0.35, 0.25), GRAV = 14.6, T_QUEDA = (VEL.y + Math.sqrt(VEL.y * VEL.y + 2 * GRAV * (P0.y - 0.02))) / GRAV;
+      const CHAO = SOLTA + T_QUEDA, IMP = V(P0.x + VEL.x * T_QUEDA, 0.02, P0.z + VEL.z * T_QUEDA);
+      const cacoM = new THREE.MeshBasicMaterial({ color: 0xe6f4fb });
+      const cacos = [];
+      for (let i = 0; i < 11; i++) {
+        const c = new THREE.Mesh(new THREE.BoxGeometry(0.08 + (i % 3) * 0.03, 0.015, 0.05 + (i % 2) * 0.03), cacoM);
+        const a = i / 11 * Math.PI * 2 + (i % 3) * 0.4, d = 0.22 + (i % 4) * 0.12;
+        c.userData = { dx: Math.cos(a) * d, dz: Math.sin(a) * d, r: i * 1.3 }; c.visible = false; raiz.add(c); cacos.push(c);
+      }
+      const poca = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.005, 24), aguaM); poca.position.copy(IMP); poca.visible = false; raiz.add(poca);
+      const peitoM = [E(-0.3, 0, -0.05), E(-1.4, 0, 0)];
       function render() {
         const t = estado.t;
-        // ---- a mão direita: chega perto do copo, a mãe guia até a borda, pega, bebe, devolve; depois o fone ----
+        // ---- a mão direita: a mãe guia até a borda; ele pega, leva à boca... e o copo escapa ----
         aplica(rg.aR, esqMesa);
         if (t < PEGA) mistura(rg.aL, dirPerto, dirCopo, S((t - 1.6) / 1.6));
-        else if (t < BAIXA) mistura(rg.aL, dirCopo, dirBebe, S((t - PEGA - 0.3) / 0.9) * (1 - S((t - BAIXA + 0.5) / 0.5)));
-        else if (t < C2) mistura(rg.aL, dirBebe, dirCopo, 0 + S((t - BAIXA) / 0.6));
+        else if (t < SOLTA) mistura(rg.aL, dirCopo, dirBebe, U_SOLTA * S((t - PEGA - 0.1) / (SOLTA - PEGA - 0.1)));
+        else if (t < C2) {
+          const susto = S((t - SOLTA) / 0.25), soco = Math.max(0, 1 - Math.abs(t - SOCO) / 0.18);
+          mistura(rg.aL, dirBebe, dirCopo, Math.max(susto * 0.6, S((t - SOCO + 0.5) / 0.3)));
+          if (t < SOCO - 0.5) mistura(rg.aL, dirCopo, dirBebe, U_SOLTA * (1 - susto * 0.5));
+          rg.aL.sh.rotation.x -= 0.35 * Math.max(0, Math.sin(Math.min(1, Math.max(0, (t - SOCO + 0.45) / 0.45)) * Math.PI)) - 0.05 * soco;   // ergue e bate
+        }
         else { mistura(rg.aL, dirCopo, dirOrelha, S((t - C2) / 0.8)); mistura(rg.aR, esqMesa, esqOrelha, S((t - C2) / 0.8) * (1 - S((t - FONE - 0.9) / 0.6))); }
         if (t > FONE + 0.9) mistura(rg.aL, dirOrelha, dirCopo, S((t - FONE - 0.9) / 0.6));
-        // bebe devagar: a mão tremendo menos a cada tentativa
-        rg.aL.sh.rotation.z += Math.sin(t * 9) * 0.012 * (t < BEBE ? 1 : 0.3);
-        Elenco.mao(gabi, "dir", t > PEGA && t < C2 ? "segura" : "aberta", 1);
+        rg.aL.sh.rotation.z += Math.sin(t * 9) * 0.012 * (t < SOLTA ? 1 : 0.3);
+        Elenco.mao(gabi, "dir", t > PEGA && t < SOLTA ? "segura" : (t > SOCO - 0.6 && t < C2 ? "punho" : "aberta"), 1);
         raiz.updateMatrixWorld(true);
-        // o copo: na mesa, ou preso na mão enquanto ele bebe (inclina na boca)
-        if (t >= PEGA && t < C2 - 0.3) {
-          maoD.getWorldPosition(_p);                                   // o copo na mão: um pouco à frente dos dedos
-          copo.position.set(_p.x + 0.07, _p.y - 0.06, _p.z + 0.05);
-          copo.rotation.set(-0.9 * S((t - BEBE) / 0.4) * (1 - S((t - BAIXA + 0.4) / 0.4)), 0, 0);
-        } else { copo.position.copy(COPO0); copo.rotation.set(0, 0, 0); }
-        // o fone: na mesa; na cabeça a partir de FONE
+        // ---- o copo: na mesa · na mão · caindo · cacos e a poça no chão ----
+        copo.visible = t < CHAO;
+        if (t >= PEGA && t < SOLTA) { maoD.getWorldPosition(_p); copo.position.set(_p.x + 0.07, _p.y - 0.06, _p.z + 0.05); copo.rotation.set(-0.5 * S((t - PEGA) / (SOLTA - PEGA)), 0, 0); }
+        else if (t >= SOLTA && t < CHAO) { const d = t - SOLTA; copo.position.set(P0.x + VEL.x * d, P0.y + VEL.y * d - 0.5 * GRAV * d * d, P0.z + VEL.z * d); copo.rotation.set(-0.5 - 7 * d, 0, 4 * d); }
+        else if (t < PEGA) { copo.position.copy(COPO0); copo.rotation.set(0, 0, 0); }
+        const esp = S((t - CHAO) / 0.22);
+        for (const c of cacos) { c.visible = t >= CHAO; c.position.set(IMP.x + c.userData.dx * esp, 0.012, IMP.z + c.userData.dz * esp); c.rotation.set(0, c.userData.r + esp * 2, 0); }
+        poca.visible = t >= CHAO; poca.scale.set(0.2 + 0.8 * S((t - CHAO) / 0.8), 1, 0.2 + 0.8 * S((t - CHAO) / 0.8));
+        // ---- o fone: na mesa; na cabeça a partir de FONE ----
         if (t >= FONE) { if (fone.parent !== rg.head) rg.head.add(fone); fone.position.set(0, 0.05, 0); fone.rotation.set(0, 0, 0); fone.scale.set(2.55, 2.4, 2.4); }
         else { if (fone.parent !== raiz) raiz.add(fone); fone.position.copy(FONE0.pos); fone.rotation.copy(FONE0.rot); fone.scale.set(1, 1, 1); }
-        // ---- caras: concentrado -> meio-sorriso (54) -> ouvindo a música; a mãe ensina e se alivia ----
-        expr(gabi, t < BAIXA + 0.2 ? "firme" : "ternura");
-        Elenco.cabeca(gabi, 0.12 - 0.08 * S((t - BEBE) / 0.4) * (1 - S((t - BAIXA) / 0.4)), 0.1 + (t > FONE ? Math.sin(t * 1.4) * 0.08 : 0), (t > FONE ? Math.sin(t * 1.4 + 1) * 0.06 : 0), Math.sin(t * 2 * Math.PI * 0.3) * 0.008);
+        // ---- caras: concentrado -> susto -> raiva de si mesmo -> a música acalma; a mãe ensina, assusta, fica olhando ----
+        expr(gabi, t < SOLTA ? "firme" : (t < SOLTA + 0.5 ? "medo" : (t < FONE + 1.2 ? "raiva" : "triste")));
+        const baixa = t > SOLTA + 0.5 && t < C2 ? 0.18 : 0;
+        Elenco.cabeca(gabi, 0.12 + baixa, 0.1 + (t > FONE + 1.2 ? Math.sin(t * 1.4) * 0.07 : 0), (t > FONE + 1.2 ? Math.sin(t * 1.4 + 1) * 0.05 : 0), Math.sin(t * 2 * Math.PI * (t > SOLTA && t < FONE ? 0.8 : 0.3)) * 0.01);
         mistura(rm.aL, mSolta, mGuia, S((t - 1.4) / 0.7) * (1 - S((t - PEGA + 0.2) / 0.5)));
+        if (t > CHAO) mistura(rm.aL, mSolta, peitoM, S((t - CHAO) / 0.3));
         Elenco.mao(mae, "dir", "aberta", 1);
-        expr(mae, "ternura");
-        Elenco.cabeca(mae, 0.2 - 0.12 * S((t - C3) / 0.6), -0.1, 0.05 * S((t - C3) / 0.6), Math.sin(t * 2 * Math.PI * 0.28) * 0.008);
+        expr(mae, t < CHAO ? "ternura" : "triste");
+        { const bm = mae.userData.rosto.bocas, fala = t > 0.6 && t < 3.82 && Math.sin(t * 15) + Math.sin(t * 6.1) > 0.2;   // a boca dela mexe na fala (c08-mae-02)
+          for (const n in bm) bm[n].visible = n === (fala ? "o" : Elenco.EXPR[mae.userData.rig.ficha.expr].boca); }
+        Elenco.cabeca(mae, 0.2 + (t > CHAO && t < C3 ? 0.12 : 0), -0.1, 0.05 * S((t - C3) / 0.6), Math.sin(t * 2 * Math.PI * 0.28) * 0.008);
         // ---- planos ----
         let alvo;
         if (t < C1) { cam.fov = 40; const u = S(t / C1); cam.position.set(MX + 0.1, 2.0 - 0.05 * u, MZ + 2.7 - 0.3 * u); alvo = V(MX - 0.1, 1.45, MZ - 0.6); }
-        else if (t < C2) { cam.fov = 50; cam.position.set(MX - 1.55, 1.75, MZ + 0.25); alvo = V(MX - 0.45, 1.6, MZ - 0.75); }            // 3/4: bebe
+        else if (t >= CHAO - 0.3 && t < CHAO + 0.7) { cam.fov = 44; cam.position.set(IMP.x + 0.75, 0.75, IMP.z + 1.0); alvo = V(IMP.x, 0.2, IMP.z); }   // insert: o copo bate no chão e estoura
+        else if (t < CHAO + 0.7) { cam.fov = 50; cam.position.set(MX - 1.55, 1.75, MZ + 0.25); alvo = V(MX - 0.45, 1.6, MZ - 0.75); }            // 3/4: pega o copo, escapa
+        else if (t < C2) { cam.fov = 44; const u = S((t - CHAO - 0.7) / (C2 - CHAO)); cam.position.set(MX - 0.1 + 0.1 * u, 2.6, MZ + 2.4 - 0.2 * u); alvo = V(MX - 0.6, 0.95, MZ - 0.75); }   // os cacos no chão, a raiva
         else if (t < C3) { cam.fov = 38; const u = S((t - C2) / 2.5); cam.position.set(MX - 0.35, 2.15, MZ + 1.55 - 0.25 * u); alvo = V(MX - 0.45, 1.85, MZ - 0.9); }   // o fone
-        else { cam.fov = 36; cam.position.set(MX + 0.25, 2.1, MZ + 1.3); alvo = V(MX + 0.45, 1.9, MZ - 0.6); }                              // a mãe, aliviada
+        else { cam.fov = 36; cam.position.set(MX + 0.25, 2.1, MZ + 1.3); alvo = V(MX + 0.45, 1.9, MZ - 0.6); }                              // a mãe olhando o filho
         cam.updateProjectionMatrix(); cam.lookAt(alvo);
-        // 54: a vinheta recua (o olho "abre" um pouco)
-        const recua = S((t - BAIXA - 0.2) / 1.0);
-        pos.render(scene, cam, t, { grao: LOOK.grao, fumaca: LOOK.fumaca - 0.1 * recua, dessat: LOOK.dessat - 0.08 * recua });
+        const pico = Math.max(0, 1 - Math.abs(t - CHAO) / 0.3), recua = S((t - FONE - 1.2) / 1.5);   // a música: a vinheta recua um pouco
+        pos.render(scene, cam, t, { grao: LOOK.grao + 0.1 * pico, fumaca: LOOK.fumaca - 0.08 * recua, dessat: LOOK.dessat - 0.05 * recua });
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
       tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);

@@ -1,0 +1,111 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #br-stage { position: absolute; inset: 0; z-index: 0; }
+    #br-stage canvas { display: block; }
+    #br-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #br-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="bairro" data-width="1920" data-height="1080">
+    <div id="br-stage" class="clip" data-start="0" data-duration="9" data-track-index="0"></div>
+    <div id="br-rotulo" class="clip" data-start="0" data-duration="9" data-track-index="1">NOVA — O BAIRRO VISTO DE CIMA<small>manhã nublada · ambulâncias com giroflex pelas ruas · narrador n05</small></div>
+  </div>
+  <script>
+    (function () {
+      const DUR = 9;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.12, dessat: 0.25 };
+      const S = Cena.suave;
+      const raiz = new THREE.Group();
+      const k = Cena.kit(raiz, 1711);
+      const rnd = k.rnd;
+      // ---------- o bairro: quadras em grade, ruas de asfalto, casas térreas e sobrados ----------
+      const Q = 26, RUA = 6, N = 4, MEIO = (N * Q) / 2;            // quadra (com a rua) · largura da rua · quadras por lado
+      k.box(N * Q + 40, 0.2, N * Q + 40, 0x4a4d52, 0, -0.1, 0, { contorno: false, sombra: false });          // asfalto
+      const CORES = [0xd9cbb0, 0xc7b39a, 0xe2d7c4, 0xb9c3c9, 0xd6b89d, 0xc9d1bd, 0xe8d9b8, 0xb7a58f];
+      const TELHA = [0x9a5a43, 0x8a4c3a, 0x6f6a66, 0xa8674c];
+      for (let i = -2; i < N + 2; i++) for (let j = -2; j < N + 2; j++) {
+        const cx = i * Q - MEIO + Q / 2, cz = j * Q - MEIO + Q / 2, L = Q - RUA;
+        k.box(L + 1.2, 0.35, L + 1.2, 0xa9a59b, cx, 0.17, cz, { contorno: false, sombra: false });       // calçada
+        k.box(L, 0.4, L, 0x6f7f5a, cx, 0.2, cz, { contorno: false, sombra: false });                     // quintais
+        for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) {
+          if (rnd() < 0.12) { k.bolha(1.6, 0x4f6b3f, cx - L / 2 + (a + 0.5) * L / 3, 2.2, cz - L / 2 + (b + 0.5) * L / 3, [1, 0.9, 1]); continue; }
+          const w = 4 + rnd() * 1.8, d = 4 + rnd() * 1.8, h = rnd() < 0.3 ? 5.2 : 3.0;
+          const x = cx - L / 2 + (a + 0.5) * L / 3, z = cz - L / 2 + (b + 0.5) * L / 3;
+          k.box(w, h, d, CORES[Math.floor(rnd() * CORES.length)], x, 0.4 + h / 2, z);
+          const tel = k.cil(0.01, Math.max(w, d) * 0.74, 1.4, TELHA[Math.floor(rnd() * TELHA.length)], x, 0.4 + h + 0.7, z, { seg: 4 });
+          tel.rotation.y = Math.PI / 4; tel.scale.set(w / Math.max(w, d), 1, d / Math.max(w, d));
+        }
+      }
+      // faixas no meio das ruas
+      for (let i = -2; i <= N + 2; i++) {
+        const c = i * Q - MEIO;
+        for (let s = -70; s < 70; s += 4) {
+          k.box(0.25, 0.03, 1.8, 0xd9d4c2, c, 0.02, s, { contorno: false, sombra: false });
+          k.box(1.8, 0.03, 0.25, 0xd9d4c2, s, 0.02, c, { contorno: false, sombra: false });
+        }
+      }
+      // ---------- as ambulâncias: andam pelas ruas com o giroflex piscando ----------
+      const amb = [];
+      function ambulancia(eixo, linha, ini, vel, fase) {
+        const g = new THREE.Group(); g.scale.setScalar(1.4); raiz.add(g);
+        k.box(2.3, 2.3, 4.6, 0xf2f2ee, 0, 1.45, -0.4, { pai: g });                     // baú
+        k.box(2.2, 1.6, 1.4, 0xf2f2ee, 0, 1.1, 2.4, { pai: g });                       // cabine
+        k.box(2.34, 0.35, 4.62, 0xd02a2a, 0, 1.2, -0.4, { pai: g, contorno: false });  // faixa vermelha
+        k.box(2.0, 0.6, 0.05, 0x2b3440, 0, 1.55, 3.12, { pai: g, contorno: false });   // para-brisa
+        for (const [x, z] of [[-1.05, 1.9], [1.05, 1.9], [-1.05, -1.6], [1.05, -1.6]]) k.cil(0.45, 0.45, 0.4, 0x1c1c1f, x, 0.45, z, { r: [0, 0, Math.PI / 2], pai: g, contorno: false });
+        const mA = new THREE.MeshBasicMaterial({ color: 0x2f6bff }), mV = new THREE.MeshBasicMaterial({ color: 0xff2a2a });
+        const la = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.3, 0.4), mA); la.position.set(-0.55, 2.75, 1.6); g.add(la);
+        const lv = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.3, 0.4), mV); lv.position.set(0.55, 2.75, 1.6); g.add(lv);
+        const pA = new THREE.PointLight(0x3c6dff, 0, 14, 1.6); pA.position.set(-0.8, 3.4, 1.6); g.add(pA);
+        const pV = new THREE.PointLight(0xff3030, 0, 14, 1.6); pV.position.set(0.8, 3.4, 1.6); g.add(pV);
+        amb.push({ g, eixo, linha, ini, vel, fase, la, lv, pA, pV, mA, mV });
+      }
+      ambulancia("z", 1 * Q - MEIO, -60, 9.5, 0.0);
+      ambulancia("x", 2 * Q - MEIO, 55, -8.5, 0.37);
+      ambulancia("z", 3 * Q - MEIO, 48, -10, 0.71);
+      ambulancia("x", 0 * Q - MEIO, -40, 9, 0.2);
+      ambulancia("x", 4 * Q - MEIO, -70, 11, 0.55);
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x8e98a6);
+      scene.fog = new THREE.Fog(0x8e98a6, 70, 190);
+      scene.add(raiz);
+      scene.add(new THREE.HemisphereLight(0xc4ccd8, 0x4a4a48, 1.9));
+      const sol = new THREE.DirectionalLight(0xe8ebf0, 1.6);
+      sol.position.set(-40, 80, -30); sol.target.position.set(0, 0, 0);
+      sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); sol.shadow.bias = -0.0008; sol.shadow.normalBias = 0.05;
+      Object.assign(sol.shadow.camera, { left: -90, right: 90, top: 90, bottom: -90, near: 1, far: 220 });
+      scene.add(sol); scene.add(sol.target);
+
+      const cam = new THREE.PerspectiveCamera(38, 1920 / 1080, 1, 400);
+      const renderer = Cena.renderer("br-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+
+      function render() {
+        const t = estado.t;
+        for (const a of amb) {
+          const s = a.ini + a.vel * t;
+          if (a.eixo === "z") { a.g.position.set(a.linha, 0.1, s); a.g.rotation.y = a.vel > 0 ? 0 : Math.PI; }
+          else { a.g.position.set(s, 0.1, a.linha); a.g.rotation.y = a.vel > 0 ? Math.PI / 2 : -Math.PI / 2; }
+          a.g.position.x += a.eixo === "z" ? (a.vel > 0 ? 1.4 : -1.4) : 0;          // mão da rua
+          a.g.position.z += a.eixo === "x" ? (a.vel > 0 ? -1.4 : 1.4) : 0;
+          const azul = Math.floor((t + a.fase) * 5) % 2 === 0;
+          a.la.material.color.setHex(azul ? 0x6d98ff : 0x1a2a55); a.lv.material.color.setHex(azul ? 0x551818 : 0xff4a4a);
+          a.pA.intensity = azul ? 60 : 0; a.pV.intensity = azul ? 0 : 60;
+        }
+        // câmera: bem alta, desce devagar e avança sobre o bairro
+        const u = S(t / DUR);
+        cam.position.set(-48 + 18 * u, 70 - 18 * u, 62 - 14 * u);
+        cam.lookAt(4 + 4 * u, 0, -2 - 4 * u);
+        pos.render(scene, cam, t, LOOK);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["bairro"] = tl;
+      render();
+    })();
+  </script>
+</template>

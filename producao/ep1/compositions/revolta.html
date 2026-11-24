@@ -141,6 +141,10 @@
           if (t > ESCORREGA + 0.8) { if (fone.parent !== rg.aL.el) rg.aL.el.add(fone); fone.position.set(0, -0.55, 0.06); fone.rotation.set(0.3, 0, 1.2); }
           else if (fone.parent !== foneMesa.parent) { foneMesa.parent.add(fone); fone.position.copy(foneMesa.pos); fone.rotation.copy(foneMesa.rot); }
           expr(gabi, t < FALHA ? "grito" : "choro");
+          // regra: a boca SEMPRE mexe quando fala — o grito (c03-gabi-03, 2,0-4,78) abre e fecha com a voz
+          { const bg = gabi.userData.rosto.bocas, fala = t > GRITO && t < GRITO + 2.78, ab = Math.sin(t * 13) + Math.sin(t * 5.3) > -0.3;
+            const base = Elenco.EXPR[rg.ficha.expr].boca, q = fala ? (ab ? (t < FALHA ? "aberta" : "o") : (t < FALHA ? "o" : "triste")) : base;
+            for (const n in bg) bg[n].visible = n === q; }
           Elenco.lagrimas(gabi, S((t - FALHA) / 0.6), t);
           const resp = Math.sin(t * 2 * Math.PI * (t < ESCORREGA ? 1.1 : 0.6)) * 0.014;
           Elenco.cabeca(gabi, t < FALHA ? -0.12 : 0.1 + 0.08 * desce, t < FALHA ? 0.06 * Math.sin(t * 7) : 0, 0, resp);

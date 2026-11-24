@@ -13,16 +13,16 @@
       font-size: 40px; font-weight: 900; letter-spacing: .06em; border-radius: 6px; }
   </style>
   <div id="root" data-composition-id="fim" data-width="1920" data-height="1080">
-    <div id="fm-stage" class="clip" data-start="0" data-duration="7.5" data-track-index="0"></div>
-    <div id="fm-preto" class="clip" data-start="0" data-duration="7.5" data-track-index="1"></div>
-    <div id="fm-dia" style="opacity:0" class="clip" data-start="0" data-duration="7.5" data-track-index="2">DIA 1</div>
-    <div id="fm-rotulo" class="clip" data-start="0" data-duration="7.5" data-track-index="3">C10 — FIM<small>a vinheta fecha como um olho · PRETO · "DIA 1" · a mãe chama ao longe · planos 70–71</small></div>
+    <div id="fm-stage" class="clip" data-start="0" data-duration="12" data-track-index="0"></div>
+    <div id="fm-preto" class="clip" data-start="0" data-duration="12" data-track-index="1"></div>
+    <div id="fm-dia" style="opacity:0" class="clip" data-start="0" data-duration="12" data-track-index="2">DIA 1</div>
+    <div id="fm-rotulo" class="clip" data-start="0" data-duration="12" data-track-index="3">C10 — FIM<small>a vinheta fecha como um olho · PRETO · "DIA 1" · a mãe chama ao longe · planos 70–71</small></div>
     <audio id="fm-mae" class="clip" src="voz/audio/c10-mae-05.wav" data-start="4.1" data-duration="2.55" data-track-index="4" data-volume="0.45"></audio>
   </div>
   <script>
     (function () {
       const DUR = 8, FECHA = 4.4, BATE = 5.2, CORTE = 5.6;               // tempos da van (cópia fiel de van.html, aprovada)
-      const FIM = 7.5, OLHO0 = 0.4, OLHO1 = 3.6, PRETO = 3.9;            // a vinheta fecha · preto · DIA 1 + a mãe ao longe
+      const FIM = 12, OLHO0 = 0.4, OLHO1 = 3.6, PRETO = 3.9;            // a vinheta fecha · preto · DIA 1 + a mãe ao longe
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
 
       const raiz = new THREE.Group();
@@ -159,7 +159,7 @@
         look.fumaca = LOOK.fumaca + (1 - LOOK.fumaca) * olho;
         pretoEl.style.opacity = Math.min(1, Math.max(0, (tf - OLHO1 + 0.3) / (PRETO - OLHO1 + 0.3)));
         // plano 71: no preto, o DIA 1 permanece; some no fim
-        diaEl.style.opacity = Math.min(1, Math.max(0, (tf - 3.2) / 0.6)) * (1 - Math.min(1, Math.max(0, (tf - 6.8) / 0.7)));   // surge quando o olho fecha
+        diaEl.style.opacity = Math.min(1, Math.max(0, (tf - 3.2) / 0.6)) * (1 - Math.min(1, Math.max(0, (tf - 11.2) / 0.7)));   // surge quando o olho fecha
         if (tf < PRETO + 0.1) pos.render(scene, cam, t, look);
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });

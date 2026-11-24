@@ -1,0 +1,84 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #ac-stage { position: absolute; inset: 0; z-index: 0; }
+    #ac-stage canvas { display: block; }
+    #ac-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #ac-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="acorda" data-width="1920" data-height="1080">
+    <div id="ac-stage" class="clip" data-start="0" data-duration="7" data-track-index="0"></div>
+    <div id="ac-rotulo" class="clip" data-start="0" data-duration="7" data-track-index="1">NOVA — ACORDA DE NOVO<small>sozinho na cama · ainda cego · mãos nos olhos · a raiva (narrador n07)</small></div>
+  </div>
+  <script>
+    (function () {
+      const DUR = 7, MAOS = 2.8, RAIVA = 4.8;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };
+      const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z);
+      const expr = (g, n) => { if (g.userData.rig.ficha.expr !== n) Elenco.expressao(g, n); };
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+      const quarto = new THREE.Group();
+      const Q = Cenarios.quarto(quarto);
+      const { k, BX, BZ0, MT } = Q;
+      // ---------- deitado como no deitar (horas depois, sozinho) ----------
+      const gabi = Elenco.build("gabi", { blind: true, expr: "neutro" }); const rg = gabi.userData.rig;
+      const HZ = BZ0 + 0.42, HY = 1.36;
+      gabi.rotation.x = -Math.PI / 2; gabi.position.set(BX - 0.1, HY, HZ + Elenco.CABECA_Y); quarto.add(gabi);
+      rg.aL.sh.rotation.set(0, 0, -0.08); rg.aR.sh.rotation.set(0, 0, 0.08);
+      k.bolha(1.0, 0x5d7491, BX - 0.05, MT + 0.55, HZ + 1.97, [0.95, 0.5, 1.5], { r: [0.04, 0, 0] });
+      k.bolha(0.6, 0x5d7491, BX - 0.1, MT + 0.82, HZ + 1.2, [1.35, 0.4, 0.5]);
+      quarto.updateMatrixWorld(true);
+      const repouso = [guarda(rg.aL), guarda(rg.aR)];
+      Elenco.alcancar(gabi, "dir", rg.head.localToWorld(V(-0.42, -0.02, 0.2)), { foraDoCorpo: true });
+      Elenco.alcancar(gabi, "esq", rg.head.localToWorld(V(0.43, -0.04, 0.18)), { foraDoCorpo: true });
+      const olhos = [guarda(rg.aL), guarda(rg.aR)];
+
+      // luz: dia alto, nublado (mais claro que o amanhecer do despertar)
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1e26);
+      scene.fog = new THREE.Fog(0x3a4254, 9, 24);
+      scene.add(quarto);
+      scene.add(new THREE.HemisphereLight(0xb4c0d4, 0x544838, 2.9));
+      const sol = new THREE.DirectionalLight(0xe8ecf2, 3.0);
+      sol.position.set(Q.X0 - 6, 6.8, -0.6); sol.target.position.set(-0.6, 0, -0.9);
+      sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048); sol.shadow.bias = -0.0006;
+      Object.assign(sol.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 20 });
+      scene.add(sol); scene.add(sol.target);
+      const preench = new THREE.PointLight(0xa9b8d6, 1.6, 5, 1.5); preench.position.set(BX + 0.9, HY + 1.7, HZ + 1.0); scene.add(preench);
+
+      const cam = new THREE.PerspectiveCamera(34, 1920 / 1080, 0.1, 60);
+      const renderer = Cena.renderer("ac-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+
+      function render() {
+        const t = estado.t;
+        // acorda: a cabeça procura; as mãos vão aos olhos (nada mudou); fecha os punhos — a raiva
+        const u = S((t - MAOS) / 0.9), r = S((t - RAIVA) / 0.5);
+        mistura(rg.aL, repouso[0], olhos[0], u); mistura(rg.aR, repouso[1], olhos[1], S((t - MAOS - 0.15) / 0.9));
+        Elenco.mao(gabi, "dir", r > 0 ? "punho" : "aberta", r > 0 ? r : u); Elenco.mao(gabi, "esq", r > 0 ? "punho" : "aberta", r > 0 ? r : u);
+        expr(gabi, t < 1.2 ? "neutro" : (t < RAIVA ? "medo" : "raiva"));
+        const procura = Math.sin(Math.max(0, t - 0.8) * 1.4) * 0.3 * (1 - S((t - MAOS) / 0.8));
+        const treme = r * Math.sin(t * 23) * 0.04;
+        Elenco.cabeca(gabi, -0.05, procura + treme, 0, Math.sin(t * 2 * Math.PI * (t < RAIVA ? 0.4 : 0.9)) * 0.012);
+        // câmera por cima do rosto (como no fim do despertar aprovado), aproximando devagar: as mãos nas têmporas, a boca à mostra
+        const v = S(t / DUR), dist = 2.5 - 0.5 * v, ang = 0.25 * (1 - v);
+        cam.position.set(BX - 0.1 + Math.sin(ang) * dist, HY + Math.cos(ang) * dist, HZ + 0.8);
+        cam.up.set(0, Math.sin(ang * 0.9), -Math.cos(ang * 0.9)).normalize();
+        cam.lookAt(BX - 0.1, HY, HZ + 0.05);
+        const pico = Math.max(0, 1 - Math.abs(t - RAIVA) / 0.4);
+        pos.render(scene, cam, t, { grao: LOOK.grao + 0.08 * pico, fumaca: LOOK.fumaca, dessat: LOOK.dessat });
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["acorda"] = tl;
+      render();
+    })();
+  </script>
+</template>

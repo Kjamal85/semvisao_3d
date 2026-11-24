@@ -91,10 +91,14 @@ Cores são decisão do criador; estes são os tokens de partida.
 
 ## Vozes / narração
 
-- **Sem narrador onisciente único** (diferente da referência "E Se?"). A condução é
-  **compartilhada**: cada personagem tem a **própria voz**, e a história avança por
-  **diálogo** e pelo que se ouve em cena (tato, respiração, sons do ambiente).
-- Isso reforça a imersão: no modo cego, o som é quase um personagem.
+- **Narrador em 3ª pessoa** (decisão do usuário em 2026-11-23, aprovado no EP1 em
+  2026-11-24 — "gostei, bom trabalho"; mantém-se no EP2 e daqui em diante). Tom de
+  thriller, frases curtas, conta a história **só onde os personagens não estão
+  falando** — nunca por cima de um diálogo. Cada personagem continua tendo a
+  **própria voz**; o narrador é um terceiro elemento, não substitui o diálogo nem a
+  condução por tato/respiração/som de ambiente.
+- Isso reforça a imersão: no modo cego, o som (diálogo + narrador + ambiente) é quase
+  um personagem.
 - **TV / notícias:** uma **repórter (voz feminina)** dá a notícia do apagão e, depois,
   do medo de vírus/contágio. É a "voz do mundo lá fora" entrando na casa.
 
@@ -116,5 +120,5 @@ adaptadas ao thriller:
   todo. Na abertura, o tempo **acelera de 23:30 até 03:30** (a explosão) e depois o
   relógio segue marcando as horas. Device **próprio da série** — a referência usa selos
   de dado no canto (ex.: velocímetro/contador), mas não um relógio corrido acelerando.
-- **Legenda de fala:** no baixo/centro, nunca cobrindo a ação. Legenda de dado
-  (contador, teorias) no topo.
+- **Sem legenda de fala.** Decisão do usuário (2026-11-24): a série não usa legenda de
+  diálogo/narração — a emoção passa por voz, som e imagem, não por texto na tela.

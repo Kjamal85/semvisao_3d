@@ -1,0 +1,205 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dt-stage { position: absolute; inset: 0; z-index: 0; }
+    #dt-stage canvas { display: block; }
+    #dt-rotulo { position: absolute; left: 60px; bottom: 50px; z-index: 2; padding: 14px 22px;
+      background: rgba(10, 12, 18, 0.72); color: #e9ecf2; font-family: sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; }
+    #dt-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
+  </style>
+  <div id="root" data-composition-id="deitar" data-width="1920" data-height="1080">
+    <div id="dt-stage" class="clip" data-start="0" data-duration="17" data-track-index="0"></div>
+    <div id="dt-rotulo" class="clip" data-start="0" data-duration="17" data-track-index="1">NOVA — DOR DE CABEÇA / DEITAR<small>"minha cabeça tá doendo" · a mãe leva pro quarto · cobre · "Descansa, meu amor."</small></div>
+    <audio id="dt-gabi" class="clip" src="voz/audio/c04-gabi-07.wav" data-start="0.8" data-duration="3.57" data-track-index="2" data-volume="1"></audio>
+    <audio id="dt-mae1" class="clip" src="voz/audio/c04-mae-09.wav" data-start="4.9" data-duration="2.41" data-track-index="3" data-volume="1"></audio>
+    <audio id="dt-mae2" class="clip" src="voz/audio/c04-mae-07.wav" data-start="13.9" data-duration="1.27" data-track-index="4" data-volume="1"></audio>
+  </div>
+  <script>
+    (function () {
+      // A: sala (continua a TV: cortina fechada, a TV ligada) 0-CORTE · B: quarto, ele deitado, a mãe cobre
+      const DUR = 17, G1 = 0.8, G1F = 4.37, M1 = 4.9, M1F = 7.31, LEVANTA = 7.6, SAI = 8.6, CORTE = 11.0, M2 = 13.9, M2F = 15.17;
+      const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };
+      const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z), E = (x, y, z) => new THREE.Euler(x, y, z);
+      const expr = (g, n) => { if (g.userData.rig.ficha.expr !== n) Elenco.expressao(g, n); };
+      const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
+      const mistura = (b, A, B, u) => {
+        b.sh.rotation.set(A[0].x + (B[0].x - A[0].x) * u, A[0].y + (B[0].y - A[0].y) * u, A[0].z + (B[0].z - A[0].z) * u);
+        b.el.rotation.set(A[1].x + (B[1].x - A[1].x) * u, A[1].y + (B[1].y - A[1].y) * u, A[1].z + (B[1].z - A[1].z) * u);
+      };
+      const falaBoca = (g, t, a, b, base) => {          // regra: a boca SEMPRE mexe quando fala
+        const bocas = g.userData.rosto.bocas, on = t > a && t < b && Math.sin(t * 15) + Math.sin(t * 6.1) > 0.2;
+        for (const n in bocas) bocas[n].visible = n === (on ? "o" : base);
+      };
+      const andar = (r, t, a) => { const p = Math.sin(t * 7) * 0.3 * a; r.pL.hip.rotation.set(p, 0, 0); r.pR.hip.rotation.set(-p, 0, 0); r.pL.knee.rotation.set(Math.max(0, -p), 0, 0); r.pR.knee.rotation.set(Math.max(0, p), 0, 0); };
+      const lerpV = (A, B, u) => A.clone().lerp(B, u);
+      const rumo = (A, B) => Math.atan2(B.x - A.x, B.z - A.z);
+
+      // =================== A: a sala ===================
+      const sala = new THREE.Group();
+      const SL = Cenarios.sala(sala);
+      const { k, X0, Z0, JX0, JX1, JY1, PX0, PX1, TZ, TV_W, TV_H, TV_Y, SX, SZ, SEAT } = SL;
+      // a TV continua no plantão (imagem parada da tarja)
+      const cv = document.createElement("canvas"); cv.width = 768; cv.height = 432; const g2 = cv.getContext("2d");
+      g2.fillStyle = "#2a4a7e"; g2.fillRect(0, 0, 768, 432);
+      g2.fillStyle = "#31528c"; for (let i = 0; i < 7; i++) if (i % 2) g2.fillRect(i * 110, 0, 70, 432);
+      g2.fillStyle = "#c8102e"; g2.fillRect(24, 22, 168, 40); g2.fillStyle = "#fff"; g2.font = "bold 26px sans-serif"; g2.fillText("PLANTÃO", 38, 52);
+      g2.fillStyle = "#b00d26"; g2.fillRect(0, 314, 768, 62); g2.fillStyle = "#fff"; g2.font = "bold 40px sans-serif"; g2.fillText("CEGUEIRA: VÍRUS?", 28, 360);
+      g2.fillStyle = "#f2f2f2"; g2.fillRect(0, 376, 768, 40); g2.fillStyle = "#1a1a1a"; g2.font = "bold 26px sans-serif"; g2.fillText("casos dobram a cada dia · isolamento recomendado", 28, 405);
+      const texTV = new THREE.CanvasTexture(cv); texTV.colorSpace = THREE.SRGBColorSpace;
+      const tela = new THREE.Mesh(new THREE.PlaneGeometry(TV_W, TV_H), new THREE.MeshBasicMaterial({ map: texTV, toneMapped: false }));
+      tela.rotation.y = Math.PI / 2; tela.position.set(X0 + 0.165, TV_Y, TZ); sala.add(tela);
+      // a cortina já fechada
+      const CZ = Z0 + 0.3, MEIO = (JX0 + JX1) / 2;
+      for (const [xF, xD] of [[JX0 - 0.75, MEIO], [JX1 + 0.75, MEIO]]) {
+        const n = Math.round(Math.abs(xD - xF) / 0.11), s = Math.sign(xD - xF);
+        for (let i = 0; i < n; i++) k.cil(0.07, 0.085, JY1 + 0.3, 0xd9c7a3, xF + s * (i + 0.5) * 0.11, (JY1 + 0.3) / 2, CZ + (i % 2) * 0.04, { seg: 10, contorno: i === n - 1 });
+      }
+      const gabi = Elenco.build("gabi", { blind: true, expr: "triste" }); sala.add(gabi); const rg = gabi.userData.rig;
+      const mae = Elenco.build("mae", { expr: "triste" }); sala.add(mae); const rm = mae.userData.rig;
+      const pai = Elenco.build("pai", { expr: "triste" }); sala.add(pai); const rp = pai.userData.rig;
+      const PORTA = V((PX0 + PX1) / 2, 0, Z0 + 0.4), WP = V(0.2, 0, Z0 + 0.6);
+      const GS = V(SX - 0.05, 0, SZ + 0.55), MS = V(SX - 0.05, 0, SZ - 0.45), PJ = V(MEIO - 0.25, 0, Z0 + 0.65), PL = V(-0.55, 0, Z0 + 1.15);
+      const sentaY = SEAT + 0.1 - 1.075, ry = -Math.PI / 2;
+      function sentar(g, r, lugar, ry, u) {
+        g.position.set(lugar.x - 0.55 * (1 - u), sentaY * u, lugar.z); g.rotation.set(0, ry, 0);
+        for (const l of [r.pL, r.pR]) { l.hip.rotation.set(-Math.PI / 2 * u, 0, 0); l.knee.rotation.set(Math.PI / 2 * u, 0, 0); }
+      }
+      const colo = [E(-0.55, 0, 0.05), E(-1.2, 0, 0)], coloE = [E(-0.55, 0, -0.05), E(-1.2, 0, 0)];
+      const ombro = [E(-0.45, 0, 1.0), E(-0.4, 0, 0)], soltoD = [E(-0.05, 0, -0.08), E(-0.2, 0, 0)];
+      const guia = [E(-0.6, 0, 0.6), E(-0.8, 0, 0)];
+      // a mão dele na testa (dor): pose calculada com ele sentado e de cabeça baixa
+      sentar(gabi, rg, GS, ry, 1); Elenco.cabeca(gabi, 0.32, 0.25, 0.08); sala.updateMatrixWorld(true);
+      Elenco.alcancar(gabi, "dir", rg.head.localToWorld(V(-0.04, 0.1, 0.42)), { foraDoCorpo: true });
+      const testa = guarda(rg.aL);
+
+      const sceneA = new THREE.Scene();
+      sceneA.background = new THREE.Color(0x1a1d24);
+      sceneA.fog = new THREE.Fog(0x8d97a6, 11, 30);
+      sceneA.add(sala);
+      sceneA.add(new THREE.HemisphereLight(0xa7b4c6, 0x5a4c3e, 1.4));
+      const solA = new THREE.DirectionalLight(0xe6e9ef, 0.9);
+      solA.position.set(1.2, 6.5, -11); solA.target.position.set(0.4, 0, 0.5);
+      solA.castShadow = true; solA.shadow.mapSize.set(2048, 2048); solA.shadow.bias = -0.0006; solA.shadow.normalBias = 0.03;
+      Object.assign(solA.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 0.5, far: 25 });
+      sceneA.add(solA); sceneA.add(solA.target);
+      const brilhoTV = new THREE.SpotLight(0xa9c6ff, 5.2, 10, 0.95, 0.7, 1.2);
+      brilhoTV.position.set(X0 + 0.3, TV_Y, TZ); brilhoTV.target.position.set(SX + 1, 1.0, TZ);
+      brilhoTV.castShadow = true; brilhoTV.shadow.mapSize.set(1024, 1024); brilhoTV.shadow.bias = -0.002; brilhoTV.shadow.normalBias = 0.04;
+      sceneA.add(brilhoTV); sceneA.add(brilhoTV.target);
+
+      // =================== B: o quarto ===================
+      const quarto = new THREE.Group();
+      const Q = Cenarios.quarto(quarto);
+      const kq = Q.k, BX = Q.BX, BZ0 = Q.BZ0, MT = Q.MT;
+      const gabi2 = Elenco.build("gabi", { blind: true, expr: "triste" }); const rg2 = gabi2.userData.rig;
+      const HZ = BZ0 + 0.42, HY = 1.36;
+      gabi2.rotation.x = -Math.PI / 2; gabi2.position.set(BX - 0.1, HY, HZ + Elenco.CABECA_Y); quarto.add(gabi2);
+      rg2.aL.sh.rotation.set(0, 0, -0.08); rg2.aR.sh.rotation.set(0, 0, 0.08);
+      // o edredom que a mãe puxa: começa na cintura e sobe até o peito
+      const edr = new THREE.Group(); quarto.add(edr);
+      kq.bolha(1.0, 0x5d7491, BX - 0.05, MT + 0.55, HZ + 1.75, [0.95, 0.5, 1.5], { r: [0.04, 0, 0], pai: edr });
+      const dobra = kq.bolha(0.6, 0x5d7491, BX - 0.1, MT + 0.82, HZ + 0.98, [1.35, 0.4, 0.5], { pai: edr });
+      const mae2 = Elenco.build("mae", { expr: "triste" }); quarto.add(mae2); const rm2 = mae2.userData.rig;
+      const MQ = V(BX + 1.35, 0, HZ + 0.55);                      // de pé ao lado da cabeceira, entre a cama e o criado-mudo
+      mae2.position.copy(MQ); mae2.rotation.y = rumo(MQ, V(BX, 0, HZ + 1.3));
+      const DESCE = 0.65;                                          // quanto o edredom começa abaixo
+      edr.position.z = DESCE; quarto.updateMatrixWorld(true);
+      const pegaBaixo = () => V(BX + 0.55, MT + 0.75, HZ + 0.98 + DESCE);
+      Elenco.alcancar(mae2, "dir", pegaBaixo(), { foraDoCorpo: true }); const mbD = guarda(rm2.aL);
+      Elenco.alcancar(mae2, "esq", pegaBaixo().add(V(0, 0, 0.35)), { foraDoCorpo: true }); const mbE = guarda(rm2.aR);
+      Elenco.alcancar(mae2, "dir", V(BX + 0.5, MT + 0.85, HZ + 1.2), { foraDoCorpo: true }); const mcD = guarda(rm2.aL);
+      Elenco.alcancar(mae2, "esq", V(BX + 0.5, MT + 0.8, HZ + 1.55), { foraDoCorpo: true }); const mcE = guarda(rm2.aR);
+      const solto2D = [E(-0.1, 0, -0.08), E(-0.25, 0, 0)], solto2E = [E(-0.1, 0, 0.08), E(-0.25, 0, 0)];
+
+      const sceneB = new THREE.Scene();
+      sceneB.background = new THREE.Color(0x12151c);
+      sceneB.fog = new THREE.Fog(0x283044, 9, 24);
+      sceneB.add(quarto);
+      sceneB.add(new THREE.HemisphereLight(0x95a7c8, 0x4a3e34, 2.6));
+      const solB = new THREE.DirectionalLight(0xd8e2f2, 2.6);
+      solB.position.set(Q.X0 - 6, 6.2, -0.3); solB.target.position.set(-0.6, 0, -0.9);
+      solB.castShadow = true; solB.shadow.mapSize.set(2048, 2048); solB.shadow.bias = -0.0006;
+      Object.assign(solB.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 20 });
+      sceneB.add(solB); sceneB.add(solB.target);
+      const preench = new THREE.PointLight(0xa9b8d6, 1.6, 5, 1.5); preench.position.set(BX + 0.9, HY + 1.7, HZ + 1.0); sceneB.add(preench);
+
+      const cam = new THREE.PerspectiveCamera(40, 1920 / 1080, 0.1, 60);
+      const renderer = Cena.renderer("dt-stage");
+      const pos = Pos.criar(renderer, 1920, 1080);
+      const estado = { t: 0 };
+
+      function render() {
+        const t = estado.t;
+        if (t < CORTE) {
+          // ---- o Gabi: dor, mão na testa; levanta com a mãe e saem ----
+          const lev = S((t - LEVANTA) / 0.9), anda = S((t - SAI) / (CORTE - SAI - 0.2));
+          if (lev < 1) { sentar(gabi, rg, GS, ry, 1 - lev); sentar(mae, rm, MS, ry + 0.35 * (1 - lev), 1 - lev); }
+          else {
+            const via = (A, B, C, u) => (u < 0.5 ? lerpV(A, B, u * 2) : lerpV(B, C, (u - 0.5) * 2));
+            const iniG = V(GS.x - 0.55, 0, GS.z), iniM = V(MS.x - 0.55, 0, MS.z);
+            const pG = via(iniG, WP, PORTA, anda), pM = via(iniM, V(WP.x + 0.35, 0, WP.z - 0.05), V(PORTA.x + 0.4, 0, PORTA.z + 0.1), anda);
+            gabi.position.copy(pG); mae.position.copy(pM);
+            gabi.rotation.set(0, anda <= 0 ? ry : (anda < 0.5 ? rumo(iniG, WP) : rumo(WP, PORTA)), 0);
+            mae.rotation.set(0, anda <= 0 ? ry : (anda < 0.5 ? rumo(iniM, WP) : rumo(WP, PORTA)), 0);
+            andar(rg, t, anda > 0 && anda < 1 ? 0.7 : 0); andar(rm, t + 0.4, anda > 0 && anda < 1 ? 1 : 0);
+          }
+          const dor = S((t - 0.3) / 0.6) * (1 - S((t - LEVANTA + 0.4) / 0.6));
+          mistura(rg.aL, colo, testa, dor);
+          if (lev > 0) mistura(rg.aL, colo, [E(-0.9, 0, -0.1), E(-0.3, 0, 0)], lev);
+          mistura(rg.aR, coloE, [E(-0.6, 0, 0.2), E(-0.4, 0, 0)], lev);
+          Elenco.mao(gabi, "dir", "aberta", dor * 0.6);
+          expr(gabi, "triste");
+          Elenco.cabeca(gabi, (0.32 * dor + 0.12) * (1 - lev), 0.25 * dor + 0.15 * (1 - dor) * (1 - lev), 0.08 * dor, Math.sin(t * 2 * Math.PI * 0.4) * 0.008);
+          falaBoca(gabi, t, G1, G1F, "triste");
+          // a mãe: mão no ombro dele, vira para ele quando ele fala, responde, ajuda a levantar
+          const olha = S((t - G1 - 0.6) / 0.6);
+          mistura(rm.aR, ombro, guia, lev);
+          rm.aL.sh.rotation.set(-0.3, 0, -0.08); rm.aL.el.rotation.set(-0.9, 0, 0);
+          expr(mae, t > G1 + 0.6 && t < M1 ? "medo" : "triste");
+          Elenco.cabeca(mae, 0.1 * (1 - lev), (0.3 + 0.4 * olha) * (1 - lev), -0.05);
+          falaBoca(mae, t, M1, M1F, t > G1 + 0.6 && t < M1 ? "o" : "triste");
+          // o pai, de pé perto da janela: vira para eles e sai da frente quando passam
+          const sai = S((t - SAI) / 1.2);
+          const pP = lerpV(PJ, PL, sai); pai.position.copy(pP);
+          pai.rotation.set(0, rumo(pP, V(GS.x - 0.3, 0, GS.z - 0.4)) + (anda > 0.4 ? 0.9 * S((anda - 0.4) / 0.4) : 0), 0);
+          andar(rp, t, sai > 0 && sai < 1 ? 0.8 : 0);
+          mistura(rp.aL, soltoD, [E(-0.55, 0.35, 2.35), E(-2.05, 0, 0)], 1 - S((t - SAI) / 0.6));
+          rp.aR.sh.rotation.set(-0.05, 0, 0.08); rp.aR.el.rotation.set(-0.2, 0, 0);
+          Elenco.cabeca(pai, 0.15, 0, 0.05, Math.sin(t * 2 * Math.PI * 0.25) * 0.008);
+          brilhoTV.intensity = 5.2 + 1.1 * Math.sin(t * 3.1) * Math.sin(t * 1.7 + 0.5) + (Math.floor(t * 1.5) % 3 === 0 ? 0.9 : 0);
+          // planos: médio no sofá (os dois rostos) · aberto: levantam e saem pela porta
+          let alvo;
+          if (t < LEVANTA) { cam.fov = 40; const u = S(t / LEVANTA); cam.position.set(-2.05 + 0.2 * u, 2.05, SZ + 1.0 + 0.1 * u); alvo = V(SX - 0.3, 1.45, SZ + 0.05); }
+          else { cam.fov = 44; const u = S((t - LEVANTA) / (CORTE - LEVANTA)); cam.position.set(-2.4 + 0.3 * u, 2.4, 2.9 - 0.3 * u); alvo = V(1.0 + 0.6 * u, 1.4, -1.3 - 0.4 * u); }
+          cam.near = 0.1; cam.updateProjectionMatrix(); cam.lookAt(alvo);
+          pos.render(sceneA, cam, t, LOOK);
+        } else {
+          // ---- B: ele deitado; a mãe puxa o edredom até o peito e fala baixinho ----
+          const tb = t - CORTE, cobre = S((tb - 0.8) / 1.6);
+          edr.position.z = 0.22 + (DESCE - 0.22) * (1 - cobre);   // para abaixo do queixo: a boca fica à mostra
+          mistura(rm2.aL, mbD, mcD, cobre); mistura(rm2.aR, mbE, mcE, cobre);
+          if (tb < 0.8) { mistura(rm2.aL, solto2D, mbD, S(tb / 0.8)); mistura(rm2.aR, solto2E, mbE, S(tb / 0.8)); }
+          const solta = S((t - M2F - 0.3) / 0.8);
+          if (solta > 0) { mistura(rm2.aL, mcD, solto2D, solta); mistura(rm2.aR, mcE, solto2E, solta); }
+          Elenco.mao(mae2, "dir", "segura", cobre * (1 - solta)); Elenco.mao(mae2, "esq", "segura", cobre * (1 - solta));
+          expr(mae2, "triste");
+          Elenco.cabeca(mae2, 0.2, 0, 0, Math.sin(t * 2 * Math.PI * 0.35) * 0.008);
+          falaBoca(mae2, t, M2, M2F, "triste");
+          expr(gabi2, "neutro");
+          Elenco.cabeca(gabi2, -0.05, 0.22 * S((t - M2 + 0.3) / 0.6), 0, Math.sin(t * 2 * Math.PI * 0.3) * 0.01);
+          // câmera alta do lado do pé, à direita: o rosto dele no travesseiro e a mãe de 3/4 na cabeceira
+          const u = S(tb / (DUR - CORTE));
+          cam.fov = 38; cam.near = 0.1; cam.updateProjectionMatrix();
+          cam.position.set(0.45 - 0.1 * u, 3.2 - 0.1 * u, 0.9 - 0.25 * u);
+          cam.lookAt(BX + 0.55, 1.45, HZ + 0.45);
+          pos.render(sceneB, cam, t, LOOK);
+        }
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines["deitar"] = tl;
+      render();
+    })();
+  </script>
+</template>

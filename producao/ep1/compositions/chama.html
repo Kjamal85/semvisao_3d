@@ -9,12 +9,13 @@
     #ch-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="chama" data-width="1920" data-height="1080">
-    <div id="ch-stage" class="clip" data-start="0" data-duration="3.4" data-track-index="0"></div>
-    <div id="ch-rotulo" class="clip" data-start="0" data-duration="3.4" data-track-index="1">C06 — A CHAMA<small>a mão chega perto da chama · corte seco antes de encostar · plano 44</small></div>
+    <div id="ch-stage" class="clip" data-start="0" data-duration="5.4" data-track-index="0"></div>
+    <div id="ch-rotulo" class="clip" data-start="0" data-duration="5.4" data-track-index="1">C06 — A CHAMA<small>a mão chega perto da chama · "Cuidado, filho!" · encosta e puxa · plano 44</small></div>
+    <audio id="ch-mae" class="clip" src="voz/audio/c06-mae-11.wav" data-start="2.0" data-duration="1.29" data-track-index="2" data-volume="1"></audio>
   </div>
   <script>
     (function () {
-      const DUR = 3.4, CORTE = 1.4;
+      const DUR = 3.4, CORTE = 1.4, TOTAL = 5.4;   // montagem: em DUR encosta na chama e puxa a mão (a mãe grita antes, de fora)
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };
       const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z);
       const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
@@ -43,6 +44,7 @@
       raiz.updateMatrixWorld(true);
       Elenco.alcancar(gabi, "esq", V(QUEIMA.x + 0.05, QUEIMA.y + 0.45, QUEIMA.z + 0.15), { foraDoCorpo: true }); const longe = guarda(rg.aR);
       Elenco.alcancar(gabi, "esq", V(QUEIMA.x + 0.02, QUEIMA.y + 0.17, QUEIMA.z + 0.02), { foraDoCorpo: true }); const perto = guarda(rg.aR);
+      Elenco.alcancar(gabi, "esq", gabi.localToWorld(V(0.32, 1.45, 0.5)), { foraDoCorpo: true }); const puxa = guarda(rg.aR);   // a mão queimada volta para o peito
       Elenco.alcancar(gabi, "dir", V(FX + 0.65, BH + 0.06, BZ + 0.3), { foraDoCorpo: true });                         // a outra mão na bancada
 
       const scene = new THREE.Scene();
@@ -66,18 +68,21 @@
         for (const c of chamas) { const f = 1 + 0.25 * Math.sin(t * 23 + c.userData.f) + 0.15 * Math.sin(t * 37 + c.userData.f * 2); c.scale.set(1, f, 1); }
         brilho.intensity = 0.35 + 0.1 * Math.sin(t * 19);
         // a mão desce devagar, tateando no ar, em direção ao calor
-        const desce = S((t - 0.3) / (DUR - 0.3));
+        const desce = S((t - 0.3) / (DUR - 0.3)), dor = S((t - DUR) / 0.18);
         mistura(rg.aR, longe, perto, desce);
-        rg.aR.sh.rotation.z += Math.sin(t * 3.1) * 0.03;
-        Elenco.mao(gabi, "esq", "aberta", 1);
-        Elenco.cabeca(gabi, 0.05 + 0.08 * desce, 0.45, 0.05, Math.sin(t * 2 * Math.PI * 0.5) * 0.008);   // escuta de lado
-        if (t < CORTE) { cam.fov = 58; cam.position.set(FX - 1.45, 2.05, BZ + 1.35); cam.lookAt(FX + 0.1, 1.55, BZ + 0.85); }   // de perfil: ele escuta de lado
+        if (dor > 0) mistura(rg.aR, perto, puxa, dor);
+        rg.aR.sh.rotation.z += Math.sin(t * 3.1) * 0.03 + (dor > 0 ? Math.sin(t * 31) * 0.06 * (1 - S((t - DUR - 1.2) / 0.8)) : 0);
+        Elenco.mao(gabi, "esq", dor > 0 ? "segura" : "aberta", 1);
+        if (gabi.userData.rig.ficha.expr !== (dor > 0 ? "grito" : "firme")) Elenco.expressao(gabi, dor > 0 ? "grito" : "firme");
+        Elenco.cabeca(gabi, 0.05 + 0.08 * desce - 0.2 * dor, 0.45 + 0.1 * dor, 0.05, Math.sin(t * 2 * Math.PI * 0.5) * 0.008);   // escuta de lado; na dor, a cabeça vai para trás
+        if (t >= DUR) { cam.fov = 62; const sh = 0.03 * (1 - S((t - DUR) / 1.2)); cam.position.set(FX - 0.45 + Math.sin(t * 50) * sh, 2.3 + Math.sin(t * 41) * sh, BZ + 0.15); cam.lookAt(FX + 0.15, 2.05, BZ + 0.95); }   // de cima da bancada, de frente: o rosto na dor   // encostou: puxa a mão, dor
+        else if (t < CORTE) { cam.fov = 58; cam.position.set(FX - 1.45, 2.05, BZ + 1.35); cam.lookAt(FX + 0.1, 1.55, BZ + 0.85); }   // de perfil: ele escuta de lado
         else { cam.fov = 36; const u = S((t - CORTE) / (DUR - CORTE)); cam.position.set(QUEIMA.x - 0.75 + 0.05 * u, QUEIMA.y + 0.42, QUEIMA.z + 0.62 - 0.06 * u); cam.lookAt(QUEIMA.x + 0.05, QUEIMA.y + 0.12, QUEIMA.z); }
         cam.updateProjectionMatrix();
         pos.render(scene, cam, t, LOOK);
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
-      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      tl.fromTo(estado, { t: 0 }, { t: TOTAL, duration: TOTAL, ease: "none" }, 0);
       window.__timelines["chama"] = tl;
       render();
     })();

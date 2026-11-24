@@ -9,14 +9,17 @@
     #bs-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="buscar" data-width="1920" data-height="1080">
-    <div id="bs-stage" class="clip" data-start="0" data-duration="17" data-track-index="0"></div>
-    <div id="bs-rotulo" class="clip" data-start="0" data-duration="17" data-track-index="1">C10 — ELES VÊM BUSCAR<small>sirene na cortina · a van para · TUM-TUM-TUM · "É meu filho. Ele fica." · planos 62–65</small></div>
-    <audio id="bs-agente" class="clip" src="voz/audio/c10-agente-01.wav" data-start="10.6" data-duration="3.4" data-track-index="2" data-volume="0.85"></audio>
-    <audio id="bs-pai" class="clip" src="voz/audio/c10-pai-01.wav" data-start="14.7" data-duration="1.96" data-track-index="3" data-volume="1"></audio>
+    <div id="bs-stage" class="clip" data-start="0" data-duration="20.3" data-track-index="0"></div>
+    <div id="bs-rotulo" class="clip" data-start="0" data-duration="20.3" data-track-index="1">C10 — ELES VÊM BUSCAR<small>sirene na cortina · a van para · TUM-TUM-TUM · "É meu filho. Ele fica." · planos 62–65</small></div>
+    <audio id="bs-agente3" class="clip" src="voz/audio/c10-agente-03.wav" data-start="8.2" data-duration="2.51" data-track-index="4" data-volume="0.85"></audio>
+    <audio id="bs-gabi" class="clip" src="voz/audio/c10-gabi-08.wav" data-start="10.75" data-duration="2.83" data-track-index="5" data-volume="1"></audio>
+    <audio id="bs-agente" class="clip" src="voz/audio/c10-agente-01.wav" data-start="13.9" data-duration="3.4" data-track-index="2" data-volume="0.85"></audio>
+    <audio id="bs-pai" class="clip" src="voz/audio/c10-pai-01.wav" data-start="18.0" data-duration="1.96" data-track-index="3" data-volume="1"></audio>
   </div>
   <script>
     (function () {
       const DUR = 17, P63 = 3.5, P64 = 7.0, P65 = 10.2, P65B = 14.2;
+      const INS0 = 10.2, INS1 = 13.8, GB = 10.75;                     // montagem: o insert do Gabi (tempo da montagem)
       const BATIDAS = [7.35, 7.7, 8.05, 11.0];                         // TUM-TUM-TUM (e mais uma enquanto o agente fala)
       const PAI_F = 14.7, PAI_FF = 16.6;
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
@@ -187,8 +190,11 @@
         });
       }
 
+      // montagem: tempo remapeado (tau da montagem -> t da animação aprovada)
+      const __K = [[0,0],[10.2,10.2],[13.8,10.5]];
+      const __remap = (x) => { for (let i = 1; i < __K.length; i++) if (x <= __K[i][0]) { const [a0, b0] = __K[i - 1], [a1, b1] = __K[i]; return b0 + (b1 - b0) * (x - a0) / (a1 - a0); } const [a, b] = __K[__K.length - 1]; return b + (x - a); };
       function render() {
-        const t = estado.t;
+        const t = __remap(estado.t);
         let cena, alvo, imp = 0;
         if (t >= P63 && t < P64) {
           fora(t); cena = cenaRua;
@@ -196,18 +202,28 @@
           cam.fov = 38; cam.position.set(-6.9 + 0.5 * v, 1.85, 5.1); alvo = V(-0.9, 1.25, -1.9);
         } else {
           imp = casa(t); cena = cenaCasa;
-          if (t < P63) { const v = S(t / P63); cam.fov = 42; cam.position.set(-2.9 + 0.3 * v, 1.75, 4.85 - 0.2 * v); alvo = V(0.5, 1.45, 1.0); }
+          // montagem: INSERT (tempo da cena quase parado) — o Gabi sozinho no sofá grita pelos pais (c10-gabi-08)
+          const tau = estado.t, ins = tau >= INS0 && tau < INS1;
+          mae.visible = !ins;                                          // no close ele está sozinho: a mãe já foi para a porta
+          if (ins) {
+            expr(gabi, "grito");
+            const bg = gabi.userData.rosto.bocas, fala = tau > GB && tau < GB + 2.83, ab = Math.sin(tau * 14) + Math.sin(tau * 5.7) > -0.2;
+            for (const n in bg) bg[n].visible = n === (fala ? (ab ? "aberta" : "o") : "o");
+            Elenco.cabeca(gabi, -0.08, -0.35 + Math.sin(tau * 2.1) * 0.4, 0.05 * Math.sin(tau * 3.3), Math.sin(tau * 2 * Math.PI * 1.2) * 0.012);   // procura os pais, cego
+          }
+          if (ins) { const v = S((tau - INS0) / (INS1 - INS0)); cam.fov = 32; cam.position.set(-0.7 + 0.3 * v, 1.85, 1.75); alvo = V(2.2, 1.5, 1.9); }   // close 3/4: sozinho no sofá
+          else if (t < P63) { const v = S(t / P63); cam.fov = 42; cam.position.set(-2.9 + 0.3 * v, 1.75, 4.85 - 0.2 * v); alvo = V(0.5, 1.45, 1.0); }
           else if (t < P65) { cam.fov = 42; cam.position.set(-2.7, 1.75, 4.7); alvo = V(0.7, 1.45, 1.0); }
           else if (t < P65B) { const v = S((t - P65) / (P65B - P65)); cam.fov = 40; cam.position.set(-2.4 + 0.3 * v, 2.0, 3.6 - 0.2 * v); alvo = V(1.6, 1.45, 0.8); }
           rostoPai.intensity = t >= P65B ? 3.2 : 0;
-          if (t >= P65B) { const v = S((t - P65B) / (DUR - P65B)); cam.fov = 34; cam.position.set(0.85, 2.4, 3.1 - 0.2 * v); alvo = V(1.95, 2.35, 0.5); }
+          if (t >= P65B && !ins) { const v = S((t - P65B) / (DUR - P65B)); cam.fov = 34; cam.position.set(0.85, 2.4, 3.1 - 0.2 * v); alvo = V(1.95, 2.35, 0.5); }
           cam.position.x += Math.sin(t * 61) * 0.02 * imp; cam.position.y += Math.sin(t * 47) * 0.015 * imp;
         }
         cam.updateProjectionMatrix(); cam.lookAt(alvo);
         pos.render(cena, cam, t, { grao: LOOK.grao + 0.1 * imp, fumaca: LOOK.fumaca, dessat: LOOK.dessat });
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
-      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      tl.fromTo(estado, { t: 0 }, { t: 20.3, duration: 20.3, ease: "none" }, 0);
       window.__timelines["buscar"] = tl;
       render();
     })();

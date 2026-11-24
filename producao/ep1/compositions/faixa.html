@@ -9,12 +9,13 @@
     #fx-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="faixa" data-width="1920" data-height="1080">
-    <div id="fx-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
-    <div id="fx-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">C06 — A FAIXA<small>a mãe enfaixa a mão dele, em silêncio · o fone na mesa · planos 47–48</small></div>
+    <div id="fx-stage" class="clip" data-start="0" data-duration="12.5" data-track-index="0"></div>
+    <div id="fx-rotulo" class="clip" data-start="0" data-duration="12.5" data-track-index="1">C06 — A FAIXA<small>a mãe enfaixa a mão dele · "Você tem que se cuidar, filho…" · o fone na mesa · planos 47–48</small></div>
+    <audio id="fx-mae" class="clip" src="voz/audio/c06-mae-12.wav" data-start="0.8" data-duration="5.03" data-track-index="2" data-volume="1"></audio>
   </div>
   <script>
     (function () {
-      const DUR = 8, CORTE = 4.6;
+      const DUR = 8, CORTE = 6.2, CORTE2 = 9.4, TOTAL = 12.5, M1 = 0.8, M1F = 5.83;   // montagem: a mãe fala no plano aberto; o close; os dois em silêncio (narrador n09)
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };
       const S = Cena.suave, V = (x, y, z) => new THREE.Vector3(x, y, z);
       const guarda = (b) => [b.sh.rotation.clone(), b.el.rotation.clone()];
@@ -72,21 +73,24 @@
       function render() {
         const t = estado.t;
         // enrolando: as mãos dela giram em volta da mão dele; a faixa engrossa e cobre mais
-        const volta = Math.sin(t * 4.2), cobre = S(t / (DUR - 0.5));
-        rm.aL.sh.rotation.set(mD[0].x + 0.06 * volta, mD[0].y, mD[0].z + 0.05 * Math.cos(t * 4.2)); rm.aL.el.rotation.copy(mD[1]);
-        rm.aR.sh.rotation.set(mE[0].x - 0.05 * volta, mE[0].y, mE[0].z); rm.aR.el.rotation.set(mE[1].x + 0.06 * Math.cos(t * 4.2), 0, 0);
+        const para = 1 - S((t - CORTE2 + 0.6) / 0.6), volta = Math.sin(t * 4.2) * para, cobre = S(t / (DUR - 0.5));
+        rm.aL.sh.rotation.set(mD[0].x + 0.06 * volta, mD[0].y, mD[0].z + 0.05 * Math.cos(t * 4.2) * para); rm.aL.el.rotation.copy(mD[1]);
+        rm.aR.sh.rotation.set(mE[0].x - 0.05 * volta, mE[0].y, mE[0].z); rm.aR.el.rotation.set(mE[1].x + 0.06 * Math.cos(t * 4.2) * para, 0, 0);
         Elenco.mao(mae, "esq", "segura", 1); Elenco.mao(mae, "dir", "aberta", 0.6);
         faixa.scale.set(0.95 + 0.2 * cobre, 0.6 + 0.55 * cobre, 0.95 + 0.2 * cobre);
         rolo.scale.setScalar(1 - 0.35 * cobre);
         Elenco.cabeca(gabi, 0.2, 0.15, 0.04, Math.sin(t * 2 * Math.PI * 0.3) * 0.008);
         Elenco.cabeca(mae, 0.28, -0.1 + Math.sin(t * 0.7) * 0.04, 0, Math.sin(t * 2 * Math.PI * 0.28) * 0.008);
-        if (t < CORTE) { cam.fov = 40; const u = S(t / CORTE); cam.position.set(MX + 0.1, 2.05 - 0.05 * u, MZ + 2.9 - 0.3 * u); cam.lookAt(MX - 0.05, 1.45, MZ - 0.45); }
+        { const bm = mae.userData.rosto.bocas, fala = t > M1 && t < M1F && Math.sin(t * 15) + Math.sin(t * 6.1) > 0.2;   // a boca dela mexe na fala (c06-mae-12)
+          for (const n in bm) bm[n].visible = n === (fala ? "o" : Elenco.EXPR[mae.userData.rig.ficha.expr].boca); }
+        if (t >= CORTE2) { cam.fov = 42; const u = S((t - CORTE2) / (TOTAL - CORTE2)); cam.position.set(MX + 0.6 + 0.3 * u, 2.3 + 0.15 * u, MZ + 3.0 + 0.4 * u); cam.lookAt(MX, 1.4, MZ - 0.5); }   // os dois em silêncio; a câmera se afasta
+        else if (t < CORTE) { cam.fov = 40; const u = S(t / CORTE); cam.position.set(MX + 0.1, 2.05 - 0.05 * u, MZ + 2.9 - 0.3 * u); cam.lookAt(MX - 0.05, 1.45, MZ - 0.45); }
         else { cam.fov = 38; const u = S((t - CORTE) / (DUR - CORTE)); cam.position.set(MX - 0.3, 1.75 - 0.05 * u, MZ + 0.55 - 0.1 * u); cam.lookAt(MX - 0.3, 1.05, MZ - 0.32); }   // close: a faixa e o fone
         cam.updateProjectionMatrix();
         pos.render(scene, cam, t, LOOK);
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
-      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      tl.fromTo(estado, { t: 0 }, { t: TOTAL, duration: TOTAL, ease: "none" }, 0);
       window.__timelines["faixa"] = tl;
       render();
     })();

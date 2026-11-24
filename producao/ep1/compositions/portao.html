@@ -9,11 +9,11 @@
     #p-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="portao" data-width="1920" data-height="1080">
-    <div id="p-stage" class="clip" data-start="0" data-duration="15" data-track-index="0"></div>
-    <div id="p-rotulo" class="clip" data-start="0" data-duration="15" data-track-index="1">CENÁRIO 5 — A DUDA NO PORTÃO (DE DENTRO)<small>fim de tarde · silhueta na cortina, sem rosto · planos 57–60</small></div>
-    <audio id="p-duda" class="clip" src="voz/audio/c09-duda-01.wav" data-start="2.6" data-duration="4.11" data-track-index="2" data-volume="0.8"
+    <div id="p-stage" class="clip" data-start="0" data-duration="18.3" data-track-index="0"></div>
+    <div id="p-rotulo" class="clip" data-start="0" data-duration="18.3" data-track-index="1">CENÁRIO 5 — A DUDA NO PORTÃO (DE DENTRO)<small>fim de tarde · silhueta na cortina, sem rosto · planos 57–60</small></div>
+    <audio id="p-duda" class="clip" src="voz/audio/c09-duda-01.wav" data-start="5.9" data-duration="4.11" data-track-index="2" data-volume="0.8"
       data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;de fora, pelo portão&quot;,&quot;params&quot;:{&quot;frequency&quot;:2200}}]}"></audio>
-    <audio id="p-mae" class="clip" src="voz/audio/c09-mae-03.wav" data-start="8.0" data-duration="5.32" data-track-index="3" data-volume="1"></audio>
+    <audio id="p-mae" class="clip" src="voz/audio/c09-mae-03.wav" data-start="11.3" data-duration="5.32" data-track-index="3" data-volume="1"></audio>
   </div>
   <script>
     (function () {
@@ -23,6 +23,8 @@
       const lin = (P) => (x) => { for (let i = 1; i < P.length; i++) if (x <= P[i][0]) { const [a, b] = P[i - 1], [c, d] = P[i]; return b + (d - b) * (x - a) / (c - a); } return P[P.length - 1][1]; };
       const remapA = lin([[0, 0], [7.4, 6.1], [8.0, 6.7], [13.3, 6.9], [15, 8]]);
       const remapD = lin([[0, 0], [7.4, 5.6], [13.3, 5.9], [14.0, 6.75], [15, 8]]);
+      // montagem: prefixo de 3,3 s (o narrador n12 fala antes da batida): os primeiros 1,0 s da cena se esticam em 4,3 s
+      const __pre = lin([[0, 0], [4.3, 1.0], [18.3, 15]]);
       const C1N = 4.7, C2N = 7.4;                                       // cortes no tempo novo                                // cortina · o Gabi congela · a Duda vai embora
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
 
@@ -229,7 +231,7 @@
       }
 
       function render() {
-        const tn = estado.t, t = remapA(tn);
+        const tn = __pre(estado.t), t = remapA(tn);
         animarDuda(remapD(tn));
         renderer.setRenderTarget(alvoSombra); renderer.render(fora3D, camLuz); renderer.setRenderTarget(null);
         cortina.material.uniforms.onda.value = tn * 1.3;
@@ -252,6 +254,8 @@
         mae.position.set(MX0 + 0.05 * vai, 0, MZ0 - 0.2 * vai); mae.rotation.y = MRY + (Math.PI - 0.5 - MRY) * vai;   // vira para a porta
         if (t > 5.9) { rm.aL.sh.rotation.copy(maeTrinco[0]); rm.aL.el.rotation.copy(maeTrinco[1]); } else { rm.aL.sh.rotation.set(-0.15, 0, 0.05); rm.aL.el.rotation.set(-0.3, 0, 0); }
         Elenco.cabeca(mae, 0.12, t < 5.4 ? 0.1 : -0.4 * vai, 0, Math.sin(tn * 2 * Math.PI * 0.3) * 0.008);
+        { const bm = mae.userData.rosto.bocas, fala = tn > 8.0 && tn < 13.32 && Math.sin(tn * 15) + Math.sin(tn * 6.1) > 0.2;   // a boca dela mexe na fala (c09-mae-03)
+          for (const n in bm) bm[n].visible = n === (fala ? "o" : Elenco.EXPR[mae.userData.rig.ficha.expr].boca); }
         const abre = S((t - 6.2) / 0.6) * 0.55;
         porta.rotation.y = abre; fresta.intensity = 30 * abre;
         let cam;
@@ -268,7 +272,7 @@
         pos.render(scene, cam, tn, LOOK);
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
-      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      tl.fromTo(estado, { t: 0 }, { t: 18.3, duration: 18.3, ease: "none" }, 0);
       window.__timelines["portao"] = tl;
       render();
     })();
