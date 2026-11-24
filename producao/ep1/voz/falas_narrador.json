@@ -1,0 +1,86 @@
+[
+  {
+    "id": "n01",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, voz grave e calma, ritmo lento",
+    "texto": "São Paulo. Dezessete de novembro. Três e meia da manhã."
+  },
+  {
+    "id": "n02",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, tensão crescendo, pausa antes do fim",
+    "texto": "Uma luz atravessou o planeta. E na manhã seguinte... as pessoas começaram a acordar cegas."
+  },
+  {
+    "id": "n03",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, baixo e triste",
+    "texto": "Gabriel tinha dezessete anos. Naquela manhã, ele acordou... e o mundo não estava mais lá."
+  },
+  {
+    "id": "n04",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, sombrio",
+    "texto": "Ninguém sabia ainda. Mas não era só com ele."
+  },
+  {
+    "id": "n05",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, urgente e contido",
+    "texto": "Em poucas horas, as sirenes tomaram as ruas. Milhares de pessoas tinham acordado cegas."
+  },
+  {
+    "id": "n06",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, ameaçador e calmo",
+    "texto": "Uma hora depois, eles chegaram à rua do Gabi."
+  },
+  {
+    "id": "n07",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, pesado",
+    "texto": "Quando o Gabi acordou de novo, nada tinha mudado. E a raiva veio antes do choro."
+  },
+  {
+    "id": "n08",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, calmo",
+    "texto": "Dentro de casa, cada coisa simples virou uma prova."
+  },
+  {
+    "id": "n09",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, com um pouco de esperança",
+    "texto": "A mãe decidiu: se ele não podia ver, ia aprender tudo de novo. Do começo."
+  },
+  {
+    "id": "n10",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, triste e baixo",
+    "texto": "Na frente do filho, o pai era forte. Só no quintal ele se deixava desabar."
+  },
+  {
+    "id": "n11",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, melancólico",
+    "texto": "A casa onde ele cresceu agora tinha quinas que ele não lembrava."
+  },
+  {
+    "id": "n12",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, suave",
+    "texto": "Do outro lado da rua, alguém ainda pensava nele."
+  },
+  {
+    "id": "n13",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, frio e ameaçador",
+    "texto": "Ao anoitecer, a notícia já tinha virado ordem: quem cegasse seria isolado."
+  },
+  {
+    "id": "n14",
+    "voz": "ESCOLHER",
+    "estilo": "narrador de suspense, lento, pausa longa antes do fim",
+    "texto": "E esse... foi só o primeiro dia."
+  }
+]

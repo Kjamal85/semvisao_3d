@@ -28,5 +28,47 @@
     "voz": "Sola",
     "estilo": "com voz de mulher adulta, desesperada, chamando de longe",
     "texto": "Gabi!... Gabi!"
+  },
+  {
+    "id": "c02-mae-06",
+    "voz": "Sola",
+    "estilo": "com voz de mãe, carinhosa, baixa, a voz tremendo de quem segura o choro para não assustar o filho",
+    "texto": "Vem, filho. Vamos pra sala."
+  },
+  {
+    "id": "c04-mae-07",
+    "voz": "Sola",
+    "estilo": "com voz de mãe, quase um sussurro, terna e cansada, cobrindo o filho na cama",
+    "texto": "Descansa, meu amor."
+  },
+  {
+    "id": "c02-mae-08",
+    "voz": "Sola",
+    "estilo": "com voz de mãe, assustada, entrando correndo no quarto, a voz aguda de medo",
+    "texto": "Gabi! O que houve, filho?"
+  },
+  {
+    "id": "c04-mae-09",
+    "voz": "Sola",
+    "estilo": "com voz de mãe, carinhosa e preocupada, baixa, ajudando o filho a levantar",
+    "texto": "Vou te levar pro quarto. Vem comigo."
+  },
+  {
+    "id": "c06-mae-10",
+    "voz": "Sola",
+    "estilo": "com voz de mãe, prestativa e gentil, se aproximando para ajudar",
+    "texto": "Deixa que eu faço, filho."
+  },
+  {
+    "id": "c06-mae-11",
+    "voz": "Sola",
+    "estilo": "com voz de mãe, grito curto de susto e alerta",
+    "texto": "Cuidado, filho!"
+  },
+  {
+    "id": "c06-mae-12",
+    "voz": "Sola",
+    "estilo": "com voz de mãe, terna, baixa, segurando o choro enquanto faz um curativo",
+    "texto": "Você tem que se cuidar, filho. Devagar, tá? Eu tô aqui."
   }
 ]

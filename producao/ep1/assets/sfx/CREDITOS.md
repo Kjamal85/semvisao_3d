@@ -1,30 +1,37 @@
 # Efeitos sonoros — créditos (Openverse/Freesound, só CC0 e CC BY)
 
-CC BY exige crédito na descrição do vídeo publicado (lista abaixo marcada com BY).
-
-- `baque.mp3` — "thud bassy slam.aiff" por kyles · CC0 1.0 · https://freesound.org/people/kyles/sounds/51817
-- `batidas-porta.mp3` — "wood hammer, gavel, knock, pound, jury, court.mp3" por JohnsonBrandEditing · CC0 1.0 · https://freesound.org/people/JohnsonBrandEditing/sounds/173941
-- `batimento.mp3` — "Heartbeat." por urupin · BY 4.0 · https://freesound.org/people/urupin/sounds/92036
-- `boom.mp3` — "Booms.wav" por studiomandragore · CC0 1.0 · https://freesound.org/people/studiomandragore/sounds/401630
-- `cidade-noite.mp3` — "Night city atmosphere" por Soundkrampf · CC0 1.0 · https://freesound.org/people/Soundkrampf/sounds/237329
-- `cortina.mp3` — "Curtains Opening or Closing.wav" por RutgerMuller · CC0 1.0 · https://freesound.org/people/RutgerMuller/sounds/51137
-- `energia-cai.mp3` — "Power Down" por peepholecircus · CC0 1.0 · https://freesound.org/people/peepholecircus/sounds/169994
-- `gas.mp3` — "Blow Torch Version_1" por DRFX · CC0 1.0 · https://freesound.org/people/DRFX/sounds/347447
-- `grilos.mp3` — "crickets" por FreethinkerAnon · CC0 1.0 · https://freesound.org/people/FreethinkerAnon/sounds/129678
 - `interruptor.mp3` — "Light Switch Turn Off Sound" por ChrisTutorials · CC0 1.0 · https://freesound.org/people/ChrisTutorials/sounds/440499
-- `mesa-cai.mp3` — "object falls (5).wav" por FreqMan · BY 4.0 · https://freesound.org/people/FreqMan/sounds/43603
-- `motor.mp3` — "Truck Engine Idle Loops.flac" por qubodup · CC0 1.0 · https://freesound.org/people/qubodup/sounds/187564
-- `passos-pesados.mp3` — "Hiking Boot Footsteps on Gravel" por Fission9 · CC0 1.0 · https://freesound.org/people/Fission9/sounds/521588
-- `passos-saindo.mp3` — "Footsteps on Wooden Floor.aif" por ftpalad · CC0 1.0 · https://freesound.org/people/ftpalad/sounds/119914
-- `porta-arrombada.mp3` — "Smash.ogg" por egomassive · CC0 1.0 · https://freesound.org/people/egomassive/sounds/536777
-- `porta-carro.mp3` — "Car Door Slam" por mandymatz · CC0 1.0 · https://freesound.org/people/mandymatz/sounds/424031
-- `portao-batida.mp3` — "Knock knock on gate or door" por deleted_user_746442 · CC0 1.0 · https://freesound.org/people/deleted_user_746442/sounds/623201
-- `queda-corpo.mp3` — "Body Fall Over.wav" por raubana · CC0 1.0 · https://freesound.org/people/raubana/sounds/82027
-- `radio-chiado.mp3` — "FM Radio Static" por caculo · CC0 1.0 · https://freesound.org/people/caculo/sounds/347039
-- `respiracao.mp3` — "Heavy Breathing" por Under7dude · CC0 1.0 · https://freesound.org/people/Under7dude/sounds/163383
-- `sirene.mp3` — "Police siren" por sofialomba · CC0 1.0 · https://freesound.org/people/sofialomba/sounds/469411
-- `tv-liga.mp3` — "TV Static" por mrbriandesign · BY 4.0 · https://freesound.org/people/mrbriandesign/sounds/160615
-- `vento-alto.mp3` — "Wind Howl 4 inch Pipe.wav" por Takkyi · CC0 1.0 · https://freesound.org/people/Takkyi/sounds/543809
-- `vidro.mp3` — "Glass Shattering and Falling" por 221Beimesche · CC0 1.0 · https://freesound.org/people/221Beimesche/sounds/336425
 - `zumbido-grave.mp3` — "Low tension buildup.wav" por juskiddink · BY 4.0 · https://freesound.org/people/juskiddink/sounds/117129
+- `boom.mp3` — "Booms.wav" por studiomandragore · CC0 1.0 · https://freesound.org/people/studiomandragore/sounds/401630
+- `energia-cai.mp3` — "Power Down" por peepholecircus · CC0 1.0 · https://freesound.org/people/peepholecircus/sounds/169994
+- `vento-alto.mp3` — "Wind Howl 4 inch Pipe.wav" por Takkyi · CC0 1.0 · https://freesound.org/people/Takkyi/sounds/543809
+- `respiracao.mp3` — "Heavy Breathing" por Under7dude · CC0 1.0 · https://freesound.org/people/Under7dude/sounds/163383
+- `queda-corpo.mp3` — "Body Fall Over.wav" por raubana · CC0 1.0 · https://freesound.org/people/raubana/sounds/82027
+- `mesa-cai.mp3` — "object falls (5).wav" por FreqMan · BY 4.0 · https://freesound.org/people/FreqMan/sounds/43603
+- `tv-liga.mp3` — "TV Static" por mrbriandesign · BY 4.0 · https://freesound.org/people/mrbriandesign/sounds/160615
+- `cortina.mp3` — "Curtains Opening or Closing.wav" por RutgerMuller · CC0 1.0 · https://freesound.org/people/RutgerMuller/sounds/51137
+- `radio-chiado.mp3` — "FM Radio Static" por caculo · CC0 1.0 · https://freesound.org/people/caculo/sounds/347039
+- `porta-carro.mp3` — "Car Door Slam" por mandymatz · CC0 1.0 · https://freesound.org/people/mandymatz/sounds/424031
+- `baque.mp3` — "thud bassy slam.aiff" por kyles · CC0 1.0 · https://freesound.org/people/kyles/sounds/51817
+- `passos-saindo.mp3` — "Footsteps on Wooden Floor.aif" por ftpalad · CC0 1.0 · https://freesound.org/people/ftpalad/sounds/119914
+- `sirene.mp3` — "Police siren" por sofialomba · CC0 1.0 · https://freesound.org/people/sofialomba/sounds/469411
+- `motor.mp3` — "Truck Engine Idle Loops.flac" por qubodup · CC0 1.0 · https://freesound.org/people/qubodup/sounds/187564
+- `porta-arrombada.mp3` — "Smash.ogg" por egomassive · CC0 1.0 · https://freesound.org/people/egomassive/sounds/536777
+- `passos-pesados.mp3` — "Hiking Boot Footsteps on Gravel" por Fission9 · CC0 1.0 · https://freesound.org/people/Fission9/sounds/521588
+- `batidas-porta.mp3` — "wood hammer, gavel, knock, pound, jury, court.mp3" por JohnsonBrandEditing · CC0 1.0 · https://freesound.org/people/JohnsonBrandEditing/sounds/173941
+- `cidade-noite.mp3` — "Night city atmosphere" por Soundkrampf · CC0 1.0 · https://freesound.org/people/Soundkrampf/sounds/237329
+- `grilos.mp3` — "crickets" por FreethinkerAnon · CC0 1.0 · https://freesound.org/people/FreethinkerAnon/sounds/129678
+- `vidro.mp3` — "Glass Shattering and Falling" por 221Beimesche · CC0 1.0 · https://freesound.org/people/221Beimesche/sounds/336425
 - `zumbido-ouvido.mp3` — "Tinnitus" por Klangkobold · CC0 1.0 · https://freesound.org/people/Klangkobold/sounds/455304
+- `batimento.mp3` — "Heartbeat." por urupin · BY 4.0 · https://freesound.org/people/urupin/sounds/92036
+- `gas.mp3` — "Blow Torch Version_1" por DRFX · CC0 1.0 · https://freesound.org/people/DRFX/sounds/347447
+- `portao-batida.mp3` — "Knock knock on gate or door" por deleted_user_746442 · CC0 1.0 · https://freesound.org/people/deleted_user_746442/sounds/623201
+- `passos-tenis.mp3` — "Footsteps on hard floor indoors.wav" por Jake Williams · BY 3.0 · https://freesound.org/people/Jake%20Williams/sounds/18169
+- `porta-quarto.mp3` — "Door Opening Creaking" por dleverett · CC0 1.0 · https://freesound.org/people/dleverett/sounds/710510
+- `agua-copo.mp3` — "Water To Glass" por Black_River_Phonogram · CC0 1.0 · https://freesound.org/people/Black_River_Phonogram/sounds/414077
+- `ambiente-casa.mp3` — "room-tone living 140219_0101.wav" por klankbeeld · BY 4.0 · https://freesound.org/people/klankbeeld/sounds/219681 (ganho +10 dB)
+- `passos-casa.mp3` — "Footsteps_Wood_Walk_Mono_NTG4.wav" por Nox_Sound · CC0 1.0 · https://freesound.org/people/Nox_Sound/sounds/543685
+- `choro-homem.mp3` — "Man sobbing, crying, or whimpering.mp3" por SnowFightStudios · CC0 1.0 · https://freesound.org/people/SnowFightStudios/sounds/643669
+- `choro-mulher.mp3` — "Woman crying" por akoecreative · CC0 1.0 · https://freesound.org/people/akoecreative/sounds/790620
+- `esparadrapo.mp3` — "Tape Rip 6" por Geoff-Bremner-Audio · CC0 1.0 · https://freesound.org/people/Geoff-Bremner-Audio/sounds/795801
+- `caixa.mp3` — "plastic box open close 1.wav" por peritel · CC0 1.0 · https://freesound.org/people/peritel/sounds/547628 (primeiros 1,9 s)

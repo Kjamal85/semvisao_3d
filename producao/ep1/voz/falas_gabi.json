@@ -22,5 +22,23 @@
     "voz": "Enceladus",
     "estilo": "com voz de menino, grito de pânico sendo arrastado, a voz quebrando",
     "texto": "Mãe! Pai!"
+  },
+  {
+    "id": "c04-gabi-06",
+    "voz": "Enceladus",
+    "estilo": "com voz de menino, baixo, exausto, voz embargada de quem chorou muito",
+    "texto": "Mãe... eu quero deitar."
+  },
+  {
+    "id": "c04-gabi-07",
+    "voz": "Enceladus",
+    "estilo": "com voz de menino, baixo, fraco, gemendo de dor, exausto de tanto chorar",
+    "texto": "Mãe... minha cabeça tá doendo."
+  },
+  {
+    "id": "c10-gabi-08",
+    "voz": "Enceladus",
+    "estilo": "com voz de menino, pânico, gritando por ajuda, a voz quebrando",
+    "texto": "Mãe! Pai! Me ajuda!"
   }
 ]

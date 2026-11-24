@@ -3,11 +3,11 @@ As cenas (compositions/*.html) não mudam. Rodar em producao/ep1: python montar_
 """
 import html
 
-CENAS = [  # id, duração (s), planos do roteiro
-    ("abertura", 12, "1-11"), ("despertar", 8, "12-16"), ("quarto", 8, "17"), ("queda", 8, "18-24"),
-    ("revolta", 10, "25-31"), ("tv", 21.5, "32-37"), ("vizinho", 10, "38-41"), ("deixa", 5, "42"),
-    ("cozinha", 8, "43"), ("chama", 3.4, "44"), ("corredor", 8, "45-46"), ("faixa", 8, "47-48"),
-    ("quintal", 8, "49-51"), ("esperanca", 12, "52-56"), ("portao", 8, "57-60"), ("ouviu", 6, "61"),
+CENAS = [  # id, duração (s), planos — NOVA ORDEM do usuário (episodios/MONTAGEM_EP1.md)
+    ("abertura", 15, "1-11"), ("despertar", 9.5, "12-16"), ("quarto", 14, "14-17"), ("queda", 19, "18-24 + pra-sala"),
+    ("tv", 23.8, "32-37"), ("vizinho", 10, "38-41"), ("revolta", 10, "25-31"),
+    ("deixa", 5, "42"), ("cozinha", 8, "43"), ("chama", 3.4, "44"), ("faixa", 8, "47-48"), ("esperanca", 12, "52-56"),
+    ("quintal", 8, "49-51"), ("corredor", 8, "45-46"), ("portao", 15, "57-60"), ("ouviu", 6, "61"),
     ("buscar", 17, "62-65"), ("levam", 11, "66-67"), ("rua", 8, "68"), ("van", 8, "69"), ("fim", 7.5, "70-71"),
 ]
 INICIO, t = {}, 0.0
@@ -19,31 +19,40 @@ DUR_ARQ = {"baque": 2.04, "batidas-porta": 3.6, "batimento": 11.75, "boom": 7.49
            "energia-cai": 4.39, "gas": 5.94, "grilos": 15.58, "interruptor": 0.36, "mesa-cai": 2.48, "motor": 38.0,
            "passos-pesados": 2.73, "passos-saindo": 5.8, "porta-arrombada": 1.05, "porta-carro": 0.31, "portao-batida": 3.83,
            "queda-corpo": 0.35, "radio-chiado": 6.75, "respiracao": 4.27, "sirene": 13.26, "tv-liga": 9.17, "vento-alto": 7.68,
-           "vidro": 3.69, "zumbido-grave": 28.0, "zumbido-ouvido": 10.0}
+           "vidro": 3.69, "zumbido-grave": 28.0, "zumbido-ouvido": 10.0,
+           "ambiente-casa": 600.0, "passos-casa": 24.54, "passos-tenis": 3.49, "porta-quarto": 3.0, "agua-copo": 10.0}
 
 # início útil de cada arquivo (silêncio no começo; medido com silencedetect -45 dB)
 INICIO_ARQ = {"tv-liga": 1.13, "passos-saindo": 0.55, "interruptor": 0.13, "portao-batida": 0.12, "boom": 0.12, "cidade-noite": 0.34, "sirene": 0.32}
 
 # (cena, tempo local, arquivo, duração do trecho ou None = arquivo todo, volume, fade-in, fade-out, abafado(Hz) ou None, nota)
 SFX = [
-    ("abertura", 0.0, "cidade-noite", 5.0, 0.35, 0.8, 0.25, None, "cidade à noite (planos 1-5)"),
-    ("abertura", 2.0, "zumbido-grave", 3.0, 0.5, 1.5, 0.05, None, "zumbido grave subliminar (5); some no FLASH"),
-    ("abertura", 5.3, "boom", 6.0, 0.85, 0, 2.0, None, "BOOM — a onda (7)"),
-    ("abertura", 5.6, "energia-cai", None, 0.45, 0, 0.8, None, "energia sugada (8)"),
-    ("abertura", 8.0, "vento-alto", 4.0, 0.3, 1.0, 1.0, None, "vento de altitude (9-11)"),
-    ("despertar", 0.0, "respiracao", None, 0.35, 0.5, 0.6, None, "respiração no preto (12-14)"),
-    ("despertar", 5.4, "zumbido-ouvido", 2.6, 0.3, 0.3, 1.2, None, "zunido ao revelar os olhos (15-16)"),
-    ("quarto", 0.4, "respiracao", None, 0.22, 0.6, 1.0, None, "respiração tateando (17)"),
+    ("abertura", 0.0, "cidade-noite", 8.3, 0.35, 0.8, 0.25, None, "cidade à noite (planos 1-5)"),
+    ("abertura", 4.5, "zumbido-grave", 3.5, 0.5, 2.0, 0.05, None, "zumbido grave subliminar (5); some no FLASH"),
+    ("abertura", 8.3, "boom", 6.0, 0.6, 0, 2.0, None, "BOOM — a onda (7)"),
+    ("abertura", 8.6, "energia-cai", None, 0.3, 0, 0.8, None, "energia sugada (8)"),
+    ("abertura", 11.0, "vento-alto", 4.0, 0.3, 1.0, 1.0, None, "vento de altitude (9-11)"),
+    ("despertar", 0.0, "respiracao", None, 0.35, 0.5, 0.3, None, "respiração no preto (12-14) — até 0:20"),
+    ("despertar", 3.6, "respiracao", None, 0.45, 0.3, 0.3, None, "respiração acelera ao acordar"),
+    ("despertar", 6.6, "zumbido-ouvido", 2.9, 0.25, 0.3, 0.3, None, "zunido ao revelar os olhos (15-16)"),
+    ("quarto", 0.0, "zumbido-ouvido", 4.5, 0.3, 0.1, 1.2, None, "zunido sentado na cama"),
+    ("quarto", 0.0, "respiracao", None, 0.5, 0.2, 0.3, None, "ofegante antes de \"pai? mãe?\""),
+    ("quarto", 5.5, "respiracao", None, 0.22, 0.6, 1.0, None, "respiração tateando (17)"),
     ("queda", 1.55, "queda-corpo", None, 0.9, 0, 0, None, "cai (20)"),
     ("queda", 1.75, "vidro", None, 0.6, 0, 0.5, None, "o abajur quebra (20)"),
-    ("queda", 2.45, "batimento", 5.5, 0.4, 0.5, 1.0, None, "batimento começa (21)"),
+    ("queda", 2.45, "batimento", 8.3, 0.4, 0.5, 1.5, None, "coração batendo até o pai falar (21)"),
+    ("queda", 3.3, "porta-quarto", 1.2, 0.5, 0, 0.3, None, "a porta do quarto abre"),
+    ("queda", 3.4, "passos-casa", 1.3, 0.8, 0, 0.2, None, "a mãe entra correndo"),
+    ("queda", 4.6, "passos-casa", 1.4, 0.6, 0, 0.3, None, "o pai chega atrás"),
+    ("queda", 15.6, "passos-casa", 3.4, 0.6, 0.2, 0.4, None, "saem do quarto, os três juntos"),
     ("revolta", 0.0, "batimento", 2.2, 0.35, 0.2, 0.6, None, "batimento sobe (25)"),
     ("revolta", 0.55, "mesa-cai", None, 0.8, 0, 0.3, None, "varre a mesa (26)"),
     ("revolta", 1.15, "vidro", 1.6, 0.45, 0, 0.5, None, "o vaso na parede (27)"),
     ("revolta", 1.45, "baque", 1.0, 0.7, 0, 0.3, None, "chuta a cadeira (27)"),
-    ("tv", 3.75, "interruptor", None, 0.6, 0, 0, None, "clique do controle (33)"),
-    ("tv", 3.8, "tv-liga", 0.8, 0.3, 0, 0.3, None, "chiado da TV ligando (33)"),
-    ("tv", 18.6, "cortina", 2.5, 0.6, 0, 0.6, None, "o pai fecha a cortina (37)"),
+    ("tv", 0.2, "passos-casa", 4.4, 0.7, 0.2, 0.4, None, "os três andando até o sofá"),
+    ("tv", 6.05, "interruptor", None, 0.6, 0, 0, None, "clique do controle (33)"),
+    ("tv", 6.1, "tv-liga", 0.8, 0.3, 0, 0.3, None, "chiado da TV ligando (33)"),
+    ("tv", 20.9, "cortina", 2.5, 0.6, 0, 0.6, None, "o pai fecha a cortina (37)"),
     ("vizinho", 1.8, "passos-pesados", None, 0.35, 0.2, 0.4, 1400, "passos na rua, abafados (39)"),
     ("vizinho", 2.1, "radio-chiado", 4.0, 0.12, 0.3, 0.5, 1800, "chiado do rádio por baixo da voz (39)"),
     ("vizinho", 5.3, "porta-carro", None, 0.6, 0, 0, 1600, "portas da van batem, abafado (39)"),
@@ -52,7 +61,7 @@ SFX = [
     ("corredor", 4.0, "baque", 1.2, 0.8, 0, 0.4, None, "bate o ombro na quina (45)"),
     ("quintal", 0.0, "grilos", 8.0, 0.35, 0.6, 0.6, None, "grilos (49-51)"),
     ("portao", 1.65, "portao-batida", 1.2, 0.6, 0, 0.2, 1500, "batida no portão de ferro, de fora (57)"),
-    ("portao", 6.9, "passos-saindo", 1.1, 0.3, 0, 0.4, 1200, "passos se afastando (60)"),
+    ("portao", 14.0, "passos-saindo", 1.0, 0.3, 0, 0.4, 1200, "passos se afastando (60)"),
     ("buscar", 0.0, "sirene", None, 0.4, 2.5, 2.0, 1200, "sirene abafada se aproximando (62)"),
     ("buscar", 3.5, "motor", 3.5, 0.45, 0.4, 0.3, None, "a van chega (63)"),
     ("buscar", 5.4, "radio-chiado", 1.4, 0.3, 0.05, 0.3, None, "rádio da equipe, só chiado (63)"),
@@ -102,6 +111,37 @@ for j, (cid, tl, arq, trecho, vol, fi, fo, lp, nota) in enumerate(SFX):
         attrs.append(f'data-fx-chain="{html.escape(fx, quote=True)}"')
     audios.append(f'      <audio {" ".join(attrs)}></audio> <!-- {nota} -->')
 
+# NARRADOR (voz trazida pelo usuário, voz/audio/narrador-nNN.wav normalizado -18 LUFS): conta a história e
+# NUNCA fala por cima dos personagens. (cena, tempo local, id, duração)
+NARRADOR = [("abertura", 0.8, "n01", 4.99), ("abertura", 7.7, "n02", 7.24), ("quarto", 6.0, "n03", 7.63),
+            ("tv", 0.3, "n04", 4.28)]
+for j, (cid, tl, nid, d) in enumerate(NARRADOR):
+    audios.append(f'      <audio id="narr-{nid}" class="clip" src="voz/audio/narrador-{nid}.wav" data-start="{num(INICIO[cid] + tl)}" '
+                  f'data-duration="{num(d)}" data-track-index="{120 + j}" data-volume="1"></audio> <!-- narrador {nid} -->')
+
+# fundo ambiente contínuo (room tone) em todas as cenas dentro de casa: nunca fica mudo.
+# cada cena lê o arquivo a partir do seu tempo global, então o fundo não "reinicia" a cada corte.
+CASA = ["despertar", "quarto", "queda", "revolta", "tv", "vizinho", "deixa", "cozinha", "chama", "corredor", "faixa",
+        "esperanca", "portao", "ouviu", "buscar", "levam"]
+DURC = dict((c, du) for c, du, _ in CENAS)
+for j, cid in enumerate(c for c in CASA if c in INICIO):
+    audios.append(f'      <audio id="amb-{j:02d}" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="{num(INICIO[cid])}" '
+                  f'data-duration="{num(DURC[cid])}" data-track-index="{80 + j}" data-volume="0.6" data-media-start="{num(INICIO[cid])}" '
+                  f'data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: {cid} -->')
+
+# música de fundo (assets/musica, escolhida pelo usuário): bem baixa por baixo do episódio inteiro
+audios.append(f'      <audio id="musica" class="clip" src="assets/musica/musica-fundo.mp3" data-start="0" data-duration="{num(TOTAL)}" '
+              f'data-track-index="99" data-volume="0.12" data-fade-in="3" data-fade-out="4"></audio> <!-- música de fundo -->')
+
+# transições suaves: em cada emenda de cena, uma fusão rápida pelo preto (sai 0,3 s · volta 0,4 s)
+SEM_TRANS = {"despertar"}   # o despertar já começa no preto
+trans = [f"      tl.to(\"#transicao\", {{ opacity: 1, duration: 0.3, ease: \"power1.in\" }}, {num(INICIO[c] - 0.3)});\n"
+         f"      tl.to(\"#transicao\", {{ opacity: 0, duration: 0.4, ease: \"power1.out\" }}, {num(INICIO[c])});"
+         for c, _, _ in CENAS[1:] if c not in SEM_TRANS]
+CORTES_INTERNOS = [("quarto", 5.5)]   # cortes dentro de uma cena que também ficam suaves (close -> plano aberto)
+trans += [f"      tl.to(\"#transicao\", {{ opacity: 0.85, duration: 0.25 }}, {num(INICIO[c] + tl - 0.25)});\n"
+          f"      tl.to(\"#transicao\", {{ opacity: 0, duration: 0.35 }}, {num(INICIO[c] + tl)});" for c, tl in CORTES_INTERNOS]
+
 pagina = f'''<!doctype html>
 <html lang="pt-BR">
   <head>
@@ -123,6 +163,7 @@ pagina = f'''<!doctype html>
       #root {{ width: 100%; height: 100%; position: relative; }}
       /* episódio montado: os rótulos de revisão de cada cena não aparecem */
       [id$="-rotulo"] {{ visibility: hidden !important; }}
+      #transicao {{ position: absolute; inset: 0; background: #000; z-index: 50; pointer-events: none; opacity: 0; }}
       /* contraste: o subtítulo do selo da abertura sobre o globo claro (abertura.html aprovada fica igual) */
       #ab-selo small {{ color: #e4e9f0 !important; }}
     </style>
@@ -133,10 +174,14 @@ pagina = f'''<!doctype html>
 {chr(10).join(linhas)}
       <!-- efeitos sonoros (assets/sfx, créditos em assets/sfx/CREDITOS.md) -->
 {chr(10).join(audios)}
+      <div id="transicao" class="clip" data-start="0" data-duration="{num(TOTAL)}" data-track-index="9"></div>
     </div>
     <script>
       window.__timelines = window.__timelines || {{}};
-      window.__timelines["main"] = gsap.timeline({{ paused: true }});
+      const tl = gsap.timeline({{ paused: true }});
+      gsap.set("#transicao", {{ opacity: 0 }});
+{chr(10).join(trans)}
+      window.__timelines["main"] = tl;
     </script>
   </body>
 </html>

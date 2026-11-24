@@ -10,14 +10,15 @@
     #dp-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="despertar" data-width="1920" data-height="1080">
-    <div id="dp-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
-    <div id="dp-preto" class="clip" data-start="0" data-duration="8" data-track-index="1"></div>
-    <div id="dp-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="2">CENA — O DESPERTAR<small>tela preta · "...pai? mãe?" · a câmera vira e revela os olhos · planos 12–16</small></div>
-    <audio id="dp-fala" class="clip" src="voz/audio/c01-gabi-01.wav" data-start="1.5" data-duration="1.74" data-track-index="3" data-volume="1"></audio>
+    <div id="dp-stage" class="clip" data-start="0" data-duration="9.5" data-track-index="0"></div>
+    <div id="dp-preto" class="clip" data-start="0" data-duration="9.5" data-track-index="1"></div>
+    <div id="dp-rotulo" class="clip" data-start="0" data-duration="9.5" data-track-index="2">CENA — O DESPERTAR<small>tela preta · "...pai? mãe?" · a câmera vira e revela os olhos · planos 12–16</small></div>
   </div>
   <script>
     (function () {
       const DUR = 8, CORTE = 3.8, REVELA = 5.4, MAOS = 6.0;
+      // montagem: 5 s de preto só com a respiração; depois a cena aprovada em tempo real ("pai? mãe?" foi para o quarto, sentado)
+      const PRETO = 5, TOTAL = 9.5;
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
       const S = Cena.suave;
       const preto = document.getElementById("dp-preto");
@@ -71,7 +72,8 @@
       const estado = { t: 0 };
 
       function render() {
-        const t = estado.t;
+        const tau = estado.t;
+        const t = tau < PRETO ? CORTE * tau / PRETO : CORTE + (tau - PRETO);
         preto.style.opacity = t < CORTE ? 1 : 0;              // tela preta: só respiração e lençol (o som entra na pós)
         // respiração curta; a cabeça vira no travesseiro procurando o som
         const resp = Math.sin(t * 2 * Math.PI * 0.6) * 0.01;
@@ -93,7 +95,7 @@
         pos.render(scene, cam, t, { grao: LOOK.grao + 0.1 * pico, fumaca: LOOK.fumaca, dessat: LOOK.dessat });
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
-      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      tl.fromTo(estado, { t: 0 }, { t: TOTAL, duration: TOTAL, ease: "none" }, 0);
       window.__timelines["despertar"] = tl;
       render();
     })();

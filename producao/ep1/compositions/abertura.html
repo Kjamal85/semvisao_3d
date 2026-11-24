@@ -14,10 +14,10 @@
     #ab-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="abertura" data-width="1920" data-height="1080">
-    <div id="ab-stage" class="clip" data-start="0" data-duration="12" data-track-index="0"></div>
-    <div id="ab-selo" class="clip" data-start="0" data-duration="12" data-track-index="1"><small>SÃO PAULO · 17 NOV</small><span id="ab-hora">23:30</span></div>
-    <div id="ab-flash" class="clip" data-start="0" data-duration="12" data-track-index="2"></div>
-    <div id="ab-rotulo" class="clip" data-start="0" data-duration="12" data-track-index="3">CENÁRIO 9 — ABERTURA<small>23:30 → 03:30 · flash · onda · São Paulo → Brasil → globo · planos 1–11</small></div>
+    <div id="ab-stage" class="clip" data-start="0" data-duration="15" data-track-index="0"></div>
+    <div id="ab-selo" class="clip" data-start="0" data-duration="15" data-track-index="1"><small>SÃO PAULO · 17 NOV</small><span id="ab-hora">23:30</span></div>
+    <div id="ab-flash" class="clip" data-start="0" data-duration="15" data-track-index="2"></div>
+    <div id="ab-rotulo" class="clip" data-start="0" data-duration="15" data-track-index="3">CENÁRIO 9 — ABERTURA<small>23:30 → 03:30 · flash · onda · São Paulo → Brasil → globo · planos 1–11</small></div>
   </div>
   <script>
     (function () {
@@ -198,8 +198,10 @@
       const pos = Pos.criar(renderer, 1920, 1080);
       const estado = { t: 0 };
 
+      // 15 s na montagem: o lapso da cidade (0-5 s da cena aprovada) vai devagar em 8 s; o resto segue igual (+3 s)
+      const ESTICA = 8, TOTAL = DUR + ESTICA - LAPSO;
       function render() {
-        const t = estado.t;
+        const t = estado.t < ESTICA ? estado.t * LAPSO / ESTICA : estado.t - (ESTICA - LAPSO);
         // relógio acelerando 23:30 -> 03:30 (aceleração forte no fim); depois fica em 03:30
         const u = Math.min(1, t / LAPSO), min = Math.floor(240 * u * u * (0.35 + 0.65 * u) / (1)) ;
         const tot = 23 * 60 + 30 + Math.min(240, min), hh = Math.floor(tot / 60) % 24, mm = tot % 60;
@@ -257,7 +259,7 @@
         }
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
-      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      tl.fromTo(estado, { t: 0 }, { t: TOTAL, duration: TOTAL, ease: "none" }, 0);
       window.__timelines["abertura"] = tl;
       render();
     })();

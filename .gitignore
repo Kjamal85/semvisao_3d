@@ -1,3 +1,7 @@
 
 .env
 **/.env
+
+# renders de revisão na raiz (EP1 por trechos)
+/EP1_trecho*.mp4
+/EP1_*.mp4

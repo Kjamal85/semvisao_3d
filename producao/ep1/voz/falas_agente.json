@@ -10,5 +10,11 @@
     "voz": "Achird",
     "estilo": "com voz de homem adulto, ríspido e alto, dando uma ordem",
     "texto": "Afasta da porta, senhor!"
+  },
+  {
+    "id": "c10-agente-03",
+    "voz": "Achird",
+    "estilo": "com voz de homem adulto, alto e ríspido, batendo na porta, comando",
+    "texto": "Abram a porta! Equipe de isolamento!"
   }
 ]

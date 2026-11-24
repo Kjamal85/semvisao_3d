@@ -9,13 +9,16 @@
     #qd-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="queda" data-width="1920" data-height="1080">
-    <div id="qd-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
-    <div id="qd-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">CENA — A QUEDA<small>tropeça no lençol · o abajur quebra · o fone · "Gabi!" · planos 18–22</small></div>
-    <audio id="qd-mae" class="clip" src="voz/audio/c02-mae-01.wav" data-start="4.3" data-duration="0.73" data-track-index="2" data-volume="1"></audio>
+    <div id="qd-stage" class="clip" data-start="0" data-duration="19" data-track-index="0"></div>
+    <div id="qd-rotulo" class="clip" data-start="0" data-duration="19" data-track-index="1">CENA — A QUEDA<small>tropeça no lençol · o abajur quebra · o fone · "Gabi!" · planos 18–22</small></div>
+    <audio id="qd-mae" class="clip" src="voz/audio/c02-mae-08.wav" data-start="4.3" data-duration="2.22" data-track-index="2" data-volume="1"></audio>
+    <audio id="qd-gabi" class="clip" src="voz/audio/c02-gabi-02.wav" data-start="6.7" data-duration="3.5" data-track-index="3" data-volume="1"></audio>
+    <audio id="qd-sala" class="clip" src="voz/audio/c02-mae-06.wav" data-start="12.0" data-duration="2.49" data-track-index="5" data-volume="1"></audio>
+    <audio id="qd-pai" class="clip" src="voz/audio/c02-pai-02.wav" data-start="10.5" data-duration="1.06" data-track-index="4" data-volume="1"></audio>
   </div>
   <script>
     (function () {
-      const DUR = 8, TROPECA = 1.35, CORTE = 2.45, ACHA = 3.0, CHEGA = 4.1, SEGURA = 5.1, AGARRA = 5.9;
+      const DUR = 19, FALA_M2 = [12.0, 14.4], LEVANTA = 14.2, SAEM = 16.0, FALA = [6.7, 10.1], FALA_M = [4.3, 6.45], FALA_P = [10.5, 11.5], TROPECA = 1.35, CORTE = 2.45, ACHA = 3.0, CHEGA = 4.1, SEGURA = 5.1, AGARRA = 5.9;
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
       const S = Cena.suave;
       const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -99,6 +102,7 @@
 
       const camA = new THREE.PerspectiveCamera(50, 1920 / 1080, 0.1, 60);
       const camB = new THREE.PerspectiveCamera(36, 1920 / 1080, 0.1, 60);
+      const camS = new THREE.PerspectiveCamera(44, 1920 / 1080, 0.3, 40);
       const renderer = Cena.renderer("qd-stage");
       const pos = Pos.criar(renderer, 1920, 1080);
       const estado = { t: 0 };
@@ -148,6 +152,9 @@
           if (t > CHEGA + 0.6 && rg.ficha.expr !== "choro") Elenco.expressao(gabi, "choro");
           if (t <= CHEGA + 0.6 && rg.ficha.expr !== "medo") Elenco.expressao(gabi, "medo");
           Elenco.lagrimas(gabi, S((t - CHEGA - 0.6) / 0.6), t);
+          // plano 23: "Não tô enxergando, mãe, não tô vendo nada." — a boca mexe na fala
+          const falaG = t > FALA[0] && t < FALA[1] && Math.sin(t * 16) + Math.sin(t * 6.3) > 0.15;
+          { const b = gabi.userData.rosto.bocas; for (const n in b) b[n].visible = n === (falaG ? "o" : Elenco.EXPR[rg.ficha.expr].boca); }
           const resp = Math.sin(t * 2 * Math.PI * 0.8) * 0.012;
           Elenco.cabeca(gabi, -0.08, -0.35 + Math.sin(t * 1.7) * 0.1 * (1 - S((t - SEGURA) / 0.4)), 0, resp);
           // a mãe: entra correndo pela direita, ajoelha, segura o rosto
@@ -163,17 +170,73 @@
           if (t > SEGURA + 0.3 && rm.ficha.expr !== "triste") Elenco.expressao(mae, "triste");
           if (t <= SEGURA + 0.3 && rm.ficha.expr !== "grito") Elenco.expressao(mae, "grito");
           Elenco.cabeca(mae, 0.15, 0.3 * S((t - SEGURA + 0.4) / 0.4), 0, Math.sin(t * 2 * Math.PI * 0.9) * 0.01);
+          // "Gabi! O que houve, filho?" — a boca da mãe mexe na fala
+          const falaM = t > FALA_M[0] && t < FALA_M[1] && Math.sin(t * 15.5) + Math.sin(t * 6.7 + 1) > 0.1;
+          { const b = mae.userData.rosto.bocas; for (const n in b) b[n].visible = n === (falaM ? "o" : Elenco.EXPR[rm.ficha.expr].boca); }
           // o pai: chega logo atrás, de pé
           pai.visible = t > CHEGA + 0.5;
           const paiE = S((t - CHEGA - 0.5) / 1.0);
           pai.position.set(MK.x + 1.0 + 1.6 * (1 - paiE), 0, MK.z - 0.9 + 0.8 * (1 - paiE)); pai.rotation.set(0, -Math.PI / 2 - 0.35, 0);
           rp.aL.sh.rotation.set(-0.3, 0, -0.1); rp.aL.el.rotation.set(-0.4, 0, 0);
           rp.aR.sh.rotation.set(-0.3, 0, 0.1); rp.aR.el.rotation.set(-0.4, 0, 0);
-          Elenco.cabeca(pai, 0.18, 0.1, 0);
+          // "Calma, meu filho." — o pai se inclina um pouco e a boca mexe
+          const inclina = S((t - FALA_P[0] + 0.5) / 0.6);
+          Elenco.cabeca(pai, 0.18 + 0.1 * inclina, 0.1, 0);
+          rp.aR.sh.rotation.set(-0.3 - 0.6 * inclina, 0, 0.1);
+          const falaP = t > FALA_P[0] && t < FALA_P[1] && Math.sin(t * 14) + Math.sin(t * 5.3) > 0.1;
+          { const b = pai.userData.rosto.bocas; for (const n in b) b[n].visible = n === (falaP ? "o" : Elenco.EXPR[rp.ficha.expr].boca); }
+          // ---- NOVA (montagem): "Vem, filho. Vamos pra sala." — levantam o Gabi e saem com ele, um de cada lado ----
+          if (t > FALA_M2[0] - 0.3) {
+            const falaM2 = t > FALA_M2[0] && t < FALA_M2[1] && Math.sin(t * 15.5) + Math.sin(t * 6.7 + 1) > 0.1;
+            { const b = mae.userData.rosto.bocas; for (const n in b) b[n].visible = n === (falaM2 ? "o" : Elenco.EXPR[rm.ficha.expr].boca); }
+          }
+          if (t > LEVANTA) {
+            const lev = S((t - LEVANTA) / 1.5), anda = Math.max(0, t - SAEM) / 2.6;
+            const DIR = V(0.92, 0, 0.39), giro = Math.atan2(DIR.x, DIR.z);
+            const ry = Math.PI / 2 + (giro - Math.PI / 2) * S((t - SAEM + 0.4) / 0.6);
+            const passo = (r, f) => { const p = Math.sin(t * 7 + f) * 0.3 * S(anda * 4); r.pL.hip.rotation.x += p; r.pR.hip.rotation.x -= p; r.pL.knee.rotation.x += Math.max(0, -p); r.pR.knee.rotation.x += Math.max(0, p); };
+            // o Gabi: do chão para de pé, depois anda
+            const base = V(CH.x + 0.25, 0, CH.z).addScaledVector(DIR, anda * 1.0);
+            gabi.position.set(base.x, CH.y * (1 - lev), base.z); gabi.rotation.set(0, ry, 0);
+            for (const l of [rg.pL, rg.pR]) { l.hip.rotation.set(-Math.PI / 2 * (1 - lev), 0, 0); l.knee.rotation.set(0.5 * Math.sin(Math.PI * lev), 0, 0); }
+            passo(rg, 0);
+            mistura(rg.aL, gAgarra, [new THREE.Euler(-0.9, 0, -0.15), new THREE.Euler(-0.3, 0, 0)], lev);
+            mistura(rg.aR, gE, [new THREE.Euler(-0.5, 0, 0.35), new THREE.Euler(-0.2, 0, 0)], lev);
+            fone.visible = lev < 0.4;
+            // a mãe: levanta e vai para o lado dele (lado da câmera), segurando o braço
+            const lado = V(-DIR.z, 0, DIR.x);                                     // perpendicular ao caminho
+            const mFim = base.clone().addScaledVector(lado, 0.72);
+            mae.position.set(MK.x + (mFim.x - MK.x) * lev, -0.5 * (1 - lev), MK.z + (mFim.z - MK.z) * lev);
+            mae.rotation.set(0, -Math.PI / 2 + (ry + Math.PI / 2) * lev, 0);
+            for (const l of [rm.pL, rm.pR]) { l.hip.rotation.set(0, 0, 0); l.knee.rotation.set(Math.PI / 2 * (1 - lev), 0, 0); }
+            passo(rm, 1.3);
+            mistura(rm.aR, mE, [new THREE.Euler(-0.75, 0, -0.55), new THREE.Euler(-0.5, 0, 0)], lev);
+            mistura(rm.aL, mD, [new THREE.Euler(-0.2, 0, 0.1), new THREE.Euler(-0.3, 0, 0)], lev);
+            Elenco.mao(mae, "esq", "segura", 1); Elenco.mao(mae, "dir", "relaxada", lev);
+            // o pai: vem para o outro lado dele
+            const pIni = pai.position.clone(), pFim = base.clone().addScaledVector(lado, -0.72);
+            pai.position.set(pIni.x + (pFim.x - pIni.x) * lev, 0, pIni.z + (pFim.z - pIni.z) * lev);
+            pai.rotation.set(0, (-Math.PI / 2 - 0.35) + (ry + Math.PI / 2 + 0.35) * lev, 0);
+            passo(rp, 2.1);
+            rp.aL.sh.rotation.set(-0.75, 0, 0.55); rp.aL.el.rotation.set(-0.5, 0, 0);
+            rp.aR.sh.rotation.set(-0.15, 0, -0.08); rp.aR.el.rotation.set(-0.25, 0, 0);
+            Elenco.cabeca(gabi, 0.1, 0.25 * Math.sin(t * 1.4), 0, Math.sin(t * 2 * Math.PI * 0.8) * 0.01);
+            Elenco.cabeca(mae, 0.12, 0.35 * (1 - lev) - 0.4 * lev, 0); Elenco.cabeca(pai, 0.12, 0.4 * lev, 0);
+          }
           rosto.position.set(CH.x + 1.3, 1.9, CH.z + 1.6);
           const v = S((t - CORTE) / (DUR - CORTE));
-          camB.position.set(0.25 + 0.05 * v, 1.8, 2.15 - 0.15 * v); camB.lookAt(CH.x + 0.65, 1.55, CH.z);
+          // na fala do pai a câmera recua e sobe um pouco: o rosto dele entra no quadro
+          const rec = S((t - FALA_P[0] + 0.9) / 0.9);
+          camB.position.set(0.25 + 0.05 * v + 0.35 * rec, 1.8 + 0.35 * rec, 2.15 - 0.15 * v + 0.9 * rec);
+          camB.lookAt(CH.x + 0.65 + 0.3 * rec + 1.1 * S((t - SAEM) / 2.6), 1.55 + 0.4 * rec + 0.15 * S((t - LEVANTA) / 1.5), CH.z - 0.2 * rec + 0.4 * S((t - SAEM) / 2.6));
           cam = camB;
+          if (t > LEVANTA + 0.9) {
+            // levantam e saem: câmera à frente do caminho, olhando de volta — os três lado a lado, rostos à mostra
+            const DIR = V(0.92, 0, 0.39), ini = V(CH.x + 0.25, 0, CH.z), anda = Math.max(0, t - SAEM) / 2.6;
+            camS.position.copy(ini).addScaledVector(DIR, 3.7 + anda * 0.85); camS.position.y = 1.9;
+            camS.lookAt(ini.x + DIR.x * anda, 1.25 + 0.2 * S((t - LEVANTA) / 1.5), ini.z + DIR.z * anda);
+            cam = camS;
+          }
         }
         pos.render(scene, cam, t, LOOK);
       }

@@ -9,12 +9,21 @@
     #p-rotulo small { display: block; font-size: 28px; font-weight: 400; color: #c3c9d4; margin-top: 4px; }
   </style>
   <div id="root" data-composition-id="portao" data-width="1920" data-height="1080">
-    <div id="p-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
-    <div id="p-rotulo" class="clip" data-start="0" data-duration="8" data-track-index="1">CENÁRIO 5 — A DUDA NO PORTÃO (DE DENTRO)<small>fim de tarde · silhueta na cortina, sem rosto · planos 57–60</small></div>
+    <div id="p-stage" class="clip" data-start="0" data-duration="15" data-track-index="0"></div>
+    <div id="p-rotulo" class="clip" data-start="0" data-duration="15" data-track-index="1">CENÁRIO 5 — A DUDA NO PORTÃO (DE DENTRO)<small>fim de tarde · silhueta na cortina, sem rosto · planos 57–60</small></div>
+    <audio id="p-duda" class="clip" src="voz/audio/c09-duda-01.wav" data-start="2.6" data-duration="4.11" data-track-index="2" data-volume="0.8"
+      data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;id&quot;:&quot;lp&quot;,&quot;label&quot;:&quot;de fora, pelo portão&quot;,&quot;params&quot;:{&quot;frequency&quot;:2200}}]}"></audio>
+    <audio id="p-mae" class="clip" src="voz/audio/c09-mae-03.wav" data-start="8.0" data-duration="5.32" data-track-index="3" data-volume="1"></audio>
   </div>
   <script>
     (function () {
-      const DUR = 8, C1 = 3.9, C2 = 6.1;                                // cortina · o Gabi congela · a Duda vai embora
+      const DUR = 15, C1 = 3.9, C2 = 6.1;                               // C1/C2: tempos da animação ORIGINAL (aprovada, 8 s)
+      // as falas (c09-duda-01 2,6 s, c09-mae-03 8,0 s) não cabiam em 8 s: o tempo da cena é remapeado.
+      // novo -> original (linear por trechos). A: casa (Gabi, mãe, porta, câmeras). D: a Duda (só olha a janela depois da mãe falar).
+      const lin = (P) => (x) => { for (let i = 1; i < P.length; i++) if (x <= P[i][0]) { const [a, b] = P[i - 1], [c, d] = P[i]; return b + (d - b) * (x - a) / (c - a); } return P[P.length - 1][1]; };
+      const remapA = lin([[0, 0], [7.4, 6.1], [8.0, 6.7], [13.3, 6.9], [15, 8]]);
+      const remapD = lin([[0, 0], [7.4, 5.6], [13.3, 5.9], [14.0, 6.75], [15, 8]]);
+      const C1N = 4.7, C2N = 7.4;                                       // cortes no tempo novo                                // cortina · o Gabi congela · a Duda vai embora
       const LOOK = { grao: Pos.GRAO.baixo, fumaca: 0.15, dessat: 0.2 };   // padrão do modo cego
 
       const sala = new THREE.Group();
@@ -220,20 +229,20 @@
       }
 
       function render() {
-        const t = estado.t;
-        animarDuda(t);
+        const tn = estado.t, t = remapA(tn);
+        animarDuda(remapD(tn));
         renderer.setRenderTarget(alvoSombra); renderer.render(fora3D, camLuz); renderer.setRenderTarget(null);
-        cortina.material.uniforms.onda.value = t * 1.3;
+        cortina.material.uniforms.onda.value = tn * 1.3;
         for (let i = 0; i < N; i++) {
           const b = base[i];
-          arr[i * 3] = b[0] + Math.sin(t * 0.3 + b[3]) * 0.08; arr[i * 3 + 1] = b[1] + Math.sin(t * 0.21 + b[3] * 2) * 0.06; arr[i * 3 + 2] = b[2];
+          arr[i * 3] = b[0] + Math.sin(tn * 0.3 + b[3]) * 0.08; arr[i * 3 + 1] = b[1] + Math.sin(tn * 0.21 + b[3] * 2) * 0.06; arr[i * 3 + 2] = b[2];
         }
         pg.attributes.position.needsUpdate = true;
         // o Gabi: ouve a batida (1,8 s) e congela · a mão sobe e aperta o fone (4,2) · "não" com a cabeça (4,9-5,8)
         const ouve = S((t - 1.8) / 0.25);
         aplicar(colo, aperta, S((t - 4.1) / 0.5));
         const nao = (t > 4.9 && t < 5.9) ? Math.sin((t - 4.9) * 2 * Math.PI * 2) * 0.32 * (1 - (t - 4.9)) : 0;
-        const resp = Math.sin(t * 2 * Math.PI * (t > 1.8 ? 0.55 : 0.3)) * (t > 1.8 && t < 5 ? 0.003 : 0.008);   // respiração presa
+        const resp = Math.sin(tn * 2 * Math.PI * (t > 1.8 ? 0.55 : 0.3)) * (t > 1.8 && t < 5 ? 0.003 : 0.008);   // respiração presa
         Elenco.cabeca(gabi, 0.15 - 0.2 * ouve + 0.12 * S((t - 6.2) / 0.8), -0.55 * ouve + 0.75 * S((t - 4.6) / 0.3) + nao, 0.12 * ouve, resp);
         if (t > 1.8 && rg.ficha.expr !== "medo") Elenco.expressao(gabi, "medo");
         if (t > 6.3 && rg.ficha.expr !== "choro") Elenco.expressao(gabi, "choro");
@@ -242,21 +251,21 @@
         const vai = S((t - 5.4) / 0.6);
         mae.position.set(MX0 + 0.05 * vai, 0, MZ0 - 0.2 * vai); mae.rotation.y = MRY + (Math.PI - 0.5 - MRY) * vai;   // vira para a porta
         if (t > 5.9) { rm.aL.sh.rotation.copy(maeTrinco[0]); rm.aL.el.rotation.copy(maeTrinco[1]); } else { rm.aL.sh.rotation.set(-0.15, 0, 0.05); rm.aL.el.rotation.set(-0.3, 0, 0); }
-        Elenco.cabeca(mae, 0.12, t < 5.4 ? 0.1 : -0.4 * vai, 0, Math.sin(t * 2 * Math.PI * 0.3) * 0.008);
+        Elenco.cabeca(mae, 0.12, t < 5.4 ? 0.1 : -0.4 * vai, 0, Math.sin(tn * 2 * Math.PI * 0.3) * 0.008);
         const abre = S((t - 6.2) / 0.6) * 0.55;
         porta.rotation.y = abre; fresta.intensity = 30 * abre;
         let cam;
-        if (t < C1) {
-          const u = S(t / C1);
+        if (tn < C1N) {
+          const u = S(tn / C1N);
           camA.position.set(-2.9 + 0.4 * u, 1.6, 4.85 - 0.3 * u); camA.lookAt(0.1, 1.4, 0.8); cam = camA;
-        } else if (t < C2) {
-          const u = S((t - C1) / (C2 - C1));
+        } else if (tn < C2N) {
+          const u = S((tn - C1N) / (C2N - C1N));
           camB.position.set(-1.6 + 0.25 * u, 1.75, 4.1 - 0.1 * u); camB.lookAt(SX - 0.6, 1.4, SZ - 0.9); cam = camB;
         } else {
-          const u = S((t - C2) / (DUR - C2));
+          const u = S((tn - C2N) / (DUR - C2N));
           camC.position.set(-2.7 + 0.25 * u, 1.6, 4.7 - 0.25 * u); camC.lookAt(-0.75, 1.5, 0.3); cam = camC;
         }
-        pos.render(scene, cam, t, LOOK);
+        pos.render(scene, cam, tn, LOOK);
       }
       const tl = gsap.timeline({ paused: true, onUpdate: render });
       tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);

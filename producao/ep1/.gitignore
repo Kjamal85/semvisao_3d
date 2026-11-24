@@ -15,3 +15,8 @@ renders/
 # caches do Studio (preview)
 .thumbnails/
 .waveform-cache/
+
+# recortes alternativos do TTS (os oficiais ficam em voz/audio/<ID>.wav)
+voz/audio/*-recorte*.wav
+# música: só a cópia com nome seguro vai pro Git
+assets/musica/musica de fundo.mp3

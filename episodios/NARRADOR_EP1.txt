@@ -1,0 +1,114 @@
+﻿EP1 - NARRADOR (Sem Visão)
+===========================================================
+
+COMO USAR
+- Gere UM ARQUIVO POR FRASE, com o nome indicado (narrador-n01, narrador-n02...).
+- Salve em: F:\Projeto_sem_visao_3d\semvisao_3d\producao\ep1\voz\audio
+- Sem música e sem efeito. Pode ser .wav ou .mp3.
+- Entre [colchetes] estão as expressões: NÃO são para ler em voz alta.
+  Se a ferramenta de voz não entender colchetes, use só o TEXTO e ajuste o tom pelo "COMO FALAR".
+- "..." = pausa curta.   [pausa] = pausa de 1 segundo.
+
+VOZ DO NARRADOR (geral)
+Adulto, grave, calmo, voz baixa e próxima, como quem conta um segredo.
+Suspense, nunca dramático demais. Ritmo lento, sem pressa. Português do Brasil.
+
+===========================================================
+
+narrador-n01   (abertura - a cidade à noite)
+COMO FALAR: calmo, quase sussurrado, cada parte separada.
+TEXTO:
+[calmo] São Paulo. [pausa curta] Dezessete de novembro. [pausa curta] Três e meia da manhã.
+
+-----------------------------------------------------------
+
+narrador-n02   (a onda de luz -> o globo)
+COMO FALAR: começa contido; a tensão sobe devagar; o fim cai grave e lento.
+TEXTO:
+[tenso, baixo] Uma luz atravessou o planeta. [pausa] E na manhã seguinte... [mais lento, grave] as pessoas começaram a acordar cegas.
+
+-----------------------------------------------------------
+
+narrador-n03   (o quarto, antes da queda)
+COMO FALAR: triste e baixo; pausa longa antes do fim.
+TEXTO:
+[baixo, triste] Gabriel tinha dezessete anos. [pausa curta] Naquela manhã, ele acordou... [pausa] e o mundo não estava mais lá.
+
+-----------------------------------------------------------
+
+narrador-n04   (indo para a sala)
+COMO FALAR: sombrio, em tom de aviso.
+TEXTO:
+[sombrio] Ninguém sabia ainda. [pausa curta] Mas não era só com ele.
+
+-----------------------------------------------------------
+
+narrador-n05   (o bairro visto de cima, as ambulâncias)
+COMO FALAR: urgente mas contido, um pouco mais rápido que as outras.
+TEXTO:
+[urgente, contido] Em poucas horas, as sirenes tomaram as ruas. [pausa curta] Milhares de pessoas tinham acordado cegas.
+
+-----------------------------------------------------------
+
+narrador-n06   (uma hora depois, o pai na janela)
+COMO FALAR: calmo e ameaçador; "eles" com peso.
+TEXTO:
+[calmo, ameaçador] Uma hora depois... eles chegaram à rua do Gabi.
+
+-----------------------------------------------------------
+
+narrador-n07   (antes da revolta)
+COMO FALAR: pesado; a segunda frase mais lenta.
+TEXTO:
+[pesado] Quando o Gabi acordou de novo, nada tinha mudado. [pausa] [lento] E a raiva veio antes do choro.
+
+-----------------------------------------------------------
+
+narrador-n08   (a cozinha)
+COMO FALAR: calmo, observador.
+TEXTO:
+[calmo] Dentro de casa, cada coisa simples virou uma prova.
+
+-----------------------------------------------------------
+
+narrador-n09   (antes do copo)
+COMO FALAR: um pouco de esperança; "Do começo." firme e curto.
+TEXTO:
+[suave, com esperança] A mãe decidiu: se ele não podia ver, ia aprender tudo de novo. [pausa curta] [firme] Do começo.
+
+-----------------------------------------------------------
+
+narrador-n10   (o quintal, o pai chorando)
+COMO FALAR: triste, baixo, quase quebrando no fim.
+TEXTO:
+[triste, baixo] Na frente do filho, o pai era forte. [pausa] Só no quintal... ele se deixava desabar.
+
+-----------------------------------------------------------
+
+narrador-n11   (o corredor)
+COMO FALAR: melancólico, devagar.
+TEXTO:
+[melancólico] A casa onde ele cresceu... agora tinha quinas que ele não lembrava.
+
+-----------------------------------------------------------
+
+narrador-n12   (antes da Duda no portão)
+COMO FALAR: suave, um respiro de carinho no meio do medo.
+TEXTO:
+[suave, carinhoso] Do outro lado da rua... alguém ainda pensava nele.
+
+-----------------------------------------------------------
+
+narrador-n13   (depois do abraço, antes dos agentes)
+COMO FALAR: frio e ameaçador; "isolado" seco.
+TEXTO:
+[frio] Ao anoitecer, a notícia já tinha virado ordem: [pausa curta] [seco] quem cegasse seria isolado.
+
+-----------------------------------------------------------
+
+narrador-n14   (o fim - "DIA 1" na tela preta)
+COMO FALAR: muito lento; pausa longa antes de "foi só o primeiro dia"; termina quase num sussurro.
+TEXTO:
+[lento, grave] E esse... [pausa longa] [sussurrado] foi só o primeiro dia.
+
+===========================================================

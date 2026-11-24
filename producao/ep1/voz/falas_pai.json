@@ -4,5 +4,11 @@
     "voz": "Charon",
     "estilo": "com voz de homem adulto, baixo e firme, sem gritar, a voz quase sem tremer",
     "texto": "É meu filho. Ele fica."
+  },
+  {
+    "id": "c02-pai-02",
+    "voz": "Charon",
+    "estilo": "com voz de pai, baixo e firme, tentando acalmar o filho, a voz tremendo um pouco",
+    "texto": "Calma, meu filho."
   }
 ]
