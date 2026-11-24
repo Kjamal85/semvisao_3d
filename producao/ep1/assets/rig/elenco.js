@@ -2,7 +2,7 @@
 // Mesmas proporções do Gabi aprovado (commit baa3c95): formas simples, contorno escuro em
 // casca BackSide, cabeça ~0,31 da altura. Cada personagem é uma ficha de parâmetros.
 (function () {
-  const OUT = 0x1b1b20;
+  const OUT = 0x000000;
   const EYE = { white: 0xffffff, pupil: 0x24242a, blind: 0x6a6a71, glintB: 0xecebe4, glint: 0xffffff };
   const outlineMat = new THREE.MeshBasicMaterial({ color: OUT, side: THREE.BackSide });
   const cache = {};
