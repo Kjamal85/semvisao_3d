@@ -1,0 +1,90 @@
+<template>
+  <style>
+      #root { position: absolute; inset: 0; background: #e9e9ee; font-family: sans-serif; --ink: #33363f; }
+      #er-stage { position: absolute; inset: 0; z-index: 0; }
+      #er-stage canvas { display: block; }
+      #er-title { position:absolute; top:40px; left:0; width:100%; text-align:center; color:var(--ink);
+        font-size:40px; font-weight:700; z-index:2; }
+      .er-sub { position:absolute; top:94px; left:0; width:100%; text-align:center; color:#5c5f69; font-size:30px; font-weight:700; letter-spacing:.1em; z-index:2; }
+      .er-lab { position:absolute; bottom:36px; width:340px; text-align:center; z-index:2; color:var(--ink);
+        font-size:30px; font-weight:700; }
+      .er-lab small { display:block; font-size:28px; font-weight:400; color:#5c5f69; margin-top:4px; }
+  </style>
+  <div id="root" data-composition-id="elenco-refinado" data-width="1920" data-height="1080">
+      <div id="er-title" class="clip" data-start="0" data-duration="12" data-track-index="0">RIG REFINADO — teste (fora do episódio)</div>
+      <div id="er-s1" class="er-sub clip" data-start="0" data-duration="6" data-track-index="1">CORPO INTEIRO · mola nos braços e na cabeça</div>
+      <div id="er-s2" class="er-sub clip" data-start="6" data-duration="6" data-track-index="1">ROSTOS · piscar, olhar, respirar</div>
+      <div id="er-stage" class="clip" data-start="0" data-duration="12" data-track-index="2"></div>
+      <div id="er-l1" class="er-lab clip" data-start="0" data-duration="6" data-track-index="3" style="left:40px">GABI EP1<small>aprovado, sem vida</small></div>
+      <div id="er-l2" class="er-lab clip" data-start="0" data-duration="6" data-track-index="4" style="left:400px">GABI REFINADO<small>toon 3 faixas (descartado)</small></div>
+      <div id="er-l3" class="er-lab clip" data-start="0" data-duration="6" data-track-index="5" style="left:790px">GABI PBR<small>padrão do EP2 em diante</small></div>
+      <div id="er-l4" class="er-lab clip" data-start="0" data-duration="6" data-track-index="6" style="left:1175px">DUDA<small>refinado · medo</small></div>
+      <div id="er-l5" class="er-lab clip" data-start="0" data-duration="6" data-track-index="7" style="left:1540px">MÃE<small>refinado · choro</small></div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const relogio = { t: 0 };
+      tl.fromTo(relogio, { t: 0 }, { t: 12, duration: 12, ease: "none" }, 0);
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xe9e9ee);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.78));
+      const key = new THREE.DirectionalLight(0xffffff, 1.05); key.position.set(-3, 5, 4); scene.add(key);
+      const rim = new THREE.DirectionalLight(0xbcd0e6, 0.3); rim.position.set(3, 2, -3); scene.add(rim);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(1); renderer.setSize(1920, 1080);
+      document.getElementById("er-stage").appendChild(renderer.domElement);
+      Elenco.ambiente(renderer, scene);   // reflexo para o boneco PBR (o toon ignora)
+
+      // 0-6 s: corpo inteiro, ortográfica (8 unidades = 1920 px)
+      const cam = new THREE.OrthographicCamera(-4, 4, 2.25, -2.25, 0.1, 100);
+      cam.position.set(0, 1.5, 12); cam.lookAt(0, 1.5, 0);
+      // 6-12 s: perspectiva fechada nos rostos dos refinados
+      const camR = new THREE.PerspectiveCamera(22, 16 / 9, 0.1, 100);
+      camR.position.set(0.75, 2.0, 10.5); camR.lookAt(0.75, 1.95, 0);
+
+      const gabi1 = Elenco.build("gabi", { blind: true });
+      const gabiR = Elenco.build("gabi", { blind: true, refinado: true });
+      const gabiP = Elenco.build("gabi", { blind: true, refinado: true, material: "pbr" });
+      const duda = Elenco.build("duda", { refinado: true, expr: "medo" });
+      const mae = Elenco.build("mae", { refinado: true, expr: "choro" });
+      const fila = [[gabi1, -3.0], [gabiR, -1.5], [gabiP, 0], [duda, 1.5], [mae, 3.0]];
+      for (const [p, x] of fila) { p.position.x = x; p.rotation.y = -0.3; scene.add(p); }
+
+      // chaves das molas: o alvo muda de repente, a mola dá o peso (arranca, passa um tico, assenta)
+      // aceno para o lado (o braço abre para fora: nada passa na frente do rosto)
+      const bracoZ = [[0, 0.09], [1.2, 1.25], [3.4, 0.09]];
+      const cotov  = [[0, -0.14], [1.2, -0.9], [3.4, -0.14]];
+      const vira   = [[0, 0], [1.0, 0.55], [3.0, -0.35], [4.6, 0]];
+
+      function posar(t) {
+        // braço direito dos dois Gabis refinados: o ombro responde mais rápido que o cotovelo
+        // (frequências diferentes = o antebraço "vem atrás", sensação de massa)
+        for (const p of [gabiR, gabiP]) {
+          const a = p.userData.rig.aR;
+          a.sh.rotation.set(-0.15, 0, Elenco.mola(bracoZ, t, { freq: 2.0, amort: 0.62 }));
+          a.el.rotation.set(Elenco.mola(cotov, t, { freq: 1.4, amort: 0.55 }), 0, 0);
+        }
+        // a Duda vira a cabeça com uma mola mais lenta (cabeça é pesada)
+        Elenco.cabeca(duda, 0, Elenco.mola(vira, t, { freq: 1.5, amort: 0.75 }), 0);
+        Elenco.vida(gabiR, t, { ritmo: "calmo" });
+        Elenco.vida(gabiP, t, { ritmo: "calmo", fase: 1 });
+        Elenco.vida(duda, t, { ritmo: "medo" });
+        Elenco.vida(mae, t, { ritmo: "choro" });
+        Elenco.lagrimas(mae, 0.9, t);
+      }
+      function renderAt() {
+        const t = relogio.t;
+        posar(t);
+        if (t < 6) { gabi1.visible = true; renderer.render(scene, cam); }
+        else { gabi1.visible = false; renderer.render(scene, camR); }
+      }
+      tl.eventCallback("onUpdate", renderAt);
+      renderAt();
+      window.__timelines = window.__timelines || {};
+      window.__timelines["elenco-refinado"] = tl;
+    })();
+  </script>
+</template>

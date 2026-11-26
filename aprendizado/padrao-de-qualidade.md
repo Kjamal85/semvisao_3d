@@ -12,6 +12,17 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
 - Câmera com ease suave (sem tranco no início/fim do movimento).
 - Troca de expressão passa por um "take" (antecipação → nova cara → assentamento), nunca
   pula de uma para outra.
+- **Cenas novas (EP2 em diante) usam o rig refinado** (2026-11-25), sem mexer no EP1 aprovado,
+  que continua usando `Elenco.build(id)` e sai pixel a pixel igual:
+  - `Elenco.build(id, { refinado: true, material: "pbr" })` dá a geometria lisa, os pivôs de cintura
+    e peito e o material PBR. **Personagem em PBR, cenário em toon** (decisão do usuário, 2026-11-25).
+  - Depois de pôr as luzes, chamar `Elenco.ambiente(renderer, scene)`: o reflexo nasce delas. Com um
+    céu fixo, o boneco fica mais claro que a cena e parece colado (teste do portão, 2026-11-25).
+  - No `render()`, posar primeiro e **depois** chamar `Elenco.vida(g, t, { ritmo })`, que cuida de
+    respirar, balançar, piscar, olhar e mexer os dedos. Os ritmos são calmo, medo, tensao, choro e alivio.
+  - Movimento com peso usa `Elenco.mola(chaves, t, { freq, amort })`, nunca lerp quadro a quadro,
+    porque o render é por seek. A cabeça pede uma mola mais lenta (~1,5 Hz) que o braço (~2 Hz).
+  - Teste visual em `compositions/elenco-refinado.html`, que fica fora do episódio.
 
 ## 2. Elementos de cena — detalhe e variedade
 - Objetos que contam a história, não enfeite: no quarto do Gabi, despertador apagado
