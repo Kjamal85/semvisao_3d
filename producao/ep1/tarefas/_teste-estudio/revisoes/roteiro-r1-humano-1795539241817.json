@@ -1,0 +1,13 @@
+{
+  "portao": "roteiro",
+  "rodada": 1,
+  "revisor": "humano",
+  "em": "2026-11-24T16:54:01.817Z",
+  "veredito": "correcao",
+  "resumo": "aplique as correçoes",
+  "criterios": [],
+  "correcoes": [
+    "aplique as correçoes"
+  ],
+  "criterios_usados": []
+}

@@ -1,0 +1,58 @@
+{
+  "_sobre": "Configuração do Estúdio. Sem segredos aqui: chaves ficam só nos .env dos projetos (ignorados pelo Git). Caminhos relativos partem da pasta estudio/.",
+  "porta": 4380,
+  "claude_exe": "auto",
+  "bash_exe": "auto",
+  "hyperframes": "hyperframes@0.8.206",
+  "render_workers": "auto",
+
+  "limites": {
+    "tentativas_por_etapa": 3,
+    "espera_entre_tentativas_s": [60, 300],
+    "rodadas_de_correcao": 3,
+    "execucoes_de_agente_por_producao": 30,
+    "retomadas_automaticas_por_limite": 3,
+    "espera_padrao_limite_min": 60,
+    "tempo_max_min": {
+      "preparar": 5,
+      "roteiro": 20,
+      "revisao": 15,
+      "voz": 20,
+      "cenas": 75,
+      "correcao": 45,
+      "montagem": 10,
+      "previa": 40,
+      "render_final": 90,
+      "metadados": 10,
+      "entrega": 10
+    },
+    "turnos_max": {
+      "roteiro": 40,
+      "revisao": 30,
+      "cenas": 150,
+      "correcao": 90,
+      "metadados": 20
+    }
+  },
+
+  "modelos": {
+    "roteiro": "opus",
+    "revisao": "sonnet",
+    "cenas": "opus",
+    "correcao": "opus",
+    "metadados": "sonnet"
+  },
+
+  "revisao_padrao": { "roteiro": "subagente", "previa": "subagente", "final": "humano" },
+
+  "perfis": {
+    "3d": {
+      "nome": "semvisão 3D — colapso gradual (capítulos sobre o ep1)",
+      "raiz": "..",
+      "episodio": "producao/ep1",
+      "env_voz": [".env"],
+      "alinhar_vozes": false,
+      "duracao_alvo_s": 45
+    }
+  }
+}

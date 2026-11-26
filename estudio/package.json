@@ -2,8 +2,12 @@
   "name": "estudio",
   "private": true,
   "type": "module",
+  "description": "Fila, cronograma e executor da produção dos vídeos (2D e 3D) com revisão humana ou por subagente.",
+  "engines": { "node": ">=24" },
   "scripts": {
-    "start": "node src/server.js",
-    "test": "node testes/simulado.mjs"
+    "iniciar": "node src/iniciar.mjs --abrir",
+    "servidor": "node src/servidor.mjs",
+    "executor": "node src/executor.mjs",
+    "teste": "node testes/simulado.mjs"
   }
 }

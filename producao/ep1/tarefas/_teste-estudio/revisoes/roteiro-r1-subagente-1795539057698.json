@@ -1,0 +1,86 @@
+{
+  "portao": "roteiro",
+  "rodada": 1,
+  "revisor": "subagente",
+  "em": "2026-11-24T16:50:57.698Z",
+  "veredito": "aprovado",
+  "resumo": "O roteiro do EP2 cobre o Dia 1 pelo ponto de vista da Duda, com narrador em 3ª pessoa e sem legenda. Mostra mais do que explica, e o tom segue de thriller social, sem herói e sem resolução limpa. Os pontos de continuidade novos (mãe da Duda, vizinho de manhã, casa térrea, distância entre as casas) aparecem como propostas 💡 ou decisões pendentes, e nenhum virou cânone. Nenhum critério bloqueante falhou. As decisões 1–5 continuam abertas para a pessoa.",
+  "criterios": [
+    {
+      "id": "rot-minimundo",
+      "atendido": true,
+      "observacao": "Há vários sinais de mundo vivo e de ofício: o despertador e o rádio-relógio piscando 00:00, a rua que parece normal enquanto o narrador diz o contrário (duda-quarto), a respiração suspensa e a mão da mãe procurando a da filha (duda-tv), e a mão que hesita no portão. Há também subtexto (a olhada para a janela dele) e silêncio no clímax, em que a Duda fica com o corpo travado e sem falar. Nada é explicado em fala."
+    },
+    {
+      "id": "rot-personagens",
+      "atendido": true,
+      "observacao": "A Duda é vidente, de blusa rosa, loira e 16 anos, com o rosto revelado como o brief e vizinha.md preveem. A mãe e o pai do Gabi enxergam e ficam, e o Gabi é levado cego. O sentimento entre a Duda e o Gabi segue como subtexto, sem ninguém assumir. Os desvios em relação a vizinha.md ('sozinha em casa', 'a duas casas') estão apontados no próprio roteiro, com ajuste só no pós-publicação."
+    },
+    {
+      "id": "rot-tom",
+      "atendido": true,
+      "observacao": "O tom é de thriller de colapso. Há quarentena, sirene e impotência, e o episódio fecha com 'Por enquanto'. Não há comédia nem herói. A Duda para no portãozinho e não atravessa, e ninguém resolve nada."
+    },
+    {
+      "id": "rot-sem-legenda",
+      "atendido": true,
+      "observacao": "Só aparecem como texto o overlay 'DIA 1', os selos de hora ('+1 HORA', '+2 HORAS') e o letreiro de TV já existente no EP1. Nenhuma fala nem narração vira texto na tela."
+    },
+    {
+      "id": "rot-narrador",
+      "atendido": true,
+      "observacao": "As sete falas do narrador (n01, n02, ep2-n01, ep2-n02, n03, n13, ep2-n04) caem em trechos sem diálogo. Cada uma está marcada como entrando depois da virada, com a Duda já calada, sobre o plano da janela, ou no preto depois que o grito some. O resumo confere isso."
+    },
+    {
+      "id": "rot-fatos-continuidade",
+      "atendido": true,
+      "observacao": "A mãe da Duda, o vizinho levado às 08:40 e a casa térrea são os pontos novos. Todos estão marcados 💡 ou como decisão pendente (1–5), com a fonte citada (sala.html, vizinho.html, rua.html, plano 68). A inclusão da mãe no cânone fica para o pós-publicação, e nome, aparência e voz estão listados como em aberto. Os fatos do EP1 citados (planos 38–39, 60, 68, c05-radio-01) não foram conferidos contra os arquivos do EP1. A 'fala não vi movimento' foi tratada para não criar fato novo."
+    },
+    {
+      "id": "rot-ritmo-falas",
+      "atendido": true,
+      "observacao": "Depois do choque da TV vem uma pausa explícita, sem voz, antes da mãe falar em duda-despedida. Depois da van e do rádio vem o olhar para a casa do Gabi, e só então 'Será que o Gabi...'. Depois da porta da van e da corrida há silêncio, e o 'Gabi!' vem só na sequência."
+    }
+  ],
+  "correcoes": [
+    "(opcional) Confirmar com a pessoa a duração: o prompt da etapa fala em ~10 s, mas o brief e a regra de série pedem ~4:30–5:30, e o roteiro mantém ~5:27. Já está nas pendências.",
+    "(opcional) Em duda-tv, deixar explícito no mapa de montagem que a pausa depois do ep2-reporter-03 dura alguns segundos antes de qualquer fala da mãe ou da Duda."
+  ],
+  "criterios_usados": [
+    {
+      "id": "rot-minimundo",
+      "texto": "O roteiro respeita minimundo.md: mostra em vez de explicar — tem pelo menos um sinal de mundo vivo ou um dos ofícios (silêncio, corpo antes da boca, som íntimo, câmera que sente, subtexto).",
+      "bloqueante": true
+    },
+    {
+      "id": "rot-personagens",
+      "texto": "Cada personagem age conforme a ficha em personagens/*.md (cego ou vidente, que dia, o que já foi revelado) — nenhuma continuidade nova sem checar esses arquivos.",
+      "bloqueante": true
+    },
+    {
+      "id": "rot-tom",
+      "texto": "Tom de thriller social de colapso gradual: sem comédia/deboche, sem herói salvador, sem resolução limpa.",
+      "bloqueante": true
+    },
+    {
+      "id": "rot-sem-legenda",
+      "texto": "Nenhuma fala ou narração sai como texto na tela — a série não usa legenda.",
+      "bloqueante": true
+    },
+    {
+      "id": "rot-narrador",
+      "texto": "O narrador (3ª pessoa) só fala onde nenhum personagem está falando — nunca por cima de diálogo.",
+      "bloqueante": true
+    },
+    {
+      "id": "rot-fatos-continuidade",
+      "texto": "Nenhum fato de continuidade (estado cego/vidente, dia, o que foi revelado) inventado fora de personagens/*.md; se faltar fonte, o roteiro marca a dúvida em vez de inventar cânone novo.",
+      "bloqueante": true
+    },
+    {
+      "id": "rot-ritmo-falas",
+      "texto": "Depois de um susto, a próxima fala tem um tempo de reação (respiração, olhar, silêncio) antes de vir — não cola na anterior.",
+      "bloqueante": false
+    }
+  ]
+}

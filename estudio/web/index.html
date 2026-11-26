@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Estúdio de Vídeos</title>
+  <link rel="stylesheet" href="estilo.css" />
+</head>
+<body>
+  <header class="topo">
+    <div class="marca">Estúdio <span>de vídeos</span></div>
+    <nav id="abas">
+      <a href="#/fila" data-aba="fila">Fila</a>
+      <a href="#/cronograma" data-aba="cronograma">Cronograma</a>
+      <a href="#/nova" data-aba="nova">+ Nova produção</a>
+      <a href="#/config" data-aba="config">Configurações</a>
+    </nav>
+    <div id="executor" class="pilula" title="Estado do executor">…</div>
+  </header>
+  <main id="app"><p class="vazio">Carregando…</p></main>
+  <dialog id="janela"><div id="janela-corpo"></div><form method="dialog"><button class="btn">Fechar</button></form></dialog>
+  <div id="aviso" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.credentials.json)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Write(**/.env)",
+      "Write(**/.env.*)",
+      "PowerShell(git push*)",
+      "PowerShell(git commit*)",
+      "PowerShell(git reset*)",
+      "PowerShell(git checkout*)",
+      "PowerShell(Remove-Item*)",
+      "PowerShell(rm *)",
+      "Bash(git push*)",
+      "Bash(git commit*)",
+      "Bash(git reset*)",
+      "Bash(git checkout*)",
+      "Bash(rm *)"
+    ]
+  }
+}

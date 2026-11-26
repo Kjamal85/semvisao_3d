@@ -1,0 +1,12 @@
+# Estado local: banco da fila, logs e travas (persistem no disco, não no Git)
+dados/
+# Vídeos prontos para postar (pesados)
+entregas/
+
+# Segredos: o Estúdio não guarda chaves, mas nunca versionar .env
+.env
+.env.*
+
+node_modules/
+Thumbs.db
+desktop.ini
