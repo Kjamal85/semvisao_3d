@@ -9,6 +9,17 @@ A assinatura da série. Dois modos de imagem + um truque de câmera que vira mar
 - **Técnica:** **low-poly com cel-shading** (sombreamento chapado, não realista) — o
   **mesmo estilo do canal de referência "E Se?"**. Cenários de formas simples, cores
   sólidas/gradientes, uma luz direcional com sombra limpa.
+- **Personagens em PBR, cenário em toon** (decisão do usuário, 2026-11-25, a partir do EP2):
+  - os personagens usam o rig refinado com material PBR:
+    `Elenco.build(id, { refinado: true, material: "pbr" })`;
+  - os cenários continuam cel-shaded (toon em 3 faixas);
+  - o contorno preto continua nos dois;
+  - para o boneco não parecer colado, o reflexo do PBR **nasce das luzes da cena**: chamar
+    `Elenco.ambiente(renderer, scene)` depois de pôr as luzes;
+  - o EP1 aprovado continua todo em toon e não muda.
+
+  Testado no portão (fim de tarde) e no quarto (noite): a luminosidade ficou na meta e o rosto
+  ficou mais legível no escuro que o toon.
 - **Proporção da cabeça:** **~20% menor** que a da referência (lá a cabeça é ~40% da
   altura; nosso alvo ~32%). Deixa o personagem um pouco menos "fofo/cartum" e um pouco
   mais adolescente e humano — combina com o tom de thriller.
@@ -113,6 +124,10 @@ adaptadas ao thriller:
   ficou em 108). Cenas de quarentena e noite podem ir abaixo.
 - **Câmera:** maioria **fixa** (a referência mais vista usa 54% de plano fixo). O
   movimento vem do corte, não do travelling. Câmera na mão só em pânico.
+  **Push-in lento** (decisão do usuário, 2026-11-25): o plano "fixo" respira com uma
+  aproximação quase imperceptível de **1–1,5% de escala por segundo**, sem balanço, com
+  ease — **só nas cenas novas** (o EP1 aprovado não muda). Sem pan/trilho: continua "fixo".
+  A medição quadro a quadro mostrou que o "fixo" da referência também é assim (2–4%/s).
 - **Corte:** seco. Sem dissolve. Fusão só para passagem de tempo entre dias.
 - **Overlay/contador:** topo-esquerda, no lugar do "DIA X · FORÇA Y" da referência,
   usar **"DIA X · N cegos"**. Fonte bold grotesca, ~25–31 px em 720p.
@@ -122,3 +137,15 @@ adaptadas ao thriller:
   de dado no canto (ex.: velocímetro/contador), mas não um relógio corrido acelerando.
 - **Sem legenda de fala.** Decisão do usuário (2026-11-24): a série não usa legenda de
   diálogo/narração — a emoção passa por voz, som e imagem, não por texto na tela.
+- **Cor de destaque dos textos** (decisão do usuário, 2026-11-25): **`#e8b923`** (o
+  amarelo da faixa do agente de quarentena) — texto em branco, a palavra-chave nesta cor,
+  sobre caixa escura arredondada.
+- **Cartão de dia** (decisão do usuário, 2026-11-25): na **virada de cada dia**, um cartão
+  sóbrio em tela cheia **"DIA X · N cegos"** — fundo escuro, sem speed lines nem clarão,
+  ~2 s, com ~0,2 s de silêncio antes. Não substitui o selo fixo do canto.
+- **Fim do episódio** (decisão do usuário, 2026-11-25): depois do final (frase do
+  narrador + gancho), um texto **"INSCREVA-SE"** e uma **tela final de ~10 s** (espaço para
+  as telas finais do YouTube), sobre um plano do próprio episódio. Sem perguntas ao público
+  por enquanto.
+- **Duração-alvo e ritmo de corte** continuam os da régua acima e da bíblia (decisão do
+  usuário, 2026-11-25: manter até medir um episódio nosso publicado).

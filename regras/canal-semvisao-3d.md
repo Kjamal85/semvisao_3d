@@ -34,7 +34,7 @@ ao usuário uma vez, não perguntar de novo).
 
 **Estilo 3D:** low-poly cel-shaded (mesma técnica do canal de referência "E Se?", nunca copiar frase/cena/
 imagem dele — só o método). Cabeça ~32% da altura (vs ~40% da referência). Contorno escuro em casca BackSide
-em toda forma (`OUT = 0x1b1b20`).
+em toda forma (`OUT = 0x000000`).
 
 **Legendas:** a série **não usa** legenda de fala/narração (decisão do usuário em 2026-11-24, já atualizada em
 `linguagem-visual.md`). Nunca adicionar texto de diálogo na tela.
@@ -57,6 +57,11 @@ de `check` do HyperFrames, achado real no EP1: `text_below_floor`).
 - **Cadência de publicação:** a cada 4–5 dias, alternando POV.
 - **Overlay de hora/dia:** selo fixo de canto com local + hora; na abertura o relógio acelera de 23:30 até
   3:30 (a explosão).
+- **Decisões de 2026-11-25** (registradas em `briefing/linguagem-visual.md`; detalhes em
+  `regras/receita-estilo-e-se.md`): push-in lento 1–1,5%/s nos planos fixos (só cenas novas); cartão
+  "DIA X · N cegos" na virada de cada dia; destaque dos textos em `#e8b923`; depois do final, texto
+  "INSCREVA-SE" + tela final de ~10 s. Personagens em PBR (rig refinado) e cenário em toon, do EP2 em
+  diante; `Elenco.ambiente(renderer, scene)` depois das luzes. O EP1 continua toon.
 - **Plano de câmera:** majoritariamente fixo; câmera na mão só em pânico; corte seco, sem dissolve (fusão só
   para passagem de tempo entre dias/cenas).
 - **Vinheta "olho se fechando" (modo cego):** sombra esfumaçada nas bordas, avança no pânico, recua na calma

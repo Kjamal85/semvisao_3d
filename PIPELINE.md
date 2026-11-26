@@ -47,7 +47,9 @@ Quem (humano ou IA) for trabalhar num episódio começa lendo este arquivo.
 1. **Ler o cânone** — `briefing/minimundo.md` (a alma: mundo vivo, personagens que respiram — essencial, ler sempre), `briefing/serie-biblia.md` e `briefing/linguagem-visual.md`.
 2. **Ler o estado dos personagens** — `personagens/*.md`. Quem está onde, cego ou vidente, no dia quantos, o que já foi revelado.
 3. **Ler o último aprendizado** — `aprendizado/registro.md` (a entrada mais recente). Aplicar os ajustes que a série já descobriu.
-4. **Escrever o roteiro** — copiar `episodios/_modelo.md`, preencher beats, metas de métrica e setups/payoffs.
+4. **Escrever o roteiro** — copiar `episodios/_modelo.md`, preencher beats, metas de métrica e setups/payoffs,
+   seguindo a receita passo a passo em [regras/receita-estilo-e-se.md](regras/receita-estilo-e-se.md)
+   (fórmula do roteiro, câmera, visual, textos e som; checklist na seção 5; decisões de 2026-11-25 na seção 6).
 5. **Produzir** no estilo de `briefing/linguagem-visual.md`.
 6. **Publicar** segundo a estratégia da bíblia.
 7. **Medir** — rodar a análise quadro-a-quadro (ver abaixo) e comparar com os benchmarks.
@@ -74,6 +76,7 @@ em vez de achismo, a gente compara retenção e ritmo contra números.
 - [briefing/minimundo.md](briefing/minimundo.md) — **a alma: mundo vivo, personagens que sentem** (ler sempre)
 - [briefing/serie-biblia.md](briefing/serie-biblia.md) — premissa, mundo, arco, estratégia
 - [briefing/linguagem-visual.md](briefing/linguagem-visual.md) — cor, câmera, vinheta, vozes
+- [regras/receita-estilo-e-se.md](regras/receita-estilo-e-se.md) — **receita do episódio**: método "E se?" medido quadro a quadro + regras do EP1 (Gabi) e EP2 (Duda)
 - [personagens/](personagens/) — banco de contexto (continuidade)
 - [episodios/](episodios/) — roteiros e métricas por episódio
 - [aprendizado/registro.md](aprendizado/registro.md) — o que a série já sabe
