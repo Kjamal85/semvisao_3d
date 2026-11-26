@@ -5,3 +5,8 @@
 # renders de revisão na raiz (EP1 por trechos)
 /EP1_trecho*.mp4
 /EP1_*.mp4
+
+# análise de referência: artefatos pesados que os scripts de analise_referencia/ferramentas/ geram de novo
+analise_referencia/*/folhas_6fps/
+analise_referencia/*/folhas_todos/
+analise_referencia/*/dados/audio22k.wav
