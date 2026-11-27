@@ -33,7 +33,14 @@
     pai:  { nome: "Pai", alt: 1.07, larg: 1.12, pele: 0x6e4630, cabelo: 0x16110e, cabeloEstilo: "crespo",
             barba: true, roupa: 0x6f7f5a, calca: 0x8a7a5e, sapato: 0x3a2e26, cintura: 0.93 },
     duda: { nome: "Duda", alt: 0.92, larg: 0.86, pele: 0xf3d6c2, cabelo: 0xe0bd72, cabeloEstilo: "longo", blush: 0xf3aeb2, sobrancelha: 0x9a7038,
-            roupa: 0xf2c4d0, calca: 0x8fa3c4, sapato: 0xe9e4dc, cintura: 0.78 },
+            roupa: 0xf2c4d0, calca: 0x8fa3c4, sapato: 0xe9e4dc, iris: 0x8fc8ec, cintura: 0.78 },   // iris: igual à mãe (2026-11-27); o rosto dela só aparece no EP2
+    // mãe da Duda (EP2, 2026-11-27): mais alta e magra que a filha (pedido do usuário). Cabelo castanho
+    // claro até os ombros, corte próprio ("ombro"); loiro foi testado e ficou igual ao da Duda. Longe
+    // também do castanho médio da mãe do Gabi (0x7a5236). Blusa rosa-vinho: o rosa da filha, adulto e mais escuro.
+    // (Blazer com lapela foi testado e descartado: a lapela da repórter não encaixa no tronco refinado.)
+    maeduda: { nome: "Mãe da Duda", alt: 1.03, larg: 0.84, pele: 0xf0d3bf, cabelo: 0xa47a4e, cabeloEstilo: "ombro",
+               blush: 0xeeaaa8, sobrancelha: 0x6b4a2a, roupa: 0x9a5f69, calca: 0x3d3f4a, sapato: 0x2b2727,
+               olho: 0.9, iris: 0x8fc8ec, cintura: 0.76 },   // olho azul bem claro (pedido do usuário); a Duda puxou dela
     // adulta de TV: olhos menores, batom, brincos, blazer com lapela sobre blusa clara
     reporter: { nome: "Repórter", alt: 0.97, larg: 0.95, pele: 0xd9a77f, cabelo: 0x1a1412, cabeloEstilo: "chanel",
                 blush: 0xd98c7e, roupa: 0x7a2e3a, calca: 0x2b2b33, sapato: 0x1b1b20,
@@ -326,8 +333,16 @@
         } else {
           add(sphere(0.082), EYE.white, 0, 0, 0, olho, { papel: "olho" });
           const pu = new THREE.Group(); pu.position.set(0, 0, 0.045); olho.add(pu);
-          add(sphere(0.042, 12, 12), EYE.pupil, 0, 0, 0, pu, { papel: "olho" });
-          add(sphere(0.015, 8, 8), EYE.glint, -0.022, 0.022, 0.035, pu, { papel: "olho" });
+          if (P.iris) {
+            // íris colorida (EP2 em diante, só quem tem P.iris): disco de cor em volta de uma pupila
+            // menor; tudo dentro de "pu", então acompanha as sacadas do Elenco.vida
+            add(sphere(0.052, 16, 14), P.iris, 0, 0, -0.009, pu, { papel: "olho" });
+            add(sphere(0.026, 12, 12), EYE.pupil, 0, 0, 0.021, pu, { papel: "olho", semContorno: true });
+            add(sphere(0.014, 8, 8), EYE.glint, -0.02, 0.02, 0.047, pu, { papel: "olho", semContorno: true });
+          } else {
+            add(sphere(0.042, 12, 12), EYE.pupil, 0, 0, 0, pu, { papel: "olho" });
+            add(sphere(0.015, 8, 8), EYE.glint, -0.022, 0.022, 0.035, pu, { papel: "olho" });
+          }
           rosto.pupilas.push(pu);
         }
         rosto.olhos.push(olho);
@@ -445,6 +460,13 @@
       add(sphere(0.40, 20, 16), c, 0, -0.08, -0.12, head, { s: [1.1, 0.95, 0.75] });
       for (const s of [-1, 1]) add(sphere(0.16, 14, 12), c, s * 0.34, -0.12, 0.06, head, { s: [0.7, 1.35, 0.9] });
       add(sphere(0.2, 16, 12), c, -0.1, 0.31, 0.22, head, { s: [1.35, 0.4, 0.62], r: [-0.3, 0, 0.3] });
+    } else if (P.cabeloEstilo === "ombro") {
+      // solto na altura dos ombros (mãe da Duda): mais cheio dos lados que o "longo" da filha, risca do
+      // outro lado; as laterais ficam atrás das bochechas (a boca nunca some)
+      add(cap(0.425, 0.56), c, 0, 0.03, -0.02, head, { r: [-0.55, 0, 0] });                 // testa livre
+      add(sphere(0.40, 20, 16), c, 0, -0.17, -0.15, head, { s: [1.14, 1.0, 0.66] });        // nuca até o ombro
+      for (const s of [-1, 1]) add(sphere(0.16, 14, 12), c, s * 0.36, -0.24, -0.06, head, { s: [0.55, 1.7, 0.8] });
+      add(sphere(0.2, 16, 12), c, -0.12, 0.31, 0.22, head, { s: [1.5, 0.42, 0.62], r: [-0.3, 0, 0.32] });
     } else if (P.cabeloEstilo === "crespo") {
       // curto e rente, entradas altas: calota inclinada para trás deixa testa e sobrancelhas livres
       add(cap(0.43, 0.55), c, 0, 0.03, -0.03, head, { r: [-0.65, 0, 0] }); // frente alta, nuca baixa
