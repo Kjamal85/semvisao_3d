@@ -1,0 +1,111 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dv2-stage { position: absolute; inset: 0; z-index: 0; }
+    #dv2-stage canvas { display: block; }
+  </style>
+  <div id="root" data-composition-id="duda-vizinho" data-width="1920" data-height="1080">
+    <div id="dv2-stage" class="clip" data-start="0" data-duration="33" data-track-index="0"></div>
+  </div>
+  <script>
+    (function () {
+      // planos 38-45: 0-3 fecha a torneira, a sirene chega · 3-6,5 abre a janela · 6,5-13 POV: a van leva o vizinho (c05-radio-01)
+      // · 13-17 o choque, a mão no batente · 17-19 a van vai embora · 19-21 a casa do Gabi, a cortina parada · 21-22,2 respiro ·
+      // 22,2-27,6 (ep2-duda-04) · 27,6-33 (ep2-duda-05)
+      // O vizinho é o da casa AO LADO da Duda (em frente à do Gabi), a mesma ação de vizinho.html. Em fila (agente, vizinho,
+      // agente), com folga: ninguém atravessa ninguém nem o portão.
+      const DUR = 33, CENA = "duda-vizinho", S = EP2.S, V = EP2.V;
+      const W = EP2.mundo({ hora: "meiodia", dentro: true, van: { x: 3.4, z: 3.0, ry: 0 } });
+      const { scene, casa, Q, C, R, M } = W;
+      Q.cortina(0); Q.luzinhas(false);
+      const RF = { refinado: true, material: "pbr" };
+      const duda = Elenco.build("duda", Object.assign({ expr: "neutro" }, RF)); scene.add(duda);
+      const viz = Elenco.build("pai", { nome: "Vizinho", alt: 1.0, larg: 1.05, pele: 0xd9b08c, cabelo: 0xb9b6b0, cabeloEstilo: "crespo", barba: false,
+        roupa: 0x7c6a9a, calca: 0x7c6a9a, sapato: 0x8a7a6a, blind: true, expr: "grito", refinado: true, material: "pbr" });
+      const ag1 = Elenco.build("agente"), ag2 = Elenco.build("agente"), ag3 = Elenco.build("agente");
+      for (const g of [viz, ag1, ag2, ag3]) scene.add(g);
+      ag3.position.set(-0.85, 0, 2.25); ag3.rotation.y = Math.PI / 2;                 // o terceiro, na rua ao lado da traseira: de lado na linha de visão dela (não "encosta" em ninguém)
+      // o portãozinho do vizinho (casa em x 0, do lado da Duda) aberto: a fila passa por ele, não através dele
+      const vizCasa = W.ruaG.children.find((o) => o.isGroup && Math.abs(o.position.x) < 0.01 && Math.abs(o.position.z - R.FZ2) < 0.01);
+      const portaoViz = vizCasa && vizCasa.children.find((o) => o.isGroup && Math.abs(o.position.x + 1.75) < 0.01);
+      if (portaoViz) portaoViz.rotation.y = 1.2;
+      const agua = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.016, 0.3, 10), new THREE.MeshToonMaterial({ color: 0xbfe0f0, gradientMap: C.k.grad, transparent: true, opacity: 0.7 }));
+      agua.position.set(1.55, 1.32, -4.08); casa.add(agua);
+      const pal = EP2.palco("dv2-stage");
+      Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
+      const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 140);
+      const VAN0 = R.van.position.x;
+      // a fila: do portão do vizinho (x 1,2; muro em z 5,8) até a traseira da van (x ~0,9), um atrás do outro
+      const trilha = [V(1.2, 0, 8.7), V(1.2, 0, 5.6), V(0.6, 0, 4.2), V(0.15, 0, 3.0)];
+      const planos = [
+        { t0: 0, t1: 3, pos: M(2.5, 2.25, -2.0), alvo: M(1.55, 1.3, -3.7), fov: 44 },
+        { t0: 3, t1: 6.5, pos: M(0.3, 2.3, -2.6), alvo: M(-1.9, 1.6, -0.4), fov: 56 },
+        { t0: 6.5, t1: 13, pos: M(-1.55, 2.2, 0.25), alvo: V(1.0, 1.1, 4.6), fov: 40, push: 0.008 },
+        { t0: 13, t1: 17, pos: M(-1.75, 2.2, 1.8), alvo: M(-2.0, 2.05, -0.55), fov: 34 },
+        { t0: 17, t1: 19, pos: M(-1.55, 2.2, 0.25), alvo: V(3.0, 1.2, 3.2), fov: 44 },
+        { t0: 19, t1: 21, pos: M(-1.5, 2.1, -1.9), alvo: V(0, 1.4, -6.5), fov: 38 },
+        { t0: 21, t1: 22.2, pos: M(-1.75, 2.2, 1.8), alvo: M(-2.0, 2.05, -0.55), fov: 34 },
+        { t0: 22.2, t1: 27.6, pos: M(-1.85, 2.15, 1.45), alvo: M(-2.0, 2.05, -0.55), fov: 30 },
+        { t0: 27.6, t1: 33, pos: M(-1.95, 2.12, 1.1), alvo: M(-2.0, 2.06, -0.55), fov: 30 },
+      ];
+      const estado = { t: 0 };
+      function render() {
+        const t = estado.t, p = EP2.plano(planos, t);
+        casa.updateMatrixWorld(true);
+        // a van: giroflex o tempo todo; portas abertas até 11,8 (o clangor); vai embora 17-19
+        R.giroflex(t, 1);
+        const fecha = S((t - 11.4) / 0.4);
+        for (const { pt, s } of R.portasVan) pt.rotation.y = s * 2.75 * (1 - fecha);
+        R.van.position.x = VAN0 + 12 * Math.pow(S((t - 16.6) / 2.6), 1.6);
+        // a fila anda 6,6-11 e some dentro da van; o vizinho se debate (cabeça)
+        const u = (t - 6.5) / 3.4, dentro = t > 11.4;
+        const fila = [[ag1, 0.0], [viz, -0.22], [ag2, -0.44]];   // ~1,1 de distância entre um e outro
+        for (const [g, d] of fila) {
+          // cada um aparece saindo pela porta do vizinho na sua vez e some ao entrar na van no seu tempo:
+          // ninguém fica parado em cima do outro no fim do caminho
+          const k = u + d, c = EP2.caminho(trilha, k);
+          g.position.copy(c.pos); g.rotation.y = c.ry; g.visible = k > 0 && k < 1;
+          EP2.anda(g, t, 1, g === viz ? 2.0 : 1.5);
+        }
+        Elenco.cabeca(viz, Math.sin(t * 6) * 0.08, Math.sin(t * 4.3) * 0.35, 0);
+        Elenco.alcancar(ag1, "esq", viz.localToWorld(V(0.3, 1.5, 0.1)), { foraDoCorpo: true });     // puxa pelo braço
+        ag3.visible = !dentro || t < 11.6;
+        // a Duda
+        const naJanela = t >= 3;
+        agua.visible = t < 1.2;
+        duda.visible = !((t >= 6.5 && t < 13) || (t >= 17 && t < 21));                            // nos POV a câmera é o olhar dela
+        if (!naJanela) {
+          duda.position.copy(M(1.55, 0, -3.15)); duda.rotation.y = EP2.olhaPara(M(1.55, 0, -3.15), M(1.55, 0, -4.0));
+          Elenco.alcancar(duda, "dir", M(1.55, 1.42, -3.98), { foraDoCorpo: true });           // fecha a torneira
+          Elenco.cabeca(duda, 0.2 - 0.25 * S((t - 1.4) / 0.5), 0.3 * S((t - 1.4) / 0.5), 0);    // a sirene: levanta a cabeça
+        } else {
+          duda.position.copy(M(-2.0, 0, -0.62)); duda.rotation.y = 0 + Math.PI;                    // de frente para a janela (+z local)
+          duda.rotation.y = EP2.olhaPara(M(-2.0, 0, -0.62), M(-2.0, 0, 1.0));
+          const abre = S((t - 4.4) / 1.0);
+          Q.janela(abre);
+          if (t < 6.5) {
+            Elenco.alcancar(duda, "dir", M(-2.35, 1.95, -0.12), { foraDoCorpo: true });     // (virada para a rua, o "dir" do rig fica no x menor)
+            Elenco.alcancar(duda, "esq", M(-1.65, 1.95, -0.12), { foraDoCorpo: true });
+          } else {
+            // as duas mãos apertam o peitoril, baixas e afastadas: nada passa na frente do rosto (boca à mostra)
+            Elenco.alcancar(duda, "dir", M(-2.42, 1.3, -0.2), { foraDoCorpo: true });
+            Elenco.alcancar(duda, "esq", M(-1.58, 1.3, -0.2), { foraDoCorpo: true });
+            Elenco.mao(duda, "dir", "punho", 0.7); Elenco.mao(duda, "esq", "punho", 0.7);
+          }
+          // olhar: na van (para a direita dela); depois a casa do Gabi; depois baixa os olhos, pensando
+          Elenco.cabeca(duda, t >= 22.2 ? 0.08 : 0, t < 19 ? -0.55 : t < 22.2 ? 0.3 : 0.1, 0);
+        }
+        EP2.expr(duda, t < 13 ? "neutro" : t < 22.2 ? "medo" : t < 27.6 ? "triste" : "firme");
+        Elenco.vida(duda, t, { ritmo: t < 13 ? "calmo" : t < 27.6 ? "medo" : "calmo" });
+        EP2.boca(duda, t, ["ep2-duda-04", "ep2-duda-05"], CENA);
+        EP2.camera(cam, p, t);
+        pal.render(scene, cam, t);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[CENA] = tl;
+      render();
+    })();
+  </script>
+</template>

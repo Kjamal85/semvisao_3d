@@ -1,0 +1,82 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dl-stage { position: absolute; inset: 0; z-index: 0; }
+    #dl-stage canvas { display: block; }
+  </style>
+  <div id="root" data-composition-id="duda-almoco" data-width="1920" data-height="1080">
+    <div id="dl-stage" class="clip" data-start="0" data-duration="17" data-track-index="0"></div>
+  </div>
+  <script>
+    (function () {
+      // planos 34-37 (sem voz; o selo "+4 HORAS" e as fusões ficam na raiz, ep2.html): 0-4 arruma a cama · 4-9 o micro-ondas,
+      // tira o prato · 9-13,5 almoça sozinha olhando a rua · 13,5-17 lava a louça do almoço
+      const DUR = 17, CENA = "duda-almoco", S = EP2.S, V = EP2.V;
+      const W = EP2.mundo({ hora: "meiodia", dentro: true });
+      const { scene, casa, Q, C, M } = W;
+      Q.cortina(0); Q.luzinhas(false);
+      const R = { refinado: true, material: "pbr" };
+      const pe = Elenco.build("duda", Object.assign({ expr: "neutro" }, R)); scene.add(pe);
+      const sent = Elenco.build("duda", Object.assign({ expr: "neutro", pose: "sentado" }, R)); scene.add(sent);
+      EP2.senta(sent, C.cadeiras[0], 0.92, casa);                     // a cadeira de frente para a janela-lado (a da mãe)
+      const kc = Cena.kit(casa, 29), prato = new THREE.Group(); casa.add(prato);
+      kc.cil(0.16, 0.16, 0.02, 0xfbf9f4, 0, 0, 0, { pai: prato, seg: 16 }); kc.bolha(0.1, 0xd9a865, 0, 0.04, 0, [1.3, 0.4, 1], { pai: prato });
+      const agua = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.016, 0.3, 10), new THREE.MeshToonMaterial({ color: 0xbfe0f0, gradientMap: C.k.grad, transparent: true, opacity: 0.7 }));
+      agua.position.set(1.55, 1.15 + 0.17, -3.98 - 0.1); casa.add(agua);
+      const pal = EP2.palco("dl-stage");
+      Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
+      const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 120);
+      const planos = [
+        { t0: 0, t1: 4, pos: M(0.3, 2.3, -0.4), alvo: M(-1.1, 1.0, -2.8), fov: 58 },
+        { t0: 4, t1: 9, pos: M(2.2, 2.05, -1.8), alvo: M(1.1, 1.55, -3.6), fov: 44 },
+        { t0: 9, t1: 13.5, pos: M(3.1, 2.0, -2.9), alvo: M(1.55, 1.8, -1.6), fov: 44 },
+        { t0: 13.5, t1: 17, pos: M(2.5, 2.25, -2.0), alvo: M(1.55, 1.3, -3.7), fov: 44 },
+      ];
+      const estado = { t: 0 };
+      function render() {
+        const t = estado.t, p = EP2.plano(planos, t);
+        casa.updateMatrixWorld(true);
+        sent.visible = t >= 9 && t < 13.5; pe.visible = !sent.visible;
+        agua.visible = t >= 13.6;
+        prato.visible = t >= 6.5 && t < 13.5;
+        if (t < 4) {
+          // ao lado da cama (sem encostar), puxa o edredom
+          pe.position.copy(M(-0.3, 0, -2.6)); pe.rotation.y = Math.PI + Math.PI / 2;
+          const puxa = 0.5 + 0.5 * Math.sin(t * 2.4);
+          Elenco.alcancar(pe, "esq", M(-0.95, 0.95 + 0.1 * puxa, -2.3), { foraDoCorpo: true });
+          Elenco.alcancar(pe, "dir", M(-0.95, 0.95 + 0.1 * puxa, -2.9), { foraDoCorpo: true });
+          Elenco.cabeca(pe, 0.2, 0, 0);
+        } else if (t < 9) {
+          // na bancada, de frente para o micro-ondas; tira o prato e se vira
+          pe.position.copy(M(1.1, 0, -3.15)); pe.rotation.y = EP2.olhaPara(M(1.1, 0, -3.15), M(1.1, 0, -4.0));
+          const tira = S((t - 6.0) / 0.8);
+          const mic = M(1.1, 1.38, -3.75), frente = pe.localToWorld(V(0, 1.3, 0.45));
+          const x = mic.clone().lerp(frente, tira);
+          prato.position.copy(casa.worldToLocal(x.clone()));
+          Elenco.alcancar(pe, "esq", x.clone().add(V(0.12, 0, 0)), { foraDoCorpo: true });
+          Elenco.alcancar(pe, "dir", x.clone().add(V(-0.12, 0, 0)), { foraDoCorpo: true });
+          Elenco.cabeca(pe, 0.15, 0, 0);
+        } else if (t < 13.5) {
+          prato.position.set(C.MX - 0.6, C.MY + 0.02, C.MZ + 0.05);
+          Elenco.cabeca(sent, 0.05, -0.9, 0);                        // come olhando a rua pela janela
+          Elenco.vida(sent, t, { ritmo: "calmo" });
+          EP2.boca(sent, t, [], CENA);
+        } else {
+          pe.position.copy(M(1.55, 0, -3.15)); pe.rotation.y = EP2.olhaPara(M(1.55, 0, -3.15), M(1.55, 0, -4.0));
+          const esfrega = 0.04 * Math.sin(t * 7);
+          Elenco.alcancar(pe, "esq", M(1.65 + esfrega, 1.25, -3.95), { foraDoCorpo: true });
+          Elenco.alcancar(pe, "dir", M(1.45 - esfrega, 1.25, -3.95), { foraDoCorpo: true });
+          Elenco.cabeca(pe, 0.2, 0, 0);
+        }
+        if (pe.visible) { Elenco.vida(pe, t, { ritmo: "calmo", olhar: true }); EP2.boca(pe, t, [], CENA); }
+        EP2.camera(cam, p, t);
+        pal.render(scene, cam, t);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[CENA] = tl;
+      render();
+    })();
+  </script>
+</template>
