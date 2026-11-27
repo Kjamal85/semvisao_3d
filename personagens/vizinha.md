@@ -6,7 +6,9 @@
   [linguagem-visual.md](../briefing/linguagem-visual.md)). **Blusa rosa clara, que
   dessatura** conforme a cegueira se aproxima dela. Pele **clara (branca)** e **loira** —
   escolha proposital para não lembrar a personagem homônima da referência. Adolescente,
-  um pouco mais baixa que o Gabi, magrinha. Rosto simples mas expressivo. Detalhe único: _(a definir)_.
+  um pouco mais baixa que o Gabi, magrinha. Rosto simples mas expressivo. **Olhos azul bem claro,
+  iguais aos da mãe.** Detalhe único: **sardas** no nariz e no alto das bochechas (escolhido em
+  2026-11-27; folhas em `duda-corpo.png`, `duda-expressoes.png`, `duda-piscar.png`).
 - **Voz / fala:** _(a definir)_
 
 ## Estado atual

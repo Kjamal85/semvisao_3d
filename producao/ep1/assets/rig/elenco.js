@@ -33,7 +33,7 @@
     pai:  { nome: "Pai", alt: 1.07, larg: 1.12, pele: 0x6e4630, cabelo: 0x16110e, cabeloEstilo: "crespo",
             barba: true, roupa: 0x6f7f5a, calca: 0x8a7a5e, sapato: 0x3a2e26, cintura: 0.93 },
     duda: { nome: "Duda", alt: 0.92, larg: 0.86, pele: 0xf3d6c2, cabelo: 0xe0bd72, cabeloEstilo: "longo", blush: 0xf3aeb2, sobrancelha: 0x9a7038,
-            roupa: 0xf2c4d0, calca: 0x8fa3c4, sapato: 0xe9e4dc, iris: 0x8fc8ec, cintura: 0.78 },   // iris: igual à mãe (2026-11-27); o rosto dela só aparece no EP2
+            roupa: 0xf2c4d0, calca: 0x8fa3c4, sapato: 0xe9e4dc, iris: 0x8fc8ec, detalhe: "sardas", cintura: 0.78 },   // iris igual à da mãe e sardas = detalhe único (2026-11-27); o rosto dela só aparece no EP2
     // mãe da Duda (EP2, 2026-11-27): mais alta e magra que a filha (pedido do usuário). Cabelo castanho
     // claro até os ombros, corte próprio ("ombro"); loiro foi testado e ficou igual ao da Duda. Longe
     // também do castanho médio da mãe do Gabi (0x7a5236). Blusa rosa-vinho: o rosa da filha, adulto e mais escuro.
@@ -294,6 +294,14 @@
       }
       const pol = new THREE.Group(); pol.position.set(-side * 0.012, -0.045, 0.05); mao.add(pol);
       add(new THREE.CapsuleGeometry(0.018, 0.04, 4 * SEG, 8 * SEG), cm, 0, -0.03, 0, pol);
+      // detalhe único "pulseira" (Duda, em aprovação): miçangas no pulso direito, em cima do punho
+      if (P.detalhe === "pulseira" && side === -1) {
+        const cores = [0x4fa3a0, 0xf1ece4, 0xe58a9a];
+        for (let i = 0; i < 10; i++) {
+          const a = (i / 10) * Math.PI * 2;
+          add(sphere(0.019, 8, 6), cores[i % 3], Math.cos(a) * 0.078 * w, -0.355, Math.sin(a) * 0.078 * w, el, { papel: "plastico", semContorno: true });
+        }
+      }
       const ret = { sh, el, mao: { g: mao, dedos, pol, side } };
       return ret;
     }
@@ -351,6 +359,16 @@
         if (R) add(new THREE.CapsuleGeometry(0.015, 0.1, 4, 12), P.sobrancelha || P.cabelo, 0, 0, 0, sb, { r: [0, 0, Math.PI / 2], papel: "cabelo" });
         else add(new THREE.BoxGeometry(0.13, 0.028, 0.05), P.sobrancelha || P.cabelo, 0, 0, 0, sb);
         rosto.sobr.push(sb);
+      }
+      // detalhe único: "sardas" (o da Duda, escolhido em 2026-11-27) no nariz e no alto das bochechas,
+      // ABAIXO do olho (o olho vai até y -0,13) e acima da boca (começa em -0,19); pontos rentes à
+      // pele (cabeça de raio 0,40). "presilha" ficou como opção do rig, sem uso.
+      if (P.detalhe === "presilha") {
+        add(new THREE.BoxGeometry(0.15, 0.04, 0.035), 0x4fa3a0, 0.27, 0.2, 0.25, head, { r: [0.2, 0.5, -0.55], papel: "plastico" });
+      } else if (P.detalhe === "sardas") {
+        const pts = [[-0.145, -0.158], [-0.115, -0.176], [-0.092, -0.15], [-0.045, -0.143], [0, -0.152],
+                     [0.045, -0.143], [0.092, -0.15], [0.115, -0.176], [0.145, -0.158], [-0.02, -0.168], [0.022, -0.166]];
+        for (const [x, y] of pts) add(sphere(0.0085, 6, 5), 0xb98468, x, y, Math.sqrt(0.16 - x * x - y * y) + 0.004, head, { semContorno: true, papel: "pele" });
       }
       if (P.blush) {
         // maçãs do rosto: discos achatados rentes à pele, sem contorno
