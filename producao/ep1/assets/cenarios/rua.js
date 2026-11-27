@@ -29,19 +29,25 @@
         const g = new THREE.Group(); g.position.set(x, 0, lado > 0 ? FZ : FZ2); if (lado < 0) g.rotation.y = Math.PI; raiz.add(g);
         const W = op.w || 5.6, D = 5, Hc = 3.2, cor = op.cor || PAREDES[Math.floor(rnd() * PAREDES.length)];
         const tel = op.telha || TELHAS[Math.floor(rnd() * TELHAS.length)];
-        box(W, Hc, D, cor, 0, Hc / 2, -D / 2, { pai: g });
-        for (const s of [-1, 1]) box(W + 0.5, 0.15, D / 2 + 0.6, tel, 0, Hc + 0.55, -D / 2 + s * (D / 4 + 0.1), { pai: g, r: [s * 0.42, 0, 0] });
-        box(W + 0.5, 0.12, 0.12, 0x3a3030, 0, Hc + 1.05, -D / 2, { pai: g });                  // cumeeira
+        // op.soMuro (EP2): sem corpo, telhado, porta e janelas — só muro, portão, caminho e plantas.
+        // Serve para montar um interior no lugar da casa. Não consome rnd() a mais nem a menos se a
+        // casa vier com cor, telha e "acesa" dados (caso da casa da Duda): as outras casas não mudam.
+        const corpo = op.soMuro ? new THREE.Group() : g;
+        if (op.soMuro) corpo.visible = false;
+        if (op.soMuro) g.add(corpo);
+        box(W, Hc, D, cor, 0, Hc / 2, -D / 2, { pai: corpo });
+        for (const s of [-1, 1]) box(W + 0.5, 0.15, D / 2 + 0.6, tel, 0, Hc + 0.55, -D / 2 + s * (D / 4 + 0.1), { pai: corpo, r: [s * 0.42, 0, 0] });
+        box(W + 0.5, 0.12, 0.12, 0x3a3030, 0, Hc + 1.05, -D / 2, { pai: corpo });                  // cumeeira
         // porta e janelas
         const PX = op.porta !== undefined ? op.porta : -1.2;
-        box(0.95, 2.1, 0.08, op.portaCor || 0x5a3d2c, PX, 1.05, 0.02, { pai: g });
-        if (op.portaAberta) box(0.85, 2.0, 0.02, 0xf4c98a, PX, 1.02, 0.07, { pai: g, mat: luz(0xf4c98a), contorno: false });
+        box(0.95, 2.1, 0.08, op.portaCor || 0x5a3d2c, PX, 1.05, 0.02, { pai: corpo });
+        if (op.portaAberta) box(0.85, 2.0, 0.02, 0xf4c98a, PX, 1.02, 0.07, { pai: corpo, mat: luz(0xf4c98a), contorno: false });
         for (const jx of op.janelas || [1.3]) {
           const acesa = op.acesa === undefined ? rnd() < 0.5 : op.acesa;
-          box(1.3, 1.0, 0.06, acesa ? 0xf2c27a : 0x2c3442, jx, 1.75, 0.03, { pai: g, mat: acesa ? luz(op.luzJanela || 0xf2c27a) : undefined });
-          box(1.42, 0.08, 0.14, 0xf1ede4, jx, 1.21, 0.06, { pai: g });
-          box(0.06, 1.0, 0.09, 0xf1ede4, jx, 1.75, 0.06, { pai: g, contorno: false });
-          if (op.cortina) for (const s of [-1, 1]) box(0.36, 0.98, 0.03, op.cortina, jx + s * 0.46, 1.75, 0.08, { pai: g, contorno: false });   // cortina aberta nos cantos
+          box(1.3, 1.0, 0.06, acesa ? 0xf2c27a : 0x2c3442, jx, 1.75, 0.03, { pai: corpo, mat: acesa ? luz(op.luzJanela || 0xf2c27a) : undefined });
+          box(1.42, 0.08, 0.14, 0xf1ede4, jx, 1.21, 0.06, { pai: corpo });
+          box(0.06, 1.0, 0.09, 0xf1ede4, jx, 1.75, 0.06, { pai: corpo, contorno: false });
+          if (op.cortina) for (const s of [-1, 1]) box(0.36, 0.98, 0.03, op.cortina, jx + s * 0.46, 1.75, 0.08, { pai: corpo, contorno: false });   // cortina aberta nos cantos
         }
         // muro baixo com portãozinho de grade
         const MZ = (lado > 0 ? MURO - FZ : -(MURO2 - FZ2));
@@ -61,7 +67,7 @@
       const gabiCasa = casa(0, 1, { cor: 0xd9c7a3, telha: 0x8e4b3c, portaAberta: op0.portaAberta !== false, portaoAberto: op0.portaoAberto !== false, janelas: [1.3], acesa: true, cortina: 0xd9c7a3 });
       casa(-6.4, 1, { acesa: false }); casa(6.4, 1, { acesa: true }); casa(-12.8, 1); casa(12.8, 1);
       // lado de lá: a casa da Duda na diagonal (janela da frente acesa, cortina rosa), outras casas
-      casa(-6.4, -1, { cor: 0xe8d9d2, telha: 0x5d4a44, janelas: [1.3, -2.0], acesa: true, luzJanela: 0xf7d6b0, cortina: 0xe9b7c4, porta: 0.2 });
+      const dudaCasa = casa(-6.4, -1, { cor: 0xe8d9d2, telha: 0x5d4a44, janelas: [1.3, -2.0], acesa: true, luzJanela: 0xf7d6b0, cortina: 0xe9b7c4, porta: 0.2, soMuro: !!op0.semCasaDuda });
       casa(0, -1, { acesa: false }); casa(6.4, -1, { acesa: true }); casa(-12.8, -1); casa(12.8, -1, { acesa: false });
 
       // ---------- sinais de vida: postes com fios, carro estacionado, lixeira, bola esquecida ----------
@@ -134,7 +140,7 @@
         giroA.material.color.setHex(azul && pisca ? 0x6f95ff : 0x1a2650); giroV.material.color.setHex(!azul && pisca ? 0xff5a5a : 0x501a1a);
         return { azul: azul && pisca, vermelho: !azul && pisca };
       }
-      return { k, FZ, MURO, GUIA, GUIA2, MURO2, FZ2, gabiCasa, van, portasVan, giroA, giroV, luzA, luzV, lampadas, carro, ambiente, giroflex };
+      return { k, FZ, MURO, GUIA, GUIA2, MURO2, FZ2, gabiCasa, dudaCasa, van, portasVan, giroA, giroV, luzA, luzV, lampadas, carro, ambiente, giroflex };
   }
   window.Cenarios = window.Cenarios || {};
   window.Cenarios.rua = rua;
