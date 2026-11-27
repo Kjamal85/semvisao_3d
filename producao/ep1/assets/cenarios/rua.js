@@ -68,7 +68,7 @@
       casa(-6.4, 1, { acesa: false }); casa(6.4, 1, { acesa: true }); casa(-12.8, 1); casa(12.8, 1);
       // lado de lá: a casa da Duda na diagonal (janela da frente acesa, cortina rosa), outras casas
       const dudaCasa = casa(-6.4, -1, { cor: 0xe8d9d2, telha: 0x5d4a44, janelas: [1.3, -2.0], acesa: true, luzJanela: 0xf7d6b0, cortina: 0xe9b7c4, porta: 0.2, soMuro: !!op0.semCasaDuda });
-      casa(0, -1, { acesa: false }); casa(6.4, -1, { acesa: true }); casa(-12.8, -1); casa(12.8, -1, { acesa: false });
+      casa(0, -1, { acesa: false }); casa(6.4, -1, { acesa: true }); casa(-12.8, -1, { soMuro: !!op0.semCasaDuda }); casa(12.8, -1, { acesa: false });   // a vizinha da Duda (x -12,8) também vira só muro: a cozinha dela ocupa esse espaço
 
       // ---------- sinais de vida: postes com fios, carro estacionado, lixeira, bola esquecida ----------
       const lampadas = [];
