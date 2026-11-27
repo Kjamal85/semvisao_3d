@@ -523,8 +523,9 @@ FUNÇÃO: sincroniza os dois episódios: é o mesmo momento da cena buscar do EP
 
 CENA duda-levam (4:52 a 5:17) - O CLÍMAX COMPARTILHADO
 NA TELA (câmera na mão, a única do episódio): da janela dela, o plano-espelho do plano
-68: o Gabi forçado até a van, os pais contidos na porta. Moletom azul claro, fone
-apertado no peito, olhos nublados.
+68: o Gabi forçado até a van, os pais contidos na porta. Moletom azul claro, as
+mãos agarrando o moletom no peito (sem o fone, como no EP1: decisão de 2026-11-22),
+olhos nublados.
 
   c10-mae-04 [APROVADO] - Mãe (do Gabi)
   DIREÇÃO: o mesmo .wav, longe.
@@ -588,8 +589,8 @@ NA TELA: do preto, corte seco para a traseira da van, de fora, a câmera parada 
 das portas fechadas.
 PICO SEM VOZ: as travas estalam e as portas se abrem de uma vez, para os lados da câmera:
 chegaram a algum lugar. Uma luz fria e branca, vinda de trás da câmera (holofote), entra e
-bate no Gabi, sentado no banco lateral: moletom azul claro, fone apertado no peito (o
-mesmo gesto do plano 69 do EP1), olhos nublados. Nada do lado de fora aparece: o local da
+bate no Gabi, sentado no banco lateral: moletom azul claro, as mãos agarrando o moletom no
+peito, sem o fone (o mesmo gesto do plano 69 do EP1), olhos nublados. Nada do lado de fora aparece: o local da
 quarentena continua não revelado.
 O "OLHAR" (regra do cego, briefing/linguagem-visual.md): ele não olha. Ele vira o rosto
 para o barulho das portas, devagar e com um tranco de susto (Elenco.vida com ouvir, a

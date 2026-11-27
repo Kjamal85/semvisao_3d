@@ -463,7 +463,7 @@ peitoril. A boca fica à mostra, parada. Só então entra o `c10-agente-01`.
 
 ### duda-levam (4:52–5:17) · **o clímax compartilhado**
 **Na tela (câmera na mão, a única do episódio):** da janela dela, o **plano-espelho do plano 68**: o
-Gabi **forçado** até a van, os pais contidos na porta. Moletom azul claro, **fone apertado no peito**,
+Gabi **forçado** até a van, os pais contidos na porta. Moletom azul claro, **as mãos agarrando o moletom no peito** (sem o fone, como no EP1: decisão de 2026-11-22),
 olhos nublados.
 
 | ID | Personagem | Direção | Fala |
@@ -524,7 +524,7 @@ a imagem escurece por igual.
 **Na tela:** do preto, **corte seco** para a **traseira da van**, de fora, a câmera parada na altura das
 portas fechadas. ⚡ As travas estalam e **as portas se abrem de uma vez**, para os lados da câmera: chegaram
 a algum lugar. Uma luz fria e branca, vinda de trás da câmera (holofote), entra e bate no **Gabi**,
-sentado no banco lateral: moletom azul claro, **fone apertado no peito** (o mesmo gesto do plano 69 do
+sentado no banco lateral: moletom azul claro, **as mãos agarrando o moletom no peito**, sem o fone (o mesmo gesto do plano 69 do
 EP1), olhos nublados. **Nada do lado de fora aparece**: o local da quarentena continua não revelado.
 
 **O "olhar" (regra do cego, `briefing/linguagem-visual.md`):** ele **não olha**. Ele **vira o rosto para o
