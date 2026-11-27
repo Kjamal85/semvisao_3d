@@ -18,7 +18,7 @@ Tom: suspense, calmo, grave. Frases curtas, com respiro.
 | 3 | `narrador-n03` | o quarto, antes da queda | Gabriel tinha dezessete anos. Naquela manhã, ele acordou... e o mundo não estava mais lá. |
 | 4 | `narrador-n04` | indo para a sala | Ninguém sabia ainda. Mas não era só com ele. |
 | 5 | `narrador-n05` | o bairro visto de cima, as ambulâncias | Em poucas horas, as sirenes tomaram as ruas. Milhares de pessoas tinham acordado cegas. |
-| 6 | `narrador-n06` | uma hora depois, o pai na janela | Uma hora depois, eles chegaram à rua do Gabi. |
+| 6 | `narrador-n06` | horas depois (+5 horas, depois do almoço), o pai na janela | Horas depois, eles chegaram à rua do Gabi. |
 | 7 | `narrador-n07` | antes da revolta | Quando o Gabi acordou de novo, nada tinha mudado. E a raiva veio antes do choro. |
 | 8 | `narrador-n08` | a cozinha | Dentro de casa, cada coisa simples virou uma prova. |
 | 9 | `narrador-n09` | antes do copo | A mãe decidiu: se ele não podia ver, ia aprender tudo de novo. Do começo. |

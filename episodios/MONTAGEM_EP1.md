@@ -23,7 +23,7 @@ Legenda: ✅ existe · 🆕 cena/fala nova · ✏️ cena existente que muda · 
 | 7 | 🆕 dor-cabeca | no sofá: Gabi diz que a cabeça dói; mãe "vou te levar pro quarto, vem comigo"; levantam e saem de cena | 🆕 c04-gabi-07, 🆕 c04-mae-09 | passos ✅ |
 | 8 | 🆕 deitar | ele já deitado na cama, a mãe cobrindo | c04-mae-07 ✅ "Descansa, meu amor." | lençol ⬇ |
 | 9 | 🆕 bairro | o bairro visto de cima, ambulâncias pelas ruas | — | sirenes ao longe ✅ |
-| 10 | vizinho ✏️ | selo **+1 hora**; o pai na janela vê o vizinho levado — **sem o Gabi no sofá** (está dormindo) | rádio ✅ | motor, rádio, passos, portas ✅ |
+| 10 | vizinho ✏️ | selo **+5 horas** (era +1 hora; mudado em 2026-11-27 para bater com o EP2: o vizinho é levado depois do almoço); o pai na janela vê o vizinho levado — **sem o Gabi no sofá** (está dormindo) | rádio ✅ | motor, rádio, passos, portas ✅ |
 | 11 | revolta ✅ | "Por que isso aconteceu comigo?!" | c03-gabi-03 ✅ | mesa, vaso, cadeira ✅ |
 
 ## Bloco 3 — A casa vira obstáculo (~2:30 → ~3:50)
@@ -76,7 +76,7 @@ Voz: o usuário traz os áudios prontos (voz/audio/narrador-nNN). Texto final em
 | n03 | quarto, plano aberto, antes da queda | "Gabriel tinha dezessete anos. Naquela manhã, ele acordou... e o mundo não estava mais lá." |
 | n04 | indo para a sala / sofá (antes da TV) | "Ninguém sabia ainda. Mas não era só com ele." |
 | n05 | o bairro visto de cima, ambulâncias | "Em poucas horas, as sirenes tomaram as ruas. Milhares de pessoas tinham acordado cegas." |
-| n06 | +1 hora, o pai na janela | "Uma hora depois, eles chegaram à rua do Gabi." |
+| n06 | +5 horas, o pai na janela | "Horas depois, eles chegaram à rua do Gabi." (era "Uma hora depois", trocado em 2026-11-27; regravar) |
 | n07 | antes da revolta | "Quando o Gabi acordou de novo, nada tinha mudado. E a raiva veio antes do choro." |
 | n08 | cozinha, antes da mãe falar | "Dentro de casa, cada coisa simples virou uma prova." |
 | n09 | depois do curativo, antes do copo | "A mãe decidiu: se ele não podia ver, ia aprender tudo de novo. Do começo." |
