@@ -18,8 +18,18 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
     e peito e o material PBR. **Personagem em PBR, cenário em toon** (decisão do usuário, 2026-11-25).
   - Depois de pôr as luzes, chamar `Elenco.ambiente(renderer, scene)`: o reflexo nasce delas. Com um
     céu fixo, o boneco fica mais claro que a cena e parece colado (teste do portão, 2026-11-25).
+    Mesmo nascendo das luzes, o reflexo somava a luz ambiente duas vezes no pano e na pele (rua à
+    noite, 2026-11-27: moletom com luz 0,73 contra 0,55 no EP1). Agora cada superfície tem seu `env`:
+    0 no tecido, 0,15 na pele, 0,3 no cabelo e cheio só em olho, sapato, plástico, metal e vidro.
+    Medido depois da correção, o moletom voltou a 0,55.
   - No `render()`, posar primeiro e **depois** chamar `Elenco.vida(g, t, { ritmo })`, que cuida de
     respirar, balançar, piscar, olhar e mexer os dedos. Os ritmos são calmo, medo, tensao, choro e alivio.
+  - **O Gabi (e todo cego) se comporta como cego** (pedido do usuário, 2026-11-27). No `vida` isso liga
+    sozinho com `blind: true`: a cabeça não estabiliza o olhar (vai junto com o corpo), fica um tico
+    baixa, os dedos mexem mais, e com `ouvir: [[t, ângulo], ...]` ele vira o OUVIDO para o som (meia
+    volta e inclinação, mola lenta) e o corpo congela um instante quando o som chega. O que é de
+    cena fica na cena: mão tateando parede e móvel, passo curto, braço à frente ao andar, nunca
+    olhar direto para quem fala nem "achar" algo com os olhos.
   - Movimento com peso usa `Elenco.mola(chaves, t, { freq, amort })`, nunca lerp quadro a quadro,
     porque o render é por seek. A cabeça pede uma mola mais lenta (~1,5 Hz) que o braço (~2 Hz).
   - Teste visual em `compositions/elenco-refinado.html`, que fica fora do episódio.

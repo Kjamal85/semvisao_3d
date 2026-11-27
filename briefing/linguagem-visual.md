@@ -36,6 +36,25 @@ A assinatura da série. Dois modos de imagem + um truque de câmera que vira mar
   apagado) tiram dele a ferramenta do olhar.
   A emoção dele passa a vir ainda mais do corpo, da respiração e da vinheta. A ausência
   de olhar é uma força dramática, não um problema — ela dói.
+- **Quem é cego se comporta como cego (todo personagem cego, a começar pelo Gabi).**
+  Não basta o olho nublado: o corpo tem que contar que ele não enxerga.
+  - **Ele não olha, ele escuta.** Diante de um som ou de quem fala, ele vira o **ouvido**,
+    não o rosto: meia volta de cabeça, inclinada para o lado, com hesitação. Nunca olha
+    direto nos olhos de quem fala, nunca "acha" um objeto com o olhar, nunca segue algo
+    que passa na frente dele sem som.
+  - **O som novo congela o corpo** por um instante (ele para pra ouvir) antes da reação.
+  - **A cabeça não estabiliza o olhar** como a de quem enxerga: ela vai junto com o corpo
+    e fica um pouco baixa, mas o queixo não afunda (a boca segue visível).
+  - **As mãos procuram referência:** tateiam parede, móvel, batente, a roupa de quem está
+    perto; os dedos ficam inquietos.
+  - **Andar:** passo curto e arrastado, um braço à frente do corpo, tronco um pouco para
+    trás. Nunca anda reto, rápido e confiante. Tropeça em quina, degrau e objeto fora do
+    lugar.
+  - O cegar também muda com o tempo: no dia 1 o Gabi ainda se comporta como quem enxergava
+    (procura com o rosto, se frustra); ao longo da série ele aprende a ouvir e a tatear.
+  - _Técnica: o rig já faz a parte do corpo parado (`Elenco.vida` liga o modo cego sozinho
+    com `blind: true`; passar `ouvir: [[t, ângulo], ...]` com a direção de quem fala). Tatear,
+    andar e tropeçar são encenação de cada cena._
 
 ---
 

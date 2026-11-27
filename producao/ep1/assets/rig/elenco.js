@@ -58,10 +58,14 @@
   }
   // PBR por tipo de superfície: a luz reage diferente em pele, pano, cabelo, olho, metal.
   // sheen = brilho aveludado de borda (tecido, cabelo, pele); clearcoat = verniz (olho, sapato, plástico).
+  // env = quanto o reflexo do Elenco.ambiente entra em cada superfície. O céu dele nasce das MESMAS
+  // luzes ambiente/hemisfério que já iluminam o boneco; em superfície fosca o reflexo vira luz difusa
+  // somada outra vez (teste de 2026-11-27, rua à noite: moletom com luz 0,73 contra 0,55 no EP1; sem o
+  // reflexo, 0,55). Então ele entra cheio só onde dá brilho (olho, sapato, plástico, metal, vidro).
   const PBR = {
-    pele:     { phys: true, roughness: 0.55, metalness: 0, sheen: 0.25, sheenRoughness: 0.6, sheenCor: 0xffd9c4 },
-    tecido:   { phys: true, roughness: 0.92, metalness: 0, sheen: 0.5, sheenRoughness: 0.8 },
-    cabelo:   { phys: true, roughness: 0.6, metalness: 0, sheen: 0.6, sheenRoughness: 0.4 },
+    pele:     { phys: true, roughness: 0.55, metalness: 0, sheen: 0.25, sheenRoughness: 0.6, sheenCor: 0xffd9c4, env: 0.15 },
+    tecido:   { phys: true, roughness: 0.92, metalness: 0, sheen: 0.5, sheenRoughness: 0.8, env: 0 },
+    cabelo:   { phys: true, roughness: 0.6, metalness: 0, sheen: 0.6, sheenRoughness: 0.4, env: 0.3 },
     sapato:   { phys: true, roughness: 0.45, metalness: 0, clearcoat: 0.3, clearcoatRoughness: 0.4 },
     olho:     { phys: true, roughness: 0.15, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05 },
     olhoCego: { phys: false, roughness: 0.85, metalness: 0 },      // fosco: o briefing pede "brilho apagado"
@@ -76,7 +80,8 @@
     if (cacheR[k]) return cacheR[k];
     let m;
     if (modo === "pbr") {
-      const d = PBR[papel] || PBR.tecido, o = { color: c, roughness: d.roughness, metalness: d.metalness };
+      const d = PBR[papel] || PBR.tecido, o = { color: c, roughness: d.roughness, metalness: d.metalness,
+                                                envMapIntensity: d.env === undefined ? 1 : d.env };
       if (d.phys) {
         if (d.sheen) { o.sheen = d.sheen; o.sheenRoughness = d.sheenRoughness; o.sheenColor = new THREE.Color(d.sheenCor || c); }
         if (d.clearcoat) { o.clearcoat = d.clearcoat; o.clearcoatRoughness = d.clearcoatRoughness; }
@@ -625,14 +630,29 @@
   //   t  = tempo da timeline (o mesmo t dá sempre o mesmo corpo).
   //   op = { ritmo: "calmo"|"medo"|"tensao"|"choro"|"alivio" (ou objeto), fase: número para
   //          desencontrar dois personagens iguais, piscar: true, olhar: true, corpo: true,
-  //          dedos: true, intensidade: 1 }
+  //          dedos: true, intensidade: 1,
+  //          ouvir: [[t0, ang0], [t1, ang1], ...] — só cego: de onde vem o som (rad, relativo à frente
+  //          do corpo; + = esquerda dele). A cabeça vira o OUVIDO para lá, devagar e com atraso. }
   // Funciona nos dois modelos; no refinado também move tronco e peito (no do EP1 eles não existem).
   // Agente (sem rosto) só respira. A boca NÃO é tocada aqui — ela mexe só na fala (regra da série).
+  //
+  // CEGO (build com blind:true, ou op.cego): liga sozinho. Quem enxerga estabiliza a cabeça para o
+  // olhar ficar parado; o cego não — a cabeça vai junto com o corpo. Ele não "olha": orienta o
+  // ouvido (cabeça meio virada e inclinada para o som), congela o corpo um instante quando um som
+  // novo chega, fica com a cabeça um tico baixa e os dedos mais ativos (procurando referência).
+  // O que é de cena (mão tateando a parede, passo curto e arrastado, braço à frente) fica na cena.
   function vida(g, t, op) {
     const o = op || {}, rig = g.userData.rig, P = rig.ficha;
     const RT = typeof o.ritmo === "object" ? o.ritmo : (RITMOS[o.ritmo] || RITMOS.calmo);
-    const I = o.intensidade === undefined ? 1 : o.intensidade;
+    let I = o.intensidade === undefined ? 1 : o.intensidade;
     const sem = semente(rig.id || P.nome || "x") + (o.fase || 0) * 13.1;
+    const cego = o.cego === undefined ? !!P.blind : !!o.cego;
+    // som novo -> o corpo congela (o balanço cai a 30%) e volta em ~1,5 s
+    let congela = 0;
+    if (cego && o.ouvir) for (let i = 1; i < o.ouvir.length; i++) {
+      const dt = t - o.ouvir[i][0];
+      if (dt >= 0) congela = Math.max(congela, dt < 0.25 ? suave(dt / 0.25) : Math.exp(-(dt - 0.25) / 0.6));
+    }
 
     // 1) RESPIRAÇÃO no tronco: o peito abre (x/z) mais do que sobe (y); ombros sobem e abrem junto
     let b = folego(t, RT.freq, sem) * RT.amp * I;
@@ -652,8 +672,8 @@
 
     if (o.corpo !== false) {
       // 2) BALANÇO e troca de peso: o tronco oscila pela cintura (pernas ficam plantadas);
-      // a cabeça compensa uma parte (o olhar fica estável, como numa pessoa de verdade)
-      const bal = RT.balanco * I;
+      // quem enxerga: a cabeça compensa uma parte (o olhar fica estável); cego: não compensa
+      const bal = RT.balanco * I * (1 - 0.7 * congela), comp = cego ? 0 : 0.6;
       const lx = 0.010 * bal * fbm(t * 0.21, sem + 2), lz = 0.014 * bal * fbm(t * 0.17, sem + 4);
       if (rig.tronco) {
         camada(rig.tronco, "rx", (v) => v + lx + 0.012 * b);   // inclina um tico para a frente ao inspirar
@@ -661,10 +681,21 @@
         camada(rig.tronco, "px", (v) => v + 0.012 * bal * fbm(t * 0.09, sem + 6));
       }
       // 3) CABEÇA: micro-movimento lento + compensação do balanço
-      const inq = RT.inquieto * I;
+      const inq = RT.inquieto * I * (1 - 0.8 * congela);
       camada(rig.head, "ry", (v) => v + 0.03 * inq * fbm(t * 0.33, sem + 8));
-      camada(rig.head, "rx", (v) => v + 0.016 * inq * fbm(t * 0.29, sem + 10) - 0.6 * lx);
-      camada(rig.head, "rz", (v) => v + 0.012 * inq * fbm(t * 0.25, sem + 12) - 0.6 * lz);
+      camada(rig.head, "rx", (v) => v + 0.016 * inq * fbm(t * 0.29, sem + 10) - comp * lx);
+      camada(rig.head, "rz", (v) => v + 0.012 * inq * fbm(t * 0.25, sem + 12) - comp * lz);
+      if (cego) {
+        // cabeça um tico baixa (0,05 rad — o queixo não afunda: a boca segue visível)
+        camada(rig.head, "rx", (v) => v + 0.05);
+        if (o.ouvir) {
+          // ouvido para o som: vira só parte do caminho (o rosto não "aponta") e inclina para o lado;
+          // mola lenta e amortecida = a cabeça hesita antes de chegar
+          const a = Math.max(-1.1, Math.min(1.1, mola(o.ouvir, t, { freq: 1.2, amort: 0.85 })));
+          camada(rig.head, "ry", (v) => v + 0.5 * a);
+          camada(rig.head, "rz", (v) => v - 0.14 * a);
+        }
+      }
       // braços pendem com atraso do tronco (inércia): seguem o balanço meio segundo depois
       if (rig.tronco) for (const a of [rig.aL, rig.aR]) {
         camada(a.sh, "rz", (v) => v - 0.5 * 0.014 * bal * fbm((t - 0.5) * 0.17, sem + 4));
@@ -674,7 +705,7 @@
 
     // 4) DEDOS: cada um mexe sozinho, pouco, fora de fase
     if (o.dedos !== false) for (const a of [rig.aL, rig.aR]) a.mao.dedos.forEach((d, i) =>
-      camada(d, "rz", (v) => v - a.mao.side * 0.07 * RT.inquieto * I * Math.max(0, fbm(t * 0.6 + i * 0.37, sem + 30 + i))));
+      camada(d, "rz", (v) => v - a.mao.side * 0.07 * (cego ? 1.5 : 1) * RT.inquieto * I * Math.max(0, fbm(t * 0.6 + i * 0.37, sem + 30 + i))));
 
     const r = g.userData.rosto;
     if (!r) return;
