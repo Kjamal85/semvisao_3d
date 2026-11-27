@@ -1,0 +1,65 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dk-stage { position: absolute; inset: 0; z-index: 0; }
+    #dk-stage canvas { display: block; }
+  </style>
+  <div id="root" data-composition-id="duda-caminho" data-width="1920" data-height="1080">
+    <div id="dk-stage" class="clip" data-start="0" data-duration="15" data-track-index="0"></div>
+  </div>
+  <script>
+    (function () {
+      // planos 48-50 (fim de tarde): 0-4 ela sai pelo portãozinho dela · 4-8 atravessa a rua na diagonal; para no meio,
+      // mexe no cabelo, ajeita a blusa, continua · 8-15 a janela do Gabi, fechada (ep2-narrador-n03)
+      const DUR = 15, CENA = "duda-caminho", S = EP2.S, V = EP2.V;
+      const W = EP2.mundo({ hora: "tarde" });
+      const { scene } = W, G = EP2.geo(W);
+      const duda = Elenco.build("duda", { expr: "neutro", refinado: true, material: "pbr" }); scene.add(duda);
+      const pal = EP2.palco("dk-stage");
+      Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
+      const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 160);
+      const dP = G.dudaPortao, gP = G.gabiPortao;
+      // do quintal dela, pelo portão aberto, pela calçada e pela rua, na diagonal, até a calçada do Gabi
+      const trilha = [V(dP.x, 0, dP.z + 1.2), V(dP.x, 0, dP.z - 0.7), V(-3.9, 0, 1.4), V(gP.x - 0.4, 0, gP.z + 1.7)];
+      const planos = [
+        { t0: 0, t1: 4, pos: V(-8.9, 2.6, 1.6), alvo: V(-5.9, 1.5, 4.6), fov: 44 },
+        { t0: 4, t1: 8, pos: V(2.2, 3.0, -1.9), alvo: V(-4.0, 1.2, 2.0), fov: 46 },
+        { t0: 8, t1: 15, pos: V(2.3, 1.9, 0.8), alvo: G.gabiJanela.clone(), fov: 30 },
+      ];
+      // tempo de caminhada: 0,4-3,6 até a calçada (trecho 1-2); 4-5,8 metade da rua; pausa 5,8-7,0; 7,0-8 segue
+      function andou(t) {
+        if (t < 0.4) return 0;
+        if (t < 5.8) return 0.62 * (t - 0.4) / 5.4;
+        if (t < 7.0) return 0.62;
+        return 0.62 + 0.38 * Math.min(1, (t - 7.0) / 3.0);
+      }
+      const estado = { t: 0 };
+      function render() {
+        const t = estado.t, p = EP2.plano(planos, t);
+        G.portaoDuda(S((t - 0.3) / 0.6));
+        const c = EP2.caminho(trilha, andou(t));
+        duda.position.copy(c.pos); duda.rotation.y = c.ry;
+        duda.visible = t < 8;
+        const parada = t >= 5.8 && t < 7.0;
+        EP2.anda(duda, t, parada || t < 0.4 ? 0 : 1, 1.4);
+        if (parada) {
+          // ajeita o cabelo (a mão vai ao lado da cabeça, longe da boca) e depois a blusa
+          duda.updateMatrixWorld(true);
+          const u = (t - 5.8) / 1.2;
+          if (u < 0.55) Elenco.alcancar(duda, "dir", duda.localToWorld(V(-0.3, 2.35, 0.05)), { foraDoCorpo: true });
+          else Elenco.alcancar(duda, "dir", duda.localToWorld(V(-0.05, 1.3, 0.3)), { foraDoCorpo: true });
+          Elenco.cabeca(duda, 0, 0.25, 0.1);
+        } else Elenco.cabeca(duda, 0.05, 0, 0);
+        Elenco.vida(duda, t, { ritmo: "tensao", corpo: parada });
+        EP2.boca(duda, t, [], CENA);
+        EP2.camera(cam, p, t);
+        pal.render(scene, cam, t);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[CENA] = tl;
+      render();
+    })();
+  </script>
+</template>

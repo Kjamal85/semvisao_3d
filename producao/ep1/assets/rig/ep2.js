@@ -218,6 +218,26 @@
     return { material, desenha, reporter };
   }
 
+  // geografia da rua (rua.js): portões, porta e janela do Gabi, portão da Duda. Coordenadas do mundo.
+  //   portaoGabi(u) / portaoDuda(u): 0 fechado · 1 aberto · portaGabi(u): 0 fechada · 1 fresta (0,45 rad)
+  function geo(W) {
+    const R = W.R;
+    const achaPortao = (casa) => casa.children.find((o) => o.isGroup && o.children.length >= 8 && o.position.y === 0 && Math.abs(o.position.z) > 2);
+    const pg = achaPortao(R.gabiCasa), pd = achaPortao(R.dudaCasa);
+    // a porta do Gabi numa dobradiça própria, na frente da porta do modelo; atrás, o escuro da casa
+    const k = Cena.kit(W.scene, 41);
+    const escuro = k.box(0.86, 2.0, 0.02, 0x14110e, -1.2, 1.02, R.FZ + 0.075, { contorno: false });
+    const dob = new THREE.Group(); dob.position.set(-1.2 - 0.47, 0, R.FZ + 0.1); W.scene.add(dob);
+    k.box(0.95, 2.1, 0.06, 0x5a3d2c, 0.475, 1.05, 0, { pai: dob });
+    return {
+      gabiPortao: V(-1.2, 0, R.MURO), gabiPorta: V(-1.2, 0, R.FZ), gabiJanela: V(1.3, 1.75, R.FZ),
+      dudaPortao: V(-6.6, 0, R.MURO2), dudaPorta: V(-6.6, 0, R.FZ2),
+      portaoGabi: (u) => { if (pg) pg.rotation.y = -1.2 * u; },
+      portaoDuda: (u) => { if (pd) pd.rotation.y = 1.2 * u; },
+      portaGabi: (u) => { dob.rotation.y = -0.45 * u; escuro.visible = true; },
+    };
+  }
+
   // monta o palco de uma cena: renderer + pós; render(scene, cam, t)
   function palco(id) {
     const renderer = Cena.renderer(id);
@@ -225,5 +245,5 @@
     return { renderer, pos, render: (scene, cam, t, look) => pos.render(scene, cam, t, Object.assign({}, LOOK, look || {})) };
   }
 
-  window.EP2 = { S, V, LOOK, mundo, luz, plano, camera, falando, boca, expr, anda, senta, olhaPara, caminho, tv, palco };
+  window.EP2 = { S, V, LOOK, mundo, luz, plano, camera, falando, boca, expr, anda, senta, olhaPara, caminho, geo, tv, palco };
 })();
