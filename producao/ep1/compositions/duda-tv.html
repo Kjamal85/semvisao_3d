@@ -1,0 +1,68 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dt-stage { position: absolute; inset: 0; z-index: 0; }
+    #dt-stage canvas { display: block; }
+  </style>
+  <div id="root" data-composition-id="duda-tv" data-width="1920" data-height="1080">
+    <div id="dt-stage" class="clip" data-start="0" data-duration="25.5" data-track-index="0"></div>
+  </div>
+  <script>
+    (function () {
+      // planos 23-26: 0-7,5 a TV de perto, a repórter (c04-reporter-01) · 7,5-14 as duas ouvindo (c04-reporter-02, tarja
+      // do vírus) · 14-21,5 a TV: imagens de rua, agentes levando cegos (ep2-reporter-03) · 21,5-25,5 o choque, ~4 s sem fala
+      const DUR = 25.5, CENA = "duda-tv", S = EP2.S, V = EP2.V;
+      const W = EP2.mundo({ hora: "manha", dentro: true });
+      const { scene, casa, C, M } = W;
+      const R = { refinado: true, material: "pbr" };
+      const mae = Elenco.build("maeduda", Object.assign({ expr: "neutro", pose: "sentado" }, R)); scene.add(mae);
+      const duda = Elenco.build("duda", Object.assign({ expr: "neutro", pose: "sentado" }, R)); scene.add(duda);
+      EP2.senta(mae, C.cadeiras[0], 1.03, casa); EP2.senta(duda, C.cadeiras[1], 0.92, casa);
+      const kc = Cena.kit(casa, 19), xicara = new THREE.Group(); casa.add(xicara);
+      kc.cil(0.06, 0.05, 0.1, 0xfbf9f4, 0, 0, 0, { pai: xicara, seg: 12 });
+      const pal = EP2.palco("dt-stage");
+      const tv = EP2.tv(pal.renderer);
+      C.tv.material = tv.material;
+      Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
+      const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 120);
+      const planos = [
+        { t0: 0, t1: 7.5, pos: M(3.75, 2.45, -1.65), alvo: M(5.1, 2.52, -2.1), fov: 34 },
+        { t0: 7.5, t1: 14, pos: M(4.75, 2.35, -3.3), alvo: M(2.2, 1.6, -1.5), fov: 46 },
+        { t0: 14, t1: 21.5, pos: M(3.75, 2.45, -1.65), alvo: M(5.1, 2.52, -2.1), fov: 30 },
+        { t0: 21.5, t1: 25.5, pos: M(4.2, 2.15, -2.75), alvo: M(2.3, 1.75, -1.4), fov: 40 },
+      ];
+      const F = window.EP2_FALAS;
+      const repFala = (t) => EP2.falando(t, ["c04-reporter-01", "c04-reporter-02", "ep2-reporter-03"], CENA);
+      const estado = { t: 0 };
+      function render() {
+        const t = estado.t, p = EP2.plano(planos, t);
+        casa.updateMatrixWorld(true);
+        // a TV: o estúdio; a tarja do vírus na 2ª notícia; as imagens de rua (com a tarja da quarentena) na 3ª
+        const rua = t >= 14 && t < 21.6;
+        tv.desenha(t, rua ? "rua" : "estudio", t >= F["c04-reporter-02"].t - 0.3 && !rua ? "virus" : rua ? "quarentena" : null, repFala(t) && !rua);
+        // as duas: olham a TV; a preocupação cresce; no choque, congelam (medo: boca aberta e à mostra)
+        const choque = t >= 21.5;
+        EP2.expr(mae, t < 14 ? "neutro" : choque ? "medo" : "triste");
+        EP2.expr(duda, t < 8 ? "neutro" : choque ? "medo" : "triste");
+        Elenco.cabeca(mae, -0.04, 0, 0);
+        Elenco.cabeca(duda, 0.02, -0.85, 0);
+        // a xícara da Duda: subindo para tomar um gole quando a 3ª notícia chega — e para no ar, na altura do peito
+        const sobe = S((t - 18.5) / 1.0);
+        const naMesa = M(C.MX + 0.05, C.MY + 0.07, C.MZ + 0.36), noAr = duda.localToWorld(V(0.12, 1.45, 0.45));
+        const x = naMesa.clone().lerp(noAr, sobe);
+        xicara.position.copy(casa.worldToLocal(x.clone()));
+        if (sobe > 0.01) Elenco.alcancar(duda, "dir", x.clone().add(V(0, -0.02, 0)), { foraDoCorpo: true });
+        Elenco.vida(mae, t, { ritmo: choque ? "tensao" : "calmo", fase: 1, corpo: !choque });
+        Elenco.vida(duda, t, { ritmo: choque ? "tensao" : "calmo", fase: 2, corpo: !choque });
+        EP2.boca(mae, t, [], CENA); EP2.boca(duda, t, [], CENA);
+        EP2.camera(cam, p, t);
+        pal.render(scene, cam, t);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[CENA] = tl;
+      render();
+    })();
+  </script>
+</template>

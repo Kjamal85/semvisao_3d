@@ -105,6 +105,21 @@
     const w = casa.localToWorld(cad.pos.clone().add(V(Math.sin(cad.ry) * 0.08, 0, Math.cos(cad.ry) * 0.08)));
     g.position.set(w.x, 0.75 + 0.1 - 1.075 * alt, w.z); g.rotation.y = Math.PI + cad.ry;
   }
+  // caminho por pontos de passagem (mundo), velocidade constante: { pos, ry } em u = 0..1. Regra da série:
+  // ninguém atravessa ninguém — os pontos contornam pessoas e móveis com folga (~0,5 do centro de cada um).
+  function caminho(pts, u) {
+    const seg = []; let total = 0;
+    for (let i = 1; i < pts.length; i++) { const d = pts[i].distanceTo(pts[i - 1]); seg.push(d); total += d; }
+    let alvo = Math.min(1, Math.max(0, u)) * total;
+    for (let i = 0; i < seg.length; i++) {
+      if (alvo <= seg[i] || i === seg.length - 1) {
+        const f = seg[i] ? Math.min(1, alvo / seg[i]) : 1, a = pts[i], b = pts[i + 1];
+        return { pos: a.clone().lerp(b, f), ry: Math.atan2(b.x - a.x, b.z - a.z) };
+      }
+      alvo -= seg[i];
+    }
+    return { pos: pts[pts.length - 1].clone(), ry: 0 };
+  }
   // a rotação (y) para o personagem olhar do ponto a para o ponto b (o rig olha +z)
   const olhaPara = (a, b) => Math.atan2(b.x - a.x, b.z - a.z);
 
@@ -163,7 +178,7 @@
     g4.fillStyle = "#1a1a1a"; g4.font = "bold 26px sans-serif"; g4.fillText("equipes recolhem afetados em vários bairros", 28, TVH - 27);
     // compõe a tela: o 3D no alvo + as tarjas por cima, num segundo alvo (a TV mostra uma textura só)
     const final = new THREE.WebGLRenderTarget(TVW, TVH, { samples: 4 });
-    const comp = new THREE.Scene(), camC = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 2);
+    const comp = new THREE.Scene(), camC = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 3); camC.position.set(0, 0, 1);
     const q = (map) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ map, transparent: true, toneMapped: false, depthTest: false })); comp.add(m); return m; };
     const fundo = q(alvo.texture), tTopo = q(tex(cv)), tVirus = q(tex(cv2)), tQuar = q(tex(cv3));
     fundo.renderOrder = 0; tTopo.renderOrder = tVirus.renderOrder = tQuar.renderOrder = 1;
@@ -210,5 +225,5 @@
     return { renderer, pos, render: (scene, cam, t, look) => pos.render(scene, cam, t, Object.assign({}, LOOK, look || {})) };
   }
 
-  window.EP2 = { S, V, LOOK, mundo, luz, plano, camera, falando, boca, expr, anda, senta, olhaPara, tv, palco };
+  window.EP2 = { S, V, LOOK, mundo, luz, plano, camera, falando, boca, expr, anda, senta, olhaPara, caminho, tv, palco };
 })();

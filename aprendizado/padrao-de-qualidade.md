@@ -33,6 +33,9 @@ do curso (Dr. Copi) não entram — só o nível de exigência, aplicado ao noss
   - Movimento com peso usa `Elenco.mola(chaves, t, { freq, amort })`, nunca lerp quadro a quadro,
     porque o render é por seek. A cabeça pede uma mola mais lenta (~1,5 Hz) que o braço (~2 Hz).
   - Teste visual em `compositions/elenco-refinado.html`, que fica fora do episódio.
+- **Ninguém atravessa ninguém** (pedido do usuário, 2026-11-27): personagens nunca se enroscam nem entram um
+  no outro (nem em móvel). Quem anda contorna, com folga de ~0,5 do centro de cada pessoa; se um vai de um lado, o
+  outro vai pelo outro. Deslocamento por pontos de passagem (`EP2.caminho`); conferir o snapshot no meio do trajeto.
 
 ## 2. Elementos de cena — detalhe e variedade
 - Objetos que contam a história, não enfeite: no quarto do Gabi, despertador apagado

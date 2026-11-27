@@ -1,0 +1,76 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #db-stage { position: absolute; inset: 0; z-index: 0; }
+    #db-stage canvas { display: block; }
+  </style>
+  <div id="root" data-composition-id="duda-banheiro" data-width="1920" data-height="1080">
+    <div id="db-stage" class="clip" data-start="0" data-duration="12" data-track-index="0"></div>
+  </div>
+  <script>
+    (function () {
+      // planos 11-14 (sem voz): 0-3 a escova com pasta, a torneira abre · 3-6,5 no espelho, enxaguando (boca à mostra) ·
+      // 6,5-9 as mãos na água · 9-12 o rosto pingando; a toalha seca testa e olhos, NUNCA a boca
+      const DUR = 12, CENA = "duda-banheiro", S = EP2.S;
+      const W = EP2.mundo({ hora: "manha", dentro: true });
+      const { scene, casa, B, M } = W;
+      const P = B.pia;
+      const duda = Elenco.build("duda", { expr: "neutro", refinado: true, material: "pbr" });
+      duda.position.set(P.x, 0, P.z + 0.95); duda.rotation.y = Math.PI; casa.add(duda);     // de frente para a pia (o espelho)
+      // a água da torneira (um filete) e a toalha
+      const agua = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.016, 0.26, 10),
+        new THREE.MeshToonMaterial({ color: 0xbfe0f0, gradientMap: B.k.grad, transparent: true, opacity: 0.7 }));
+      agua.position.set(P.x, P.y + 0.15, P.z - 0.08); casa.add(agua);
+      const kc = Cena.kit(casa, 13), toalha = new THREE.Group(); casa.add(toalha);
+      kc.box(0.5, 0.26, 0.05, 0xf2c4d0, 0, 0, 0, { pai: toalha });
+      kc.bolha(0.14, 0xf2c4d0, 0.12, -0.12, 0.02, [1.4, 0.7, 0.4], { pai: toalha });
+      const pal = EP2.palco("db-stage");
+      Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
+      const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 120);
+      const planos = [
+        { t0: 0, t1: 3, pos: M(P.x + 0.85, P.y + 0.38, P.z + 0.6), alvo: M(P.x + 0.4, P.y + 0.03, P.z + 0.15), fov: 32 },
+        { t0: 3, t1: 6.5, pos: M(P.x, 2.12, B.espelho.z + 0.02), alvo: M(P.x, 2.0, P.z + 0.95), fov: 44 },
+        { t0: 6.5, t1: 9, pos: M(P.x + 0.6, P.y + 0.6, P.z + 0.35), alvo: M(P.x, P.y + 0.12, P.z - 0.02), fov: 34 },
+        { t0: 9, t1: 12, pos: M(P.x, 2.12, B.espelho.z + 0.02), alvo: M(P.x, 2.0, P.z + 0.95), fov: 40 },
+      ];
+      const estado = { t: 0 };
+      function render() {
+        const t = estado.t, p = EP2.plano(planos, t);
+        const aberta = t > 0.8 && t < 9.2;
+        agua.visible = aberta; agua.scale.y = aberta ? 1 + 0.03 * Math.sin(t * 40) : 1;
+        duda.visible = t >= 3;
+        casa.updateMatrixWorld(true);
+        const g = duda, rg = g.userData.rig;
+        let inclina = 0;
+        toalha.visible = false;
+        if (t >= 3 && t < 9) {
+          // enxágua: curva um pouco sobre a pia, as mãos em concha na água (abaixo do queixo: a boca à mostra)
+          inclina = 0.12 + 0.05 * Math.sin(t * 2.2);
+          const conc = (lado, dx) => Elenco.alcancar(g, lado, M(P.x + dx, P.y + 0.12 + (t < 6.5 ? 0.25 * Math.max(0, Math.sin(t * 2.6)) : 0), P.z + 0.05), { foraDoCorpo: true });
+          conc("esq", 0.08); conc("dir", -0.08);
+          Elenco.mao(g, "esq", "aberta", 1); Elenco.mao(g, "dir", "aberta", 1);
+        } else if (t >= 9) {
+          // a toalha na testa e nos olhos (acima do nariz); desce até o peito sem passar na boca
+          const u = S((t - 9.2) / 0.5), desce = S((t - 11.0) / 0.6);
+          const topo = M(P.x, 2.32 - 0.05 * Math.sin(t * 5) * (1 - desce), P.z + 0.62);
+          const peito = M(P.x, 1.45, P.z + 0.65);
+          const alvo = topo.clone().lerp(peito, desce);
+          toalha.visible = u > 0.05;
+          toalha.position.copy(casa.worldToLocal(alvo.clone())); toalha.rotation.set(-0.1, 0, 0);
+          Elenco.alcancar(g, "esq", alvo.clone().add(EP2.V(0.18, -0.05, 0)), { foraDoCorpo: true });
+          Elenco.alcancar(g, "dir", alvo.clone().add(EP2.V(-0.18, -0.05, 0)), { foraDoCorpo: true });
+        }
+        Elenco.cabeca(g, inclina, 0, 0);
+        Elenco.vida(g, t, { ritmo: "calmo", olhar: false, piscar: t < 9 || t > 11.5 });
+        EP2.boca(g, t, [], CENA);
+        EP2.camera(cam, p, t);
+        pal.render(scene, cam, t);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[CENA] = tl;
+      render();
+    })();
+  </script>
+</template>
