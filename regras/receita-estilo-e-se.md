@@ -152,7 +152,7 @@ Para nós, isso coincide com o `minimundo.md`: a câmera **"fica parada e pacien
   - o EP1 continua todo em toon.
 - **No `render()`:** posar primeiro, depois `Elenco.vida(g, t, { ritmo })`. Movimento com peso usa `Elenco.mola()`, nunca lerp quadro a quadro.
 - **Rosto simples, mas expressivo:** olhos, sobrancelhas e boca rigados para medo, vergonha e choro contido. Uma troca de expressão passa por um "take" (antecipação → nova cara → assentamento).
-- **A boca sempre visível:** nada de mão, almofada, capuz ou queixo afundado na frente dela. ⚠ A referência cobre a boca duas vezes, como gag. **Nós não copiamos isso.**
+- **A imagem conta a frase:** cada fala ou narração tem na tela a ação (ou a imagem parada) que ela diz — quem assiste tem que ver o que estamos contando. Se a ação pede cobrir a boca (toalha no rosto, mão na boca de susto, escova de dentes), cobre. Enquanto o personagem fala, a boca mexe junto com a voz. *(A antiga regra "boca sempre visível" foi abolida pelo usuário em 2026-11-28.)*
 - **A boca só mexe durante a fala**, em sincronia com a voz. Fora da fala, fica na forma da expressão.
 - **Personagens vivos:** **piscar** (cerca de 0,12 s a cada 3–5 s, com fase diferente para cada um; o olho cego também pisca) e **respirar no tronco** (peito e ombros, mais rápido no medo e no choro), **com irregularidade**, nunca uma senoide de metrônomo. É a função central `Elenco.vida()`, que entra **nas cenas novas do EP2** sem mexer no EP1 aprovado.
 - **Proporções e corpo** só por `Elenco.build` e pelas `FICHAS`. Pescoço, juntas e cotovelo para fora do corpo, como em `padrao-de-qualidade.md` §5.

@@ -19,6 +19,8 @@ snapshot e mostrar.
       acontecendo (textos novos abaixo — mostrar ao usuário antes de gerar a voz).
 - [ ] **Boca bate com a frase:** o movimento da boca tem que acompanhar o ritmo da fala (a da mãe do Gabi está rápida
       demais).
+- [ ] **A imagem conta a frase:** cada fala ou narração tem na tela a ação que ela diz; quem assiste tem que ver o
+      que estamos contando. A regra "boca sempre visível" **foi abolida**: se a ação pede cobrir a boca, cobre.
 - [ ] **Sem câmera tremida.** O usuário não gostou da câmera na mão do plano 68 — tirar o tremor.
 
 ## Por plano
@@ -35,8 +37,7 @@ snapshot e mostrar.
       - escovar os dentes (a escova na boca, mexendo);
       - lavar as mãos **debaixo da água** da torneira;
       - secar o rosto: a toalha **passa pelo rosto e cobre**, como na vida real (hoje fica na testa com os olhos
-        apertados). Pedido explícito do usuário: aqui a toalha pode cobrir a boca por um instante (exceção a
-        [boca sempre visível]).
+        apertados).
 
 ### Bloco 2 — café, TV, despedida (1:10 → 2:35)
 
