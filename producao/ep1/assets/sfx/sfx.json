@@ -276,7 +276,7 @@
   "licenca": "cc0",
   "versao": "1.0",
   "fonte": "https://freesound.org/people/dleverett/sounds/710510",
-  "duracao": 3.0,
+  "duracao": 3,
   "busca": "door open creak"
  },
  "agua-copo": {
@@ -286,7 +286,7 @@
   "licenca": "cc0",
   "versao": "1.0",
   "fonte": "https://freesound.org/people/Black_River_Phonogram/sounds/414077",
-  "duracao": 10.0,
+  "duracao": 10,
   "busca": "pouring water glass"
  },
  "ambiente-casa": {
@@ -296,7 +296,7 @@
   "licenca": "by",
   "versao": "4.0",
   "fonte": "https://freesound.org/people/klankbeeld/sounds/219681",
-  "duracao": 600.0,
+  "duracao": 600,
   "busca": "quiet house ambience",
   "obs": "ganho +10 dB"
  },
@@ -309,5 +309,195 @@
   "fonte": "https://freesound.org/people/Nox_Sound/sounds/543685",
   "duracao": 24.54,
   "busca": "footsteps barefoot wood floor"
+ },
+ "lencol": {
+  "arquivo": "lencol.mp3",
+  "titulo": "Sheets - Movement 1.wav",
+  "autor": "MWsfx",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/MWsfx/sounds/573723",
+  "duracao": 4.38,
+  "busca": "bed sheet rustle"
+ },
+ "despertador": {
+  "arquivo": "despertador.mp3",
+  "titulo": "timer.flac",
+  "autor": "tim.kahn",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/tim.kahn/sounds/22627",
+  "duracao": 1,
+  "busca": "digital alarm clock beep"
+ },
+ "agua-pia": {
+  "arquivo": "agua-pia.mp3",
+  "titulo": "Tap Water 1",
+  "autor": "OwlStorm",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/OwlStorm/sounds/212177",
+  "duracao": 11.71,
+  "busca": "bathroom sink tap water running"
+ },
+ "louca": {
+  "arquivo": "louca.mp3",
+  "titulo": "Stacking Plates 02.wav",
+  "autor": "Glitchedtones",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/Glitchedtones/sounds/322405",
+  "duracao": 2.25,
+  "busca": "dishes plates clinking kitchen"
+ },
+ "chave-porta": {
+  "arquivo": "chave-porta.mp3",
+  "titulo": "key unlocking front door 1",
+  "autor": "whoopsadaisy",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/whoopsadaisy/sounds/674124",
+  "duracao": 4.2,
+  "busca": "keys unlock front door"
+ },
+ "porta-fecha": {
+  "arquivo": "porta-fecha.mp3",
+  "titulo": "door wood ext front door close solid +keys jingle.flac",
+  "autor": "kyles",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/kyles/sounds/637486",
+  "duracao": 1.68,
+  "busca": "front door close"
+ },
+ "microondas": {
+  "arquivo": "microondas.mp3",
+  "titulo": "Appliance-Microwave-Button-Beep.wav",
+  "autor": "DWOBoyle",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/DWOBoyle/sounds/144227",
+  "duracao": 0.33,
+  "busca": "microwave beep done"
+ },
+ "talher": {
+  "arquivo": "talher.mp3",
+  "titulo": "platos 9.aif",
+  "autor": "timlaroche",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/timlaroche/sounds/71816",
+  "duracao": 0.78,
+  "busca": "fork knife on plate eating"
+ },
+ "lapis": {
+  "arquivo": "lapis.mp3",
+  "titulo": "Pencil Writing on Paper",
+  "autor": "elliotlp",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/elliotlp/sounds/277312",
+  "duracao": 1.07,
+  "busca": "pencil writing on paper"
+ },
+ "caderno": {
+  "arquivo": "caderno.mp3",
+  "titulo": "Book Closing",
+  "autor": "dersuperanton",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/dersuperanton/sounds/435558",
+  "duracao": 2.45,
+  "busca": "book close"
+ },
+ "portaozinho": {
+  "arquivo": "portaozinho.mp3",
+  "titulo": "Gate squeak 1",
+  "autor": "GeorgeHopkins",
+  "licenca": "by",
+  "versao": "4.0",
+  "fonte": "https://freesound.org/people/GeorgeHopkins/sounds/537249",
+  "duracao": 1.58,
+  "busca": "gate squeak"
+ },
+ "motor-desliga": {
+  "arquivo": "motor-desliga.mp3",
+  "titulo": "Car engine stop 3.wav",
+  "autor": "spurioustransients",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/spurioustransients/sounds/534921",
+  "duracao": 3.75,
+  "busca": "car engine stop"
+ },
+ "travas-van": {
+  "arquivo": "travas-van.mp3",
+  "titulo": "Car Door Porter Unlocking.wav",
+  "autor": "RutgerMuller",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/RutgerMuller/sounds/50888",
+  "duracao": 1.11,
+  "busca": "car door unlock"
+ },
+ "janela-abre": {
+  "arquivo": "janela-abre.mp3",
+  "titulo": "Window Opening Squeaks Slide.wav",
+  "autor": "RutgerMuller",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/RutgerMuller/sounds/51047",
+  "duracao": 1.4,
+  "busca": "window open"
+ },
+ "cadeira": {
+  "arquivo": "cadeira.mp3",
+  "titulo": "Chair dragging",
+  "autor": "FrostyFrost",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/FrostyFrost/sounds/348365",
+  "duracao": 4.37,
+  "busca": "chair drag"
+ },
+ "troca-canal": {
+  "arquivo": "troca-canal.mp3",
+  "titulo": "Remote Control.wav",
+  "autor": "JaenKleynhans",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/JaenKleynhans/sounds/267883",
+  "duracao": 2.13,
+  "busca": "remote control button"
+ },
+ "passarinhos": {
+  "arquivo": "passarinhos.mp3",
+  "titulo": "Birdsong Singleshot Denoised Wakeup Alarm",
+  "autor": "unfa",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/unfa/sounds/186024",
+  "duracao": 2.72,
+  "busca": "birdsong"
+ },
+ "tecido": {
+  "arquivo": "tecido.mp3",
+  "titulo": "Fabric Rustling 2.aif",
+  "autor": "RutgerMuller",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/RutgerMuller/sounds/103994",
+  "duracao": 8,
+  "busca": "fabric rustle"
+ },
+ "passos-correndo": {
+  "arquivo": "passos-correndo.mp3",
+  "titulo": "Footsteps running on the floor.mp3",
+  "autor": "Caitlin_100",
+  "licenca": "cc0",
+  "versao": "1.0",
+  "fonte": "https://freesound.org/people/Caitlin_100/sounds/365617",
+  "duracao": 8.4,
+  "busca": "footsteps running"
  }
 }

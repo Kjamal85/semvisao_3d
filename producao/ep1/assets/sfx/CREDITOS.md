@@ -35,3 +35,24 @@
 - `choro-mulher.mp3` — "Woman crying" por akoecreative · CC0 1.0 · https://freesound.org/people/akoecreative/sounds/790620
 - `esparadrapo.mp3` — "Tape Rip 6" por Geoff-Bremner-Audio · CC0 1.0 · https://freesound.org/people/Geoff-Bremner-Audio/sounds/795801
 - `caixa.mp3` — "plastic box open close 1.wav" por peritel · CC0 1.0 · https://freesound.org/people/peritel/sounds/547628 (primeiros 1,9 s)
+
+<!-- EP2 -->
+- `lencol.mp3` — "Sheets - Movement 1.wav" por MWsfx · CC0 1.0 · https://freesound.org/people/MWsfx/sounds/573723
+- `despertador.mp3` — "timer.flac" por tim.kahn · BY 4.0 · https://freesound.org/people/tim.kahn/sounds/22627
+- `agua-pia.mp3` — "Tap Water 1" por OwlStorm · CC0 1.0 · https://freesound.org/people/OwlStorm/sounds/212177
+- `louca.mp3` — "Stacking Plates 02.wav" por Glitchedtones · CC0 1.0 · https://freesound.org/people/Glitchedtones/sounds/322405
+- `chave-porta.mp3` — "key unlocking front door 1" por whoopsadaisy · CC0 1.0 · https://freesound.org/people/whoopsadaisy/sounds/674124
+- `porta-fecha.mp3` — "door wood ext front door close solid +keys jingle.flac" por kyles · CC0 1.0 · https://freesound.org/people/kyles/sounds/637486
+- `microondas.mp3` — "Appliance-Microwave-Button-Beep.wav" por DWOBoyle · BY 4.0 · https://freesound.org/people/DWOBoyle/sounds/144227
+- `talher.mp3` — "platos 9.aif" por timlaroche · BY 4.0 · https://freesound.org/people/timlaroche/sounds/71816
+- `lapis.mp3` — "Pencil Writing on Paper" por elliotlp · CC0 1.0 · https://freesound.org/people/elliotlp/sounds/277312
+- `caderno.mp3` — "Book Closing" por dersuperanton · BY 4.0 · https://freesound.org/people/dersuperanton/sounds/435558
+- `portaozinho.mp3` — "Gate squeak 1" por GeorgeHopkins · BY 4.0 · https://freesound.org/people/GeorgeHopkins/sounds/537249
+- `motor-desliga.mp3` — "Car engine stop 3.wav" por spurioustransients · CC0 1.0 · https://freesound.org/people/spurioustransients/sounds/534921
+- `travas-van.mp3` — "Car Door Porter Unlocking.wav" por RutgerMuller · CC0 1.0 · https://freesound.org/people/RutgerMuller/sounds/50888
+- `janela-abre.mp3` — "Window Opening Squeaks Slide.wav" por RutgerMuller · CC0 1.0 · https://freesound.org/people/RutgerMuller/sounds/51047
+- `cadeira.mp3` — "Chair dragging" por FrostyFrost · CC0 1.0 · https://freesound.org/people/FrostyFrost/sounds/348365
+- `troca-canal.mp3` — "Remote Control.wav" por JaenKleynhans · CC0 1.0 · https://freesound.org/people/JaenKleynhans/sounds/267883
+- `passarinhos.mp3` — "Birdsong Singleshot Denoised Wakeup Alarm" por unfa · CC0 1.0 · https://freesound.org/people/unfa/sounds/186024
+- `tecido.mp3` — "Fabric Rustling 2.aif" por RutgerMuller · CC0 1.0 · https://freesound.org/people/RutgerMuller/sounds/103994
+- `passos-correndo.mp3` — "Footsteps running on the floor.mp3" por Caitlin_100 · CC0 1.0 · https://freesound.org/people/Caitlin_100/sounds/365617
