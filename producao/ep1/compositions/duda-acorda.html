@@ -19,49 +19,93 @@
       Q.cortina(1); Q.luzinhas(false);
       Q.cad.position.set(Q.EX - 0.5, 0, Q.EZ + 0.1); Q.cad.rotation.y = -Math.PI / 2;   // cadeira encostada na escrivaninha
       const R = { refinado: true, material: "pbr" };
-      // deitada: o corpo do rig gira -90° em x (a cabeça vai para a cabeceira, -z local), o rosto para cima
-      const deitada = Elenco.build("duda", Object.assign({ expr: "neutro" }, R));
-      deitada.rotation.set(-Math.PI / 2, 0, 0); deitada.position.set(Q.BX, Q.MT + 0.16, -1.85); casa.add(deitada);
-      // o edredom por cima dela (do peito aos pés): esconde o corpo deitado e os tênis
-      const kc = Cena.kit(casa, 5), EDR = 0xd8cde8;
-      kc.box(Q.BW + 0.12, 0.22, 2.05, EDR, Q.BX, Q.MT + 0.26, -2.35);
-      kc.bolha(0.42, EDR, Q.BX - 0.2, Q.MT + 0.42, -3.05, [1.45, 0.42, 0.7], { r: [0, 0.2, 0] });
-      kc.bolha(0.4, EDR, Q.BX + 0.25, Q.MT + 0.44, -2.0, [1.3, 0.45, 1.0], { r: [0, -0.3, 0] });
-      // sentada na beira da cama, de frente para o quarto (+x local)
-      const sentada = Elenco.build("duda", Object.assign({ expr: "neutro", pose: "sentado" }, R));
-      sentada.position.set(Q.BX + Q.BW / 2 + 0.05, Q.MT + 0.1 - 1.075 * 0.92, -1.75); sentada.rotation.y = Math.PI / 4; casa.add(sentada);
+      // UM corpo só, do deitado ao sentado na beira (correção do usuário: "deitada levanta o tronco, as pernas ficam
+      // na cama, ela gira e fica sentada com os pés no chão"). Ordem YXZ: primeiro gira no chão (yaw), depois deita (pitch).
+      const corpo = Elenco.build("duda", Object.assign({ expr: "neutro" }, R));
+      corpo.rotation.order = "YXZ"; casa.add(corpo);
+      const rc = corpo.userData.rig, ALT = 0.92, QUADRIL = 1.075 * ALT;
+      // o edredom por cima dela (do peito aos pés), num grupo preso na beira da parede (-x) e no colchão: ao ser
+      // empurrado ele encolhe para o lado da parede e embola para cima, saindo de cima das pernas
+      const kc = Cena.kit(casa, 5), EDR = 0xd8cde8, BORDA = Q.BX - Q.BW / 2 - 0.06;
+      const edr = new THREE.Group(); edr.position.set(BORDA, Q.MT, 0); casa.add(edr);
+      const ek = Cena.kit(edr, 5), dx = (x) => x - BORDA;
+      // um edredom só, liso (sem as bolas de volume, que viravam "bolas roxas" quando ela levantava)
+      ek.box(Q.BW + 0.12, 0.3, 2.05, EDR, dx(Q.BX), 0.27, -2.35);   // alto o bastante para a ponta do tênis não furar
       const pal = EP2.palco("da-stage");
       Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
       const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 120);
-      const M = W.M, rs = sentada.userData.rig;
-      const ombro = [rs.aL.sh.rotation.clone(), rs.aR.sh.rotation.clone(), rs.aL.el.rotation.clone(), rs.aR.el.rotation.clone()];
+      const M = W.M, V = EP2.V;
+      // o quadril é o pivô de tudo: deitada no meio da cama → sentada na beira (pés no chão)
+      const H0 = V(Q.BX, Q.MT + 0.16, -1.85 - QUADRIL);
+      const H1 = V(Q.BX + Q.BW / 2 + 0.08, Q.MT + 0.1, -2.72);
+      const YAW1 = 0.9;
+      // sentada numa cama alta: coxa inclinada para baixo e canela na vertical, sola no chão (0,88 - 0,35 - 0,50 ≈ 0,03)
+      const COXA = -(Math.PI / 2 - 0.813);
       const planos = [
         { t0: 0, t1: 5.5, pos: M(Q.BX + 0.35, 1.75, -3.6), alvo: M(Q.BX + 0.35, 3.9, -3.3), fov: 50, push: 0 },
         // a virada: começa olhando o teto (a visão de quem acorda) e desce até os olhos dela
-        { t0: 5.5, t1: 8.0, up: EP2.V(0, 0, 1), pos: M(Q.BX + 0.32, 1.7, -3.55),
+        { t0: 5.5, t1: 8.0, up: V(0, 0, 1), pos: M(Q.BX + 0.32, 1.7, -3.55),
           alvo: (t) => { const u = S((t - 5.9) / 0.9); return M(Q.BX + 0.35 - 0.3 * u, 3.9 - 2.85 * u, -3.3 - 0.62 * u); }, fov: 46, push: 0.004 },
         { t0: 8.0, t1: 12.0, pos: M(Q.BX + 0.85, 2.05, -3.15), alvo: M(Q.BX - 0.02, 1.02, -3.9), fov: 40 },
-        { t0: 12.0, t1: 20, pos: M(0.35, 1.9, -0.2), alvo: M(-0.7, 1.55, -1.85), fov: 62 },
+        // aberto, do lado do quarto (3/4 pela esquerda dela): a cama inteira, o corpo levantando e os pés no chão
+        { t0: 12.0, t1: 20, pos: M(-0.3, 2.45, -0.45), alvo: M(-0.95, 0.95, -2.6), fov: 60 },   // no vão entre o guarda-roupa e a escrivaninha
       ];
+      // braços sentada (mãos no colo) — a base do espreguiçar
+      const BASE = { L: [-0.35, 0, 0.1, -0.9], R: [-0.35, 0, -0.1, -0.9] };
       const estado = { t: 0 };
+      function pose(t) {
+        const sobe = S((t - 12.0) / 1.8);                        // o tronco levanta, pernas esticadas na cama
+        const gira = S((t - 14.4) / 1.6);                        // gira para a beira
+        const desce = S((t - 15.0) / 1.0);                       // as pernas descem pela beira até o chão
+        const pitch = -Math.PI / 2 * (1 - sobe), yaw = YAW1 * gira;
+        const H = H0.clone().lerp(H1, gira);
+        corpo.rotation.set(pitch, yaw, 0);
+        const up = V(Math.sin(pitch) * Math.sin(yaw), Math.cos(pitch), Math.sin(pitch) * Math.cos(yaw));
+        corpo.position.copy(H).addScaledVector(up, -QUADRIL);
+        const hip = -Math.PI / 2 * sobe + (Math.PI / 2 + COXA) * desce;
+        for (const l of [rc.pL, rc.pR]) { l.hip.rotation.set(hip, 0, 0); l.knee.rotation.set(-COXA * desce, 0, 0); }
+        // o edredom: a mão esquerda (lado do quarto) empurra ele para a parede entre 13,7 e 14,6
+        const emp = S((t - 13.7) / 0.9);
+        edr.scale.set(1 - 0.58 * emp, 1 + 0.6 * emp, 1);   // dobrado para o lado da parede
+        return { sobe, gira, desce, H, yaw, emp };
+      }
       function render() {
         const t = estado.t, p = EP2.plano(planos, t);
-        const deitado = t < 12;
-        deitada.visible = deitado; sentada.visible = !deitado;
-        if (deitado) {
+        const P = pose(t);
+        // os olhos voltam ao tamanho da expressão a cada quadro (o "fechado" do começo não pode ficar grudado)
+        for (const o of corpo.userData.rosto.olhos) { const k = o.userData.k || 1; o.scale.y = k * Elenco.EXPR.neutro.olho; }
+        if (t < 12) {
           // os olhos fechados até a virada; abrem devagar (focando) e piscam com a claridade
           const abre = S((t - 6.3) / 0.9);
-          Elenco.vida(deitada, t, { ritmo: "calmo", corpo: false, olhar: t > 8, piscar: t > 7.4 });
-          for (const o of deitada.userData.rosto.olhos) o.scale.y *= 0.08 + 0.92 * abre;
+          rc.aL.sh.rotation.set(0, 0, -0.06); rc.aR.sh.rotation.set(0, 0, 0.09);
+          rc.aL.el.rotation.set(-0.08, 0, 0); rc.aR.el.rotation.set(-0.14, 0, 0);
+          Elenco.cabeca(corpo, 0, 0, 0);
+          Elenco.vida(corpo, t, { ritmo: "calmo", corpo: false, olhar: t > 8, piscar: t > 7.4 });
+          for (const o of corpo.userData.rosto.olhos) o.scale.y *= 0.08 + 0.92 * abre;
         } else {
-          // espreguiça: os braços sobem com peso (mola) e voltam
-          const sobe = Elenco.mola([[0, 0], [13.2, 1], [16.4, 0]], t, { freq: 1.0, amort: 0.8 });
-          // os braços abrem para os LADOS e sobem (nunca passam na frente do rosto)
-          rs.aL.sh.rotation.set(ombro[0].x - 0.2 * sobe, ombro[0].y, ombro[0].z - 2.5 * sobe);
-          rs.aR.sh.rotation.set(ombro[1].x - 0.2 * sobe, ombro[1].y, ombro[1].z + 2.5 * sobe);
-          rs.aL.el.rotation.set(ombro[2].x - 0.4 * sobe, 0, 0); rs.aR.el.rotation.set(ombro[3].x - 0.4 * sobe, 0, 0);
-          Elenco.cabeca(sentada, -0.12 * sobe, 0, 0);
-          Elenco.vida(sentada, t, { ritmo: "calmo", fase: 1 });
+          // as mãos apoiam no colchão ao lado do quadril (o peso de quem levanta) — cada uma do seu lado
+          const lat = V(Math.cos(P.yaw), 0, -Math.sin(P.yaw)), fr = V(Math.sin(P.yaw), 0, Math.cos(P.yaw));
+          const apoio = (s) => P.H.clone().addScaledVector(lat, s * 0.32).addScaledVector(fr, 0.12).setY(Q.MT + 0.03);
+          let esq = apoio(1);
+          if (P.emp > 0 && P.emp < 1) {
+            // a mão vai até a beira do edredom e acompanha enquanto ele vai para a parede
+            const beira = V(BORDA + (Q.BX + Q.BW / 2 + 0.06 - BORDA) * edr.scale.x, Q.MT + 0.25, -2.4);
+            esq = esq.lerp(beira, Math.sin(Math.PI * P.emp));
+          }
+          Elenco.duasMaos(corpo, M(esq.x, esq.y, esq.z), M(...apoio(-1).toArray()));
+          // sentada: as mãos sobem para o colo e então espreguiça (os braços abrem para os LADOS e sobem)
+          const colo = S((t - 15.9) / 0.6);
+          if (colo > 0) {
+            const sobeB = Elenco.mola([[0, 0], [16.7, 1], [19.0, 0]], t, { freq: 1.0, amort: 0.8 });
+            for (const [b, k, s] of [[rc.aL, "L", -1], [rc.aR, "R", 1]]) {
+              const B = BASE[k];
+              const alvoSh = [B[0] - 0.2 * sobeB, 0, B[2] + s * 2.5 * sobeB], alvoEl = B[3] + 0.5 * sobeB;
+              b.sh.rotation.set(b.sh.rotation.x + (alvoSh[0] - b.sh.rotation.x) * colo, 0, b.sh.rotation.z + (alvoSh[2] - b.sh.rotation.z) * colo);
+              b.el.rotation.set(b.el.rotation.x + (alvoEl - b.el.rotation.x) * colo, 0, 0);
+            }
+            Elenco.cabeca(corpo, -0.12 * sobeB, 0, 0);
+          } else Elenco.cabeca(corpo, 0.12 * (1 - P.sobe) * P.sobe * 4, 0, 0);   // o queixo puxa o corpo ao levantar
+          Elenco.vida(corpo, t, { ritmo: "calmo", fase: 1, corpo: P.desce >= 1 });
         }
         EP2.camera(cam, p, t);
         pal.render(scene, cam, t);

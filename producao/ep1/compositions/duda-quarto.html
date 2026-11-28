@@ -49,8 +49,7 @@
           EP2.expr(sentada, t < 5.5 ? "neutro" : "firme");     // franze a testa olhando o relógio
           casa.updateMatrixWorld(true);
           const mao = sentada.localToWorld(EP2.V(0.0, 1.32, 0.45));
-          Elenco.alcancar(sentada, "dir", mao, { foraDoCorpo: true });
-          Elenco.alcancar(sentada, "esq", sentada.localToWorld(EP2.V(-0.05, 1.28, 0.44)), { foraDoCorpo: true });
+          Elenco.duasMaos(sentada, mao, sentada.localToWorld(EP2.V(-0.05, 1.28, 0.44)));   // cada alvo na mão do seu lado
           relogio.position.copy(casa.worldToLocal(sentada.localToWorld(EP2.V(-0.02, 1.36, 0.5)))); relogio.rotation.set(-0.5, Math.PI / 4, 0);
           Elenco.cabeca(sentada, 0.18, 0, 0.05);
           Elenco.vida(sentada, t, { ritmo: "calmo", olhar: false });
@@ -66,8 +65,7 @@
           Q.cortina(1 - abre);
           if (t > 10.3 && t < 12.3) {
             casa.updateMatrixWorld(true);
-            Elenco.alcancar(pe, "esq", M(-2.55 + 0.4 * (1 - abre), 2.0, -0.28), { foraDoCorpo: true });
-            Elenco.alcancar(pe, "dir", M(-1.45 - 0.4 * (1 - abre), 2.0, -0.28), { foraDoCorpo: true });
+            Elenco.duasMaos(pe, M(-2.55 + 0.4 * (1 - abre), 2.0, -0.28), M(-1.45 - 0.4 * (1 - abre), 2.0, -0.28));   // cada alvo na mão do seu lado
           }
           Elenco.vida(pe, t, { ritmo: "calmo", fase: 2, corpo: t > 12 });
           EP2.boca(pe, t, [], CENA);

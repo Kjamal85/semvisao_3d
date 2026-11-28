@@ -107,15 +107,13 @@
         F.scene.updateMatrixWorld(true);
         if (!dentroVan) {
           Elenco.alcancar(ag[0], "esq", gabi.localToWorld(V(-0.3, 1.62, 0.0)), { foraDoCorpo: true });   // o braço dele, acima do cotovelo
-          Elenco.alcancar(ag[2], "esq", gabi.localToWorld(V(0.18, 1.6, -0.25)), { foraDoCorpo: true });  // as costas
-          Elenco.alcancar(ag[2], "dir", gabi.localToWorld(V(-0.18, 1.6, -0.25)), { foraDoCorpo: true });
+          Elenco.duasMaos(ag[2], gabi.localToWorld(V(0.18, 1.6, -0.25)), gabi.localToWorld(V(-0.18, 1.6, -0.25)));   // as costas (cada alvo na mão do seu lado)
         }
         // o agente 2: barra os pais até 7, depois vai para a van
         if (t < 7) {
           ag[1].position.copy(AG2); ag[1].rotation.y = Math.PI; ag[1].visible = true;
           F.scene.updateMatrixWorld(true);
-          Elenco.alcancar(ag[1], "esq", V(-1.3, 1.65, FZ + 0.85), { foraDoCorpo: true });
-          Elenco.alcancar(ag[1], "dir", V(-0.45, 1.65, FZ + 0.95), { foraDoCorpo: true });
+          Elenco.duasMaos(ag[1], V(-1.3, 1.65, FZ + 0.85), V(-0.45, 1.65, FZ + 0.95));
         } else {
           const u2 = (t - 7) / 3.6, c2 = EP2.caminho(TA2, u2);
           ag[1].position.copy(c2.pos); ag[1].rotation.y = c2.ry; ag[1].visible = u2 < 1;
@@ -174,8 +172,7 @@
           EP2.anda(dIn, t, t < 7 ? 0 : 1.4, 2.6);
           D.scene.updateMatrixWorld(true);
           if (t < 7) {
-            Elenco.alcancar(dIn, "dir", M(-2.12, 1.3, -0.2), { foraDoCorpo: true });
-            Elenco.alcancar(dIn, "esq", M(-1.28, 1.3, -0.2), { foraDoCorpo: true });
+            Elenco.duasMaos(dIn, M(-2.12, 1.3, -0.2), M(-1.28, 1.3, -0.2));
             Elenco.mao(dIn, "dir", "punho", 0.8); Elenco.mao(dIn, "esq", "punho", 0.8);
           }
           Elenco.cabeca(dIn, -0.02, t < 7 ? 0.3 : 0, 0);

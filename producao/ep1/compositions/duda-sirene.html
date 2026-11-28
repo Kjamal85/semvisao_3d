@@ -93,8 +93,7 @@
         dCama.visible = t < 11; dJan.visible = !pov && t >= 17;
         if (dCama.visible) {
           dCama.updateMatrixWorld(true);
-          Elenco.alcancar(dCama, "dir", dCama.localToWorld(V(-0.4, 0.89, 0.02)), { foraDoCorpo: true });   // as mãos apoiadas no colchão
-          Elenco.alcancar(dCama, "esq", dCama.localToWorld(V(0.4, 0.89, 0.02)), { foraDoCorpo: true });
+          Elenco.duasMaos(dCama, dCama.localToWorld(V(-0.4, 0.89, 0.02)), dCama.localToWorld(V(0.4, 0.89, 0.02)));   // as mãos apoiadas no colchão
           const sobe = S((t - 8.6) / 0.7);                              // a luz: levanta a cabeça para a janela
           Elenco.cabeca(dCama, 0.2 * (1 - sobe) - 0.12 * sobe, -0.3 * sobe, 0);
           EP2.expr(dCama, t < 8.6 ? "triste" : "medo");
@@ -103,8 +102,7 @@
         }
         if (dJan.visible) {
           dJan.updateMatrixWorld(true);
-          Elenco.alcancar(dJan, "dir", M(-2.42, 1.3, -0.2), { foraDoCorpo: true });   // as mãos apertam o peitoril, baixas
-          Elenco.alcancar(dJan, "esq", M(-1.58, 1.3, -0.2), { foraDoCorpo: true });
+          Elenco.duasMaos(dJan, M(-2.42, 1.3, -0.2), M(-1.58, 1.3, -0.2));   // as mãos apertam o peitoril, baixas
           Elenco.mao(dJan, "dir", "punho", 0.8); Elenco.mao(dJan, "esq", "punho", 0.8);
           Elenco.cabeca(dJan, -0.02, 0.3, 0);                          // olhando a casa do Gabi
           Elenco.vida(dJan, t, { ritmo: "tensao" });

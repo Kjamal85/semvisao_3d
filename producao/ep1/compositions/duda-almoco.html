@@ -43,8 +43,7 @@
           // ao lado da cama (sem encostar), puxa o edredom
           pe.position.copy(M(-0.3, 0, -2.6)); pe.rotation.y = Math.PI + Math.PI / 2;
           const puxa = 0.5 + 0.5 * Math.sin(t * 2.4);
-          Elenco.alcancar(pe, "esq", M(-0.95, 0.95 + 0.1 * puxa, -2.3), { foraDoCorpo: true });
-          Elenco.alcancar(pe, "dir", M(-0.95, 0.95 + 0.1 * puxa, -2.9), { foraDoCorpo: true });
+          Elenco.duasMaos(pe, M(-0.95, 0.95 + 0.1 * puxa, -2.3), M(-0.95, 0.95 + 0.1 * puxa, -2.9));   // cada alvo na mão do seu lado
           Elenco.cabeca(pe, 0.2, 0, 0);
         } else if (t < 9) {
           // na bancada, de frente para o micro-ondas; tira o prato e se vira
@@ -53,8 +52,7 @@
           const mic = M(1.1, 1.38, -3.75), frente = pe.localToWorld(V(0, 1.3, 0.45));
           const x = mic.clone().lerp(frente, tira);
           prato.position.copy(casa.worldToLocal(x.clone()));
-          Elenco.alcancar(pe, "esq", x.clone().add(V(0.12, 0, 0)), { foraDoCorpo: true });
-          Elenco.alcancar(pe, "dir", x.clone().add(V(-0.12, 0, 0)), { foraDoCorpo: true });
+          Elenco.duasMaos(pe, x.clone().add(V(0.12, 0, 0)), x.clone().add(V(-0.12, 0, 0)));   // cada alvo na mão do seu lado
           Elenco.cabeca(pe, 0.15, 0, 0);
         } else if (t < 13.5) {
           prato.position.set(C.MX - 0.6, C.MY + 0.02, C.MZ + 0.05);
@@ -64,8 +62,7 @@
         } else {
           pe.position.copy(M(1.55, 0, -3.15)); pe.rotation.y = EP2.olhaPara(M(1.55, 0, -3.15), M(1.55, 0, -4.0));
           const esfrega = 0.04 * Math.sin(t * 7);
-          Elenco.alcancar(pe, "esq", M(1.65 + esfrega, 1.25, -3.95), { foraDoCorpo: true });
-          Elenco.alcancar(pe, "dir", M(1.45 - esfrega, 1.25, -3.95), { foraDoCorpo: true });
+          Elenco.duasMaos(pe, M(1.65 + esfrega, 1.25, -3.95), M(1.45 - esfrega, 1.25, -3.95));   // cada alvo na mão do seu lado
           Elenco.cabeca(pe, 0.2, 0, 0);
         }
         if (pe.visible) { Elenco.vida(pe, t, { ritmo: "calmo", olhar: true }); EP2.boca(pe, t, [], CENA); }

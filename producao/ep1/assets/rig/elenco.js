@@ -346,7 +346,7 @@
             // menor; tudo dentro de "pu", então acompanha as sacadas do Elenco.vida
             add(sphere(0.052, 16, 14), P.iris, 0, 0, -0.009, pu, { papel: "olho" });
             add(sphere(0.026, 12, 12), EYE.pupil, 0, 0, 0.021, pu, { papel: "olho", semContorno: true });
-            add(sphere(0.014, 8, 8), EYE.glint, -0.02, 0.02, 0.047, pu, { papel: "olho", semContorno: true });
+            add(sphere(0.012, 8, 8), EYE.glint, -0.02, 0.02, 0.036, pu, { papel: "olho", semContorno: true });   // rente à íris: de lado não vira "bolinha" saltada
           } else {
             add(sphere(0.042, 12, 12), EYE.pupil, 0, 0, 0, pu, { papel: "olho" });
             add(sphere(0.015, 8, 8), EYE.glint, -0.022, 0.022, 0.035, pu, { papel: "olho" });
@@ -530,12 +530,16 @@
       if (_w.y < 1.0 || _w.y > 1.95) return 0;
       return Math.max(0, RMIN - Math.hypot(_w.x, _w.z));
     };
+    const s = lado === "esq" ? 1 : -1;            // abrir o braço para fora: z + na esquerda, - na direita
+    // regra do usuário (EP2): antebraço NUNCA cruza a frente do corpo — a mão e o antebraço ficam do lado do
+    // próprio ombro (x local da personagem: + é a esquerda dela); passar da linha do meio é punido
+    // a mão pode chegar até a linha do meio; o meio do antebraço fica pelo menos 0,12 do seu lado (nada de "X" no peito)
+    const cruza = (o, m) => { o.getWorldPosition(_w); _w.applyMatrix4(inv); return Math.max(0, m - s * _w.x); };
     const custo = (sx, sz, ex) => {
       braco.sh.rotation.set(sx, 0, sz); braco.el.rotation.set(ex, 0, 0);
       raiz.updateMatrixWorld(true); mao.getWorldPosition(_v);
-      return _v.distanceTo(alvo) + (fora ? 6 * (dentro(cot) + dentro(ante)) : 0);
+      return _v.distanceTo(alvo) + (fora ? 6 * (dentro(cot) + dentro(ante)) + 8 * (cruza(mao, -0.03) + cruza(ante, 0.12 * (rig.ficha.larg || 1))) : 0);
     };
-    const s = lado === "esq" ? 1 : -1;            // abrir o braço para fora: z + na esquerda, - na direita
     let best = [0, 0, 0], bc = Infinity;
     for (let sx = -2.6; sx <= 0.6; sx += 0.2) for (let sz = -0.4; sz <= 1.6; sz += 0.2) for (let ex = -2.2; ex <= 0; ex += 0.2) {
       const c = custo(sx, s * sz, ex); if (c < bc) { bc = c; best = [sx, s * sz, ex]; }
@@ -550,6 +554,18 @@
     }
     custo(best[0], best[1], best[2]); braco.el.remove(mao); braco.el.remove(cot); braco.el.remove(ante);
     return bc;
+  }
+
+  // Duas mãos em dois alvos: cada alvo vai para a mão DO SEU LADO (pelo x local da personagem), seja qual for
+  // a ordem em que a cena passou — assim os braços nunca se cruzam quando ela está virada para o outro lado.
+  function duasMaos(g, a, b, op) {
+    let raiz = g; while (raiz.parent) raiz = raiz.parent;
+    raiz.updateMatrixWorld(true);
+    const inv = g.matrixWorld.clone().invert();
+    const xa = a.clone().applyMatrix4(inv).x, xb = b.clone().applyMatrix4(inv).x;
+    const [esq, dir] = xa >= xb ? [a, b] : [b, a];
+    const o = Object.assign({ foraDoCorpo: true }, op);
+    return alcancar(g, "esq", esq, o) + alcancar(g, "dir", dir, o);
   }
 
   // Formas da mão: "relaxada" (padrão), "aberta" (tateando), "segura" (copo, fone), "punho". u mistura com a relaxada.
@@ -763,6 +779,6 @@
     }
   }
 
-  window.Elenco = { FICHAS, EXPR, CABECA_Y, mao, lagrimas, build, expressao, cabeca, alcancar,
+  window.Elenco = { FICHAS, EXPR, CABECA_Y, mao, lagrimas, build, expressao, cabeca, alcancar, duasMaos,
                     vida, mola, ruido, fbm, ambiente, RITMOS };
 })();

@@ -84,12 +84,10 @@
           const abre = S((t - 4.4) / 1.0);
           Q.janela(abre);
           if (t < 6.5) {
-            Elenco.alcancar(duda, "dir", M(-2.35, 1.95, -0.12), { foraDoCorpo: true });     // (virada para a rua, o "dir" do rig fica no x menor)
-            Elenco.alcancar(duda, "esq", M(-1.65, 1.95, -0.12), { foraDoCorpo: true });
+            Elenco.duasMaos(duda, M(-2.35, 1.95, -0.12), M(-1.65, 1.95, -0.12));
           } else {
             // as duas mãos apertam o peitoril, baixas e afastadas: nada passa na frente do rosto (boca à mostra)
-            Elenco.alcancar(duda, "dir", M(-2.42, 1.3, -0.2), { foraDoCorpo: true });
-            Elenco.alcancar(duda, "esq", M(-1.58, 1.3, -0.2), { foraDoCorpo: true });
+            Elenco.duasMaos(duda, M(-2.42, 1.3, -0.2), M(-1.58, 1.3, -0.2));
             Elenco.mao(duda, "dir", "punho", 0.7); Elenco.mao(duda, "esq", "punho", 0.7);
           }
           // olhar: na van (para a direita dela); depois a casa do Gabi; depois baixa os olhos, pensando

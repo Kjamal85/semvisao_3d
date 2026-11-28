@@ -57,8 +57,7 @@
           const alvo = topo.clone().lerp(peito, desce);
           toalha.visible = u > 0.05;
           toalha.position.copy(casa.worldToLocal(alvo.clone())); toalha.rotation.set(-0.1, 0, 0);
-          Elenco.alcancar(g, "esq", alvo.clone().add(EP2.V(0.18, -0.05, 0)), { foraDoCorpo: true });
-          Elenco.alcancar(g, "dir", alvo.clone().add(EP2.V(-0.18, -0.05, 0)), { foraDoCorpo: true });
+          Elenco.duasMaos(g, alvo.clone().add(EP2.V(0.18, -0.05, 0)), alvo.clone().add(EP2.V(-0.18, -0.05, 0)));   // cada alvo na mão do seu lado
         }
         Elenco.cabeca(g, inclina, 0, 0);
         Elenco.vida(g, t, { ritmo: "calmo", olhar: false, piscar: t < 9 || t > 11.5 });
