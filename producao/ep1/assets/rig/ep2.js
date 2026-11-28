@@ -105,6 +105,13 @@
     const w = casa.localToWorld(cad.pos.clone().add(V(Math.sin(cad.ry) * 0.08, 0, Math.cos(cad.ry) * 0.08)));
     g.position.set(w.x, 0.75 + 0.1 - 1.075 * alt, w.z); g.rotation.y = Math.PI + cad.ry;
   }
+  // altura do chão na rua (rua.js): as calçadas (z -3,0..-1,6 do lado do Gabi; 4,4..5,8 do lado da Duda) têm 0,16;
+  // asfalto e quintais, 0. Rampa de 0,1 em cada borda (o pé sobe no meio-fio, não teleporta). Dentro das casas (z > 9
+  // ou < -6,5) a conta dá 0. Regra do usuário (2026-11-28): o pé nunca afunda na calçada.
+  function chao(x, z) {
+    const faixa = (a, b) => S((z - a + 0.1) / 0.2) * (1 - S((z - b + 0.1) / 0.2));
+    return 0.16 * Math.max(faixa(-3.0, -1.6), faixa(4.4, 5.8));
+  }
   // caminho por pontos de passagem (mundo), velocidade constante: { pos, ry } em u = 0..1. Regra da série:
   // ninguém atravessa ninguém — os pontos contornam pessoas e móveis com folga (~0,5 do centro de cada um).
   function caminho(pts, u) {
@@ -114,11 +121,13 @@
     for (let i = 0; i < seg.length; i++) {
       if (alvo <= seg[i] || i === seg.length - 1) {
         const f = seg[i] ? Math.min(1, alvo / seg[i]) : 1, a = pts[i], b = pts[i + 1];
-        return { pos: a.clone().lerp(b, f), ry: Math.atan2(b.x - a.x, b.z - a.z) };
+        const p = a.clone().lerp(b, f); p.y += chao(p.x, p.z);
+        return { pos: p, ry: Math.atan2(b.x - a.x, b.z - a.z) };
       }
       alvo -= seg[i];
     }
-    return { pos: pts[pts.length - 1].clone(), ry: 0 };
+    const p = pts[pts.length - 1].clone(); p.y += chao(p.x, p.z);
+    return { pos: p, ry: 0 };
   }
   // a rotação (y) para o personagem olhar do ponto a para o ponto b (o rig olha +z)
   const olhaPara = (a, b) => Math.atan2(b.x - a.x, b.z - a.z);
@@ -245,5 +254,5 @@
     return { renderer, pos, render: (scene, cam, t, look) => pos.render(scene, cam, t, Object.assign({}, LOOK, look || {})) };
   }
 
-  window.EP2 = { S, V, LOOK, mundo, luz, plano, camera, falando, boca, expr, anda, senta, olhaPara, caminho, geo, tv, palco };
+  window.EP2 = { S, V, LOOK, mundo, luz, plano, camera, falando, boca, expr, anda, senta, olhaPara, chao, caminho, geo, tv, palco };
 })();

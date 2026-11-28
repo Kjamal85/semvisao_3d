@@ -20,7 +20,7 @@
       const mae = Elenco.build("mae", Object.assign({ expr: "ternura" }, RF)); scene.add(mae);
       const gP = G.gabiPortao;
       // a Duda na calçada, de frente para o portão (-z), a 0,55 do muro; a mãe dentro da porta, a ~3,3 dela
-      duda.position.set(gP.x + 0.1, 0, gP.z + 0.55); duda.rotation.y = Math.PI;
+      duda.position.set(gP.x + 0.1, EP2.chao(gP.x + 0.1, gP.z + 0.55), gP.z + 0.55);   // na calçada (0,16) duda.rotation.y = Math.PI;
       mae.position.set(-1.0, 0, R.FZ + 0.32); mae.rotation.y = 0;   // no vão da porta, do lado da fechadura (a folha aberta não tapa o rosto), o corpo bloqueando a entrada
       // a cortina da sala (janela em x 1,3) por dentro: um pano que balança quando alguém espia
       const kc = Cena.kit(scene, 43), pano = new THREE.Group(); pano.position.set(1.3 - 0.35, 1.75, R.FZ - 0.06); scene.add(pano);
