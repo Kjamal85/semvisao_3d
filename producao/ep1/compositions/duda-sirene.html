@@ -1,0 +1,123 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dsi-stage { position: absolute; inset: 0; z-index: 0; }
+    #dsi-stage canvas { display: block; }
+  </style>
+  <div id="root" data-composition-id="duda-sirene" data-width="1920" data-height="1080">
+    <div id="dsi-stage" class="clip" data-start="0" data-duration="24" data-track-index="0"></div>
+  </div>
+  <script>
+    (function () {
+      // planos 62-67 (anoitecer), o mesmo momento da cena "buscar" do EP1, visto da janela dela:
+      // 0-8 sentada no pé da cama, sem fazer nada, as luzinhas acesas (narrador-n13) · 8-11 a luz azul e vermelha varre o
+      // quarto, a sirene; ela levanta a cabeça para a janela · 11-15 POV: a van para na frente da casa do Gabi, os agentes
+      // descem · 15-17 TUM-TUM-TUM, de longe (batidas em 15,9 / 16,3 / 16,7) · 17-18,3 respiro: ela na janela, a luz no
+      // rosto, as mãos apertam o peitoril, respiração suspensa · 18,3-24 POV de longe: os agentes na porta fechada
+      // (c10-agente-01 e c10-pai-01, os dois longe; o pai fala de dentro da casa).
+      const DUR = 24, CENA = "duda-sirene", S = EP2.S, V = EP2.V;
+      const W = EP2.mundo({ hora: "anoitecer", dentro: true, van: { x: 2.4, z: 0.1, ry: 0 } });   // 0,8 à direita do EP1: da janela dela, a traseira não tapa o quintal
+      const { scene, R, Q, M, casa } = W, G = EP2.geo(W);
+      Q.cortina(0); Q.janela(0); Q.luzinhas(true);
+      G.portaGabi(0);
+      const RF = { refinado: true, material: "pbr" };
+      // duas Dudas: sentada (62-63) e em pé na janela (66); o corte esconde a troca
+      const dCama = Elenco.build("duda", Object.assign({ expr: "triste", pose: "sentado" }, RF)); scene.add(dCama);
+      const dJan = Elenco.build("duda", Object.assign({ expr: "medo" }, RF)); scene.add(dJan);
+      const ags = [Elenco.build("agente"), Elenco.build("agente"), Elenco.build("agente")];
+      for (const a of ags) scene.add(a);
+      // sentada no pé da cama, de frente para a parede da janela (a janela fica à frente, um pouco à direita dela)
+      const PC = M(-1.45, 0, -1.62);
+      dCama.position.set(PC.x, Q.MT + 0.07 + 0.1 - 1.075 * 0.92, PC.z);
+      dCama.rotation.y = EP2.olhaPara(PC, M(-1.45, 0, 0));
+      const PJ = M(-2.0, 0, -0.62);
+      dJan.position.copy(PJ); dJan.rotation.y = EP2.olhaPara(PJ, M(-2.0, 0, 1.0));
+      // a luz da sirene dentro do quarto: entra pela janela e varre a parede (só quando o giroflex pisca)
+      const sir = new THREE.PointLight(0x4a6bff, 0, 6, 1.4); scene.add(sir);
+      const pal = EP2.palco("dsi-stage");
+      Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
+      const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 160);
+      const JAN = M(-2.0, 2.2, 0.3);                                  // POV: o olho dela, rente ao vidro
+      const planos = [
+        { t0: 0, t1: 8, pos: M(-3.35, 2.3, -0.25), alvo: M(-1.6, 1.4, -2.2), fov: 50 },   // canto da janela: ela, a cama, as luzinhas
+        { t0: 8, t1: 11, pos: M(-2.75, 2.05, -0.45), alvo: M(-1.45, 1.72, -1.62), fov: 42 }, // mais perto: a luz varre o rosto e a parede
+        { t0: 11, t1: 15, pos: JAN, alvo: V(-0.4, 1.0, -2.0), fov: 40, push: 0.008 },
+        { t0: 15, t1: 17, pos: JAN, alvo: V(-1.2, 1.5, -5.6), fov: 17 },
+        { t0: 17, t1: 18.3, pos: M(-1.75, 2.2, 1.8), alvo: M(-2.0, 2.05, -0.55), fov: 34 },
+        { t0: 18.3, t1: 24, pos: JAN, alvo: V(-1.1, 1.4, -5.0), fov: 24 },
+      ];
+      // os agentes: saem da traseira da van em fila; o primeiro passa pelo portão aberto (x -1,2) e bate na porta, os outros
+      // dois ficam na calçada dos lados do portão (da janela dela, só o que bate fica na frente da porta).
+      // Ninguém atravessa ninguém: ~0,9 s entre um e outro, e cada um para num ponto diferente.
+      const TR = [
+        [V(-0.35, 0, 0.1), V(-1.25, 0, -1.6), V(-1.2, 0, -3.5), V(-1.2, 0, -5.75)],               // bate na porta
+        [V(-0.35, 0, 0.1), V(0.0, 0, -2.4)],                                                        // fica na calçada, à direita do portão
+        [V(-0.35, 0, 0.1), V(-1.4, 0, -1.2), V(-3.7, 0, -2.3)],                                     // fica na calçada, à esquerda (fora da linha de visão dela)
+      ];
+      const SAI = [12.9, 13.3, 13.7], VEL = 2.0;
+      const comp = TR.map((tr) => { let L = 0; for (let i = 1; i < tr.length; i++) L += tr[i].distanceTo(tr[i - 1]); return L; });
+      const BATE = [15.9, 16.3, 16.7];
+      const estado = { t: 0 };
+      function render() {
+        const t = estado.t, p = EP2.plano(planos, t);
+        scene.updateMatrixWorld(true);
+        // ---- a van chega (10,4-12,6) e para; giroflex desde 8; portas de trás abrem 12,6-12,9 ----
+        const g = R.giroflex(t, t > 8 ? 1 : 0);
+        R.van.position.x = 2.4 - 15 * (1 - S((t - 10.4) / 2.2));
+        for (const { pt, s } of R.portasVan) pt.rotation.y = s * 2.75 * S((t - 12.6) / 0.3);
+        G.portaoGabi(S((t - 14.1) / 0.4));                            // o primeiro agente abre o portão de ferro
+        // ---- a luz da sirene no quarto: entra pela janela e varre ----
+        const pisca = g.azul || g.vermelho;
+        sir.color.setHex(g.azul ? 0x4a6bff : 0xff3a3a);
+        sir.intensity = pisca ? (t < 17 ? 3.2 : 4.5) : 0;
+        const sw = ((t * 0.7) % 1);
+        sir.position.copy(t < 17 ? M(-3.0 + 3.2 * sw, 2.1, -0.6) : M(-2.0, 2.1, 0.9));
+        // ---- agentes ----
+        ags.forEach((a, i) => {
+          const u = (t - SAI[i]) * VEL / comp[i];
+          a.visible = u > 0;
+          const c = EP2.caminho(TR[i], u);
+          a.position.copy(c.pos);
+          a.rotation.y = u >= 1 ? (i === 0 ? Math.PI : EP2.olhaPara(c.pos, V(-1.2, 0, -6.5))) : c.ry;   // parados: virados para a porta
+          EP2.anda(a, t, u > 0 && u < 1 ? 1 : 0, 1.9);
+          Elenco.vida(a, t, { ritmo: "calmo", fase: i + 2 });
+        });
+        // batidas: o punho do primeiro vai e volta na porta
+        if (t > 15.6 && t < 17.2) {
+          let k = 0; for (const b of BATE) { const d = t - b; if (d > -0.18 && d < 0.2) k = Math.max(k, 1 - Math.abs(d) / 0.2); }
+          Elenco.alcancar(ags[0], "dir", V(-1.05, 1.55, -6.35 + 0.22 * (1 - k)), { foraDoCorpo: true });
+          Elenco.mao(ags[0], "dir", "punho", 1);
+        }
+        // ---- a Duda ----
+        const pov = (t >= 11 && t < 17) || t >= 18.3;
+        dCama.visible = t < 11; dJan.visible = !pov && t >= 17;
+        if (dCama.visible) {
+          dCama.updateMatrixWorld(true);
+          Elenco.alcancar(dCama, "dir", dCama.localToWorld(V(-0.4, 0.89, 0.02)), { foraDoCorpo: true });   // as mãos apoiadas no colchão
+          Elenco.alcancar(dCama, "esq", dCama.localToWorld(V(0.4, 0.89, 0.02)), { foraDoCorpo: true });
+          const sobe = S((t - 8.6) / 0.7);                              // a luz: levanta a cabeça para a janela
+          Elenco.cabeca(dCama, 0.2 * (1 - sobe) - 0.12 * sobe, -0.3 * sobe, 0);
+          EP2.expr(dCama, t < 8.6 ? "triste" : "medo");
+          Elenco.vida(dCama, t, { ritmo: t < 8.6 ? "calmo" : "tensao", intensidade: t < 8.6 ? 0.7 : 1 });
+          EP2.boca(dCama, t, [], CENA);
+        }
+        if (dJan.visible) {
+          dJan.updateMatrixWorld(true);
+          Elenco.alcancar(dJan, "dir", M(-2.42, 1.3, -0.2), { foraDoCorpo: true });   // as mãos apertam o peitoril, baixas
+          Elenco.alcancar(dJan, "esq", M(-1.58, 1.3, -0.2), { foraDoCorpo: true });
+          Elenco.mao(dJan, "dir", "punho", 0.8); Elenco.mao(dJan, "esq", "punho", 0.8);
+          Elenco.cabeca(dJan, -0.02, 0.3, 0);                          // olhando a casa do Gabi
+          Elenco.vida(dJan, t, { ritmo: "tensao" });
+          EP2.boca(dJan, t, [], CENA);
+        }
+        EP2.camera(cam, p, t);
+        pal.render(scene, cam, t);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[CENA] = tl;
+      render();
+    })();
+  </script>
+</template>

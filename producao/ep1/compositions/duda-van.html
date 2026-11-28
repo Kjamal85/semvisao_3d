@@ -1,0 +1,68 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dva-stage { position: absolute; inset: 0; z-index: 0; }
+    #dva-stage canvas { display: block; }
+  </style>
+  <div id="root" data-composition-id="duda-van" data-width="1920" data-height="1080">
+    <div id="dva-stage" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+  </div>
+  <script>
+    (function () {
+      // planos 76-77, o gancho (sem voz). Do quadro aprovado em 2026-11-27 (briefing/cenario-van-fim-*.png):
+      // 0-2 do preto, a traseira da van, portas fechadas (motor desligando, travas) · 2,0 as portas se abrem de uma vez, o
+      // holofote frio entra por trás da câmera; o Gabi no banco, de lado, as mãos agarrando o moletom no peito ·
+      // ele vira o rosto para o barulho (devagar, hesitando: ouvir) e os olhos nublados terminam na câmera, sem ver ·
+      // 8,0 corte seco para o preto. Nada do lado de fora aparece. Câmera fora dele: sem vinheta.
+      const DUR = 8, CENA = "duda-van", S = EP2.S, V3 = EP2.V, ABRE = 2.0;
+      const scene = new THREE.Scene(); scene.background = new THREE.Color(0x05060a);
+      const raiz = new THREE.Group(); scene.add(raiz);
+      const V = Cenarios.vanBau(raiz);
+      const { L, W, SEAT } = V;
+      // chão lá fora: só a faixa que o holofote pega embaixo
+      const chao = new THREE.Mesh(new THREE.BoxGeometry(5, 0.05, 6), new THREE.MeshToonMaterial({ color: 0x2c2e33, gradientMap: V.k.grad }));
+      chao.position.set(L + 2.5, -0.35, 0); chao.receiveShadow = true; raiz.add(chao);
+      // o Gabi no banco da direita, perto das portas, de 3/4 para elas
+      const gabi = Elenco.build("gabi", { blind: true, expr: "medo", pose: "sentado", refinado: true, material: "pbr" });
+      gabi.position.set(3.15, SEAT + 0.1 - 1.075, W - 0.5); gabi.rotation.y = Math.PI - 0.75; raiz.add(gabi);
+      raiz.updateMatrixWorld(true);
+      // sem fone (decisão de 2026-11-22): as mãos fechadas agarram o moletom no peito
+      Elenco.alcancar(gabi, "esq", gabi.localToWorld(V3(0.12, 1.5, 0.4)), { foraDoCorpo: true });
+      Elenco.alcancar(gabi, "dir", gabi.localToWorld(V3(-0.1, 1.38, 0.42)), { foraDoCorpo: true });
+      Elenco.mao(gabi, "esq", "punho", 1); Elenco.mao(gabi, "dir", "punho", 1);
+      // luz: quase nada lá dentro (domo apagado); o holofote frio vem de trás da câmera quando as portas abrem
+      scene.add(new THREE.HemisphereLight(0x6a7488, 0x1a1816, 0.25));
+      const holo = new THREE.SpotLight(0xeaf2ff, 0, 16, 0.42, 0.5, 1.0);
+      holo.position.set(L + 5.5, 3.4, -0.8); holo.target.position.set(2.6, 0.9, 0.3);
+      holo.castShadow = true; holo.shadow.mapSize.set(1024, 1024); holo.shadow.bias = -0.002; holo.shadow.normalBias = 0.04;
+      scene.add(holo); scene.add(holo.target);
+      const fresta = new THREE.PointLight(0xcfe0f0, 0.5, 3, 1.5); fresta.position.set(2.1, 2.4, 0); raiz.add(fresta);
+      const pal = EP2.palco("dva-stage");
+      Elenco.ambiente(pal.renderer, scene, { forca: 0.15 });
+      const cam = new THREE.PerspectiveCamera(34, 16 / 9, 0.1, 60);
+      // um plano só (o "corte" do 76 para o 77 é a porta abrindo); fixo, com o push-in lento da régua
+      const plano = { t0: 0, t1: DUR, pos: V3(L + 3.4, 1.75, 0.15), alvo: V3(2.9, 1.55, 0.45), fov: 34, push: 0.01 };
+      const estado = { t: 0 };
+      function render() {
+        const t = estado.t, u = S((t - ABRE) / 0.3);
+        V.portas(u);
+        holo.intensity = 30 * u;
+        fresta.intensity = t < ABRE ? 0 : 0.5 * (1 - u);              // fechada: a luz pontual vazava pelas portas (sem sombra)
+        // o estrondo: um tranco de susto no corpo
+        const tranco = S((t - ABRE) / 0.08) * (1 - S((t - ABRE - 0.15) / 0.5));
+        gabi.position.y = SEAT + 0.1 - 1.075 + 0.02 * tranco;
+        // o som das portas vem de onde está a câmera (+x, à direita dele): a cabeça vira devagar, hesitando,
+        // e termina com os olhos nublados para nós
+        Elenco.vida(gabi, t, { ritmo: "medo", ouvir: [[0, 0], [ABRE + 0.15, -1.1]] });
+        EP2.boca(gabi, t, [], CENA);
+        EP2.camera(cam, plano, t);
+        pal.render(scene, cam, t);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[CENA] = tl;
+      render();
+    })();
+  </script>
+</template>

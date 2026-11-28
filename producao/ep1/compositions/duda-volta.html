@@ -1,0 +1,94 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; background: #000; }
+    #dvo-stage { position: absolute; inset: 0; z-index: 0; }
+    #dvo-stage canvas { display: block; }
+  </style>
+  <div id="root" data-composition-id="duda-volta" data-width="1920" data-height="1080">
+    <div id="dvo-stage" class="clip" data-start="0" data-duration="15" data-track-index="0"></div>
+  </div>
+  <script>
+    (function () {
+      // planos 58-61 (fim de tarde), o mal-entendido: 0-5 volta pela rua bem devagar, cabisbaixa, braços cruzados abaixo do
+      // peito · 5-7,5 para e olha para trás uma vez (a casa dele) · 7,5-12 médio de frente/3-4 na calçada dela
+      // (ep2-duda-07, quase sem voz: cabeça só um pouco baixa, queixo fora da blusa, boca à mostra) · 12-15 entra e fecha
+      // o portãozinho dela. Os cortes escondem o caminho: cada plano tem o seu trecho.
+      const DUR = 15, CENA = "duda-volta", S = EP2.S, V = EP2.V;
+      const W = EP2.mundo({ hora: "tarde" });
+      const { scene, R } = W, G = EP2.geo(W);
+      const duda = Elenco.build("duda", { expr: "triste", refinado: true, material: "pbr" }); scene.add(duda);
+      // braços cruzados abaixo do peito (cada mão no braço do outro lado, longe da boca). Pose de junta feita à mão: o
+      // alcancar só acerta a mão e deixava o antebraço para fora; aqui o ombro gira (torção y) e o cotovelo dobra, e o
+      // antebraço atravessa a barriga rente ao corpo (conferido de frente e de lado)
+      const rd = duda.userData.rig, E = (x, y, z) => new THREE.Euler(x, y, z);
+      const poe = (b, A) => { b.sh.rotation.copy(A[0]); b.el.rotation.copy(A[1]); };
+      const CRUZ_E = [E(-0.3, -1.1, -0.1), E(-1.9, 0, 0)], CRUZ_D = [E(-0.18, 1.1, 0.1), E(-1.9, 0, 0)];   // a direita por cima
+      const pal = EP2.palco("dvo-stage");
+      Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
+      const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 160);
+      const dP = G.dudaPortao, gP = G.gabiPortao;
+      G.portaoGabi(0);
+      // o portãozinho dela (ficou aberto quando ela saiu): a ponta da grade, para a mão alcançar ao fechar
+      const pd = R.dudaCasa.children.find((o) => o.isGroup && o.children.length >= 8 && o.position.y === 0 && Math.abs(o.position.z) > 2);
+      // trechos (mundo): 58 do portão dele até o meio da rua · 60 a calçada dela, andando para o portão · 61 o quintal
+      const T58 = [V(gP.x + 0.1, 0, gP.z + 0.55), V(gP.x - 1.1, 0, gP.z + 0.75), V(-3.4, 0, 0.0)];
+      const T60 = [V(-2.9, 0, 5.0), V(-4.4, 0, 5.0)];
+      const T61 = [V(dP.x, 0, dP.z - 0.75), V(dP.x, 0, dP.z + 0.75)];
+      const planos = [
+        { t0: 0, t1: 5, pos: V(-5.6, 2.3, 4.9), alvo: V(-2.4, 1.6, -1.2), fov: 42 },          // da calçada dela: ela vem, a casa dele atrás
+        { t0: 5, t1: 7.5, pos: V(0.4, 2.15, -0.85), alvo: V(-3.4, 1.85, 0.0), fov: 30 },        // do lado da casa dele: ao olhar para trás, o rosto vem para cá
+        { t0: 7.5, t1: 12, pos: V(-7.3, 2.1, 4.5), alvo: V(-4.4, 1.9, 5.0), fov: 32 },         // de frente/3-4: ela anda para a câmera
+        { t0: 12, t1: 15, pos: V(dP.x + 0.5, 1.95, dP.z - 2.7), alvo: V(dP.x, 1.55, dP.z + 0.4), fov: 40 },   // da rua: o portãozinho
+      ];
+      const estado = { t: 0 };
+      function render() {
+        const t = estado.t, p = EP2.plano(planos, t);
+        let c, liga = 0, olhaTras = 0, cabBaixa = 0.3;
+        if (t < 7.5) {
+          // anda devagar (0,3-5,0), para (5,0-7,5); olha para trás 5,5-6,9
+          const u = t < 0.3 ? 0 : Math.min(1, (t - 0.3) / 4.7);
+          c = EP2.caminho(T58, u);
+          liga = t > 0.3 && t < 5.0 ? 0.7 : 0;
+          olhaTras = S((t - 5.5) / 0.5) * (1 - S((t - 6.6) / 0.5));
+        } else if (t < 12) {
+          // a calçada dela: ainda andando, mais devagar; a fala (8,0-10,6) com a cabeça só um pouco baixa
+          c = EP2.caminho(T60, (t - 7.5) / 4.5);
+          liga = 0.6;
+          cabBaixa = t > 7.8 && t < 10.9 ? 0.1 : 0.26;
+        } else {
+          // entra (12,0-13,1), vira para a rua (13,1-13,5), fecha o portão (13,6-14,4)
+          c = EP2.caminho(T61, (t - 12) / 1.1);
+          liga = t < 13.1 ? 0.6 : 0;
+          const vira = S((t - 13.1) / 0.4);
+          c.ry = c.ry + Math.PI * vira;
+        }
+        duda.position.copy(c.pos); duda.rotation.y = c.ry + 1.5 * olhaTras;    // o corpo gira junto (para, meia-volta por cima do ombro)
+        EP2.anda(duda, t, liga, 1.1);
+        duda.updateMatrixWorld(true);
+        const fecha = S((t - 13.6) / 0.8);
+        G.portaoDuda(t < 12 ? 1 : 1 - fecha);
+        if (t >= 13.4 && pd) {
+          // a mão direita puxa a ponta da grade; a outra continua cruzada
+          scene.updateMatrixWorld(true);
+          Elenco.alcancar(duda, "dir", pd.localToWorld(V(0.95, 1.0, 0)), { foraDoCorpo: true });
+          Elenco.mao(duda, "dir", "segura", 0.8);
+          poe(rd.aR, CRUZ_E);
+        } else {
+          poe(rd.aL, CRUZ_D); poe(rd.aR, CRUZ_E);
+        }
+        // cabisbaixa antes e depois da fala; olhando para trás a cabeça sobe e vira por cima do ombro esquerdo
+        Elenco.cabeca(duda, cabBaixa * (1 - olhaTras) - 0.05 * olhaTras, 0.85 * olhaTras, 0.05 * olhaTras);
+        EP2.expr(duda, "triste");
+        Elenco.vida(duda, t, { ritmo: "calmo", intensidade: 0.8, corpo: liga === 0 });
+        EP2.boca(duda, t, ["ep2-duda-07"], CENA);
+        EP2.camera(cam, p, t);
+        pal.render(scene, cam, t);
+      }
+      const tl = gsap.timeline({ paused: true, onUpdate: render });
+      tl.fromTo(estado, { t: 0 }, { t: DUR, duration: DUR, ease: "none" }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines[CENA] = tl;
+      render();
+    })();
+  </script>
+</template>
