@@ -5,10 +5,10 @@ A chave vem de producao/ep1/.env (GEMINI_API_KEY) e nunca é impressa.
 Uso:
   python voz/gerar_voz.py modelos
   python voz/gerar_voz.py falar --modelo NOME --lote voz/amostras_gabi.json [--so ID]
-  python voz/gerar_voz.py limpar voz/audio/ARQUIVO.wav [...]   (sem gastar cota)
+  python voz/gerar_voz.py limpar voz/audio/ep1/ARQUIVO.wav [...]   (sem gastar cota)
 
 Toda fala gerada passa por limpar(): corta estalo no início e ruído colado
-no fim (defeito do TTS); o original fica em voz/audio/bruto/.
+no fim (defeito do TTS); o original fica em voz/audio/ep1/bruto/.
 
 Um pedido por fala, em sequência (nunca em paralelo).
 """
@@ -190,7 +190,7 @@ def falar(modelo, lote, so=None):
         itens = [i for i in itens if i["id"] == so]
         if not itens:
             sys.exit(f"ERRO: id {so} não está em {lote}")
-    saida_dir = Path(lote).resolve().parent / "audio"
+    saida_dir = Path(lote).resolve().parent / "audio" / "ep1"
     saida_dir.mkdir(parents=True, exist_ok=True)
     for item in itens:
         # Forma curta do exemplo oficial ("Say cheerfully: Have a wonderful day!").

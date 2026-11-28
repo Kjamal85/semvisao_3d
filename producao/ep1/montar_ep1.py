@@ -130,12 +130,12 @@ for j, (cid, tl, arq, trecho, vol, fi, fo, lp, nota) in enumerate(SFX):
         attrs.append(f'data-fx-chain="{html.escape(fx, quote=True)}"')
     audios.append(f'      <audio {" ".join(attrs)}></audio> <!-- {nota} -->')
 
-# NARRADOR (voz trazida pelo usuário, voz/audio/narrador-nNN.wav normalizado -18 LUFS): conta a história e
+# NARRADOR (voz trazida pelo usuário, voz/audio/ep1/narrador-nNN.wav normalizado -18 LUFS): conta a história e
 # NUNCA fala por cima dos personagens. (cena, tempo local, id, duração)
 NARRADOR = [("abertura", 0.8, "n01", 4.99), ("abertura", 7.7, "n02", 7.24), ("quarto", 6.0, "n03", 7.63),
             ("tv", 0.3, "n04", 4.28), ("bairro", 0.8, "n05", 5.96), ("vizinho", 0.3, "n06", 3.63), ("acorda", 0.3, "n07", 7.08), ("deixa", 0.3, "n08", 4.05), ("faixa", 6.5, "n09", 5.88), ("quintal", 0.6, "n10", 6.69), ("corredor", 0.3, "n11", 4.83), ("portao", 0.3, "n12", 3.79), ("buscar", 0.3, "n13", 6.53), ("fim", 6.9, "n14", 4.44)]
 for j, (cid, tl, nid, d) in enumerate(NARRADOR):
-    audios.append(f'      <audio id="narr-{nid}" class="clip" src="voz/audio/narrador-{nid}.wav" data-start="{num(INICIO[cid] + tl)}" '
+    audios.append(f'      <audio id="narr-{nid}" class="clip" src="voz/audio/ep1/narrador-{nid}.wav" data-start="{num(INICIO[cid] + tl)}" '
                   f'data-duration="{num(d)}" data-track-index="{120 + j}" data-volume="1"></audio> <!-- narrador {nid} -->')
 
 # a música do fone (esperança): assets/musica/musica-fone.mp3 (escolhida pelo usuário), um pouco abafada — o que ele ouve

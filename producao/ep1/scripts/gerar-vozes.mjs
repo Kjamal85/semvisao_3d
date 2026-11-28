@@ -11,13 +11,15 @@
  * Sai com código 0 (ok), 1 (erro), 2 (cota/VoiceStudio offline).
  */
 import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pipeline } from "node:stream/promises";
 
 const EP = resolve(fileURLToPath(import.meta.url), "..", "..");
 const VOZ_DIR = join(EP, "voz");
 const AUDIO_DIR = join(VOZ_DIR, "audio");
+// Pasta do episódio pela fala: id "ep2-…" → audio/ep2, sem prefixo (EP1) → audio/ep1.
+const pastaDe = (id) => join(AUDIO_DIR, (id.match(/^(ep\d+)-/) || [, "ep1"])[1]);
 const LOTES_JSON = join(VOZ_DIR, "lotes.json");
 const API = "http://127.0.0.1:3900";
 
@@ -153,7 +155,7 @@ async function gerarFala(item) {
 }
 
 async function salvarAudio(resp, destino) {
-  mkdirSync(AUDIO_DIR, { recursive: true });
+  mkdirSync(dirname(destino), { recursive: true });
   const ws = createWriteStream(destino);
   await pipeline(resp.body, ws);
 }
@@ -175,8 +177,10 @@ console.log(`Lotes: ${lotes.length} falas em ${LOTES_JSON}`);
 const pendentes = lotes.filter((item) => {
   if (soId && item.id !== soId) return false;
   if (!item.profile_id) return false; // sem perfil, skipa
-  const dest = join(AUDIO_DIR, `${item.id}.wav`);
-  return !existsSync(dest);
+  const dest = join(pastaDe(item.id), `${item.id}.wav`);
+  // o narrador do EP1 foi salvo como narrador-<id>.wav (n01 → narrador-n01.wav)
+  const alt = join(pastaDe(item.id), `${item.personagem}-${item.id}.wav`);
+  return !existsSync(dest) && !existsSync(alt);
 });
 
 const semPerfil = lotes.filter((i) => !i.profile_id && (!soId || i.id === soId));
@@ -193,7 +197,7 @@ console.log(`Gerando ${pendentes.length} fala(s)...`);
 let erros = 0;
 
 for (const item of pendentes) {
-  const dest = join(AUDIO_DIR, `${item.id}.wav`);
+  const dest = join(pastaDe(item.id), `${item.id}.wav`);
   const emo = emoTexto(item.estilo);
   const alpha = emoAlpha(item.estilo);
   process.stdout.write(`  ${item.id} [${item.personagem}] emo_alpha=${alpha} "${emo.slice(0, 60)}"... `);
