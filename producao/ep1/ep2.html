@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/lib/gsap.min.js"></script>
+    <script src="assets/lib/three.min.js"></script>
+    <script src="assets/rig/elenco.js"></script>
+    <script src="assets/rig/pos.js"></script>
+    <script src="assets/rig/cena.js"></script>
+    <script src="assets/cenarios/quarto.js"></script>
+    <script src="assets/cenarios/sala.js"></script>
+    <script src="assets/cenarios/cozinha.js"></script>
+    <script src="assets/cenarios/frente.js"></script>
+    <script src="assets/cenarios/rua.js"></script>
+    <script src="assets/cenarios/casa-duda.js"></script>
+    <script src="assets/cenarios/van.js"></script>
+    <script src="assets/ep2/falas.js"></script>
+    <script src="assets/rig/ep2.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+      #root { width: 100%; height: 100%; position: relative; }
+      [id$="-rotulo"] { visibility: hidden !important; }
+      #transicao { position: absolute; inset: 0; background: #000; z-index: 50; pointer-events: none; opacity: 0; }
+      #ab-selo small { color: #e4e9f0 !important; }
+      /* selos: os do EP1 (caixa escura arredondada, Arial Black) — "DIA 1" no topo-esquerda até o fim, o tempo logo abaixo */
+      .selo { position: absolute; left: 60px; z-index: 40; padding: 10px 20px; background: rgba(8, 10, 16, 0.6); color: #f2f4f8;
+        font-family: "Arial Black", Arial, sans-serif; font-weight: 900; border-radius: 6px; opacity: 0; }
+      #selo-dia { top: 50px; font-size: 34px; letter-spacing: .06em; }
+      .selo-tempo { top: 128px; font-size: 40px; letter-spacing: .06em; }
+      /* tela final: um plano do episódio, escurecido, e o "INSCREVA-SE" na cor de destaque da série */
+      #tela-final { position: absolute; inset: 0; z-index: 60; background: #000; overflow: hidden; opacity: 0; }
+      #tf-fundo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.42); transform-origin: 50% 40%; }
+      #tf-texto { position: absolute; left: 50%; top: 120px; transform: translateX(-50%); padding: 18px 44px; border-radius: 10px;
+        background: rgba(8, 10, 16, 0.72); font-family: "Arial Black", Arial, sans-serif; font-weight: 900; font-size: 72px;
+        letter-spacing: .08em; color: #e8b923; white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <!-- EP2 "VIDENTE" montado na ordem de episodios/MONTAGEM_EP2.md. Gerado por montar_ep2.py — editar lá. -->
+    <div id="root" data-composition-id="ep2" data-start="0" data-duration="340" data-width="1920" data-height="1080">
+      <!-- planos 1 -->
+      <div id="abertura" data-composition-id="abertura" data-composition-src="compositions/abertura.html"
+        data-start="0" data-duration="15" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 2-5 -->
+      <div id="duda-acorda" data-composition-id="duda-acorda" data-composition-src="compositions/duda-acorda.html"
+        data-start="15" data-duration="20" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 6-10 -->
+      <div id="duda-quarto" data-composition-id="duda-quarto" data-composition-src="compositions/duda-quarto.html"
+        data-start="35" data-duration="23" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 11-14 -->
+      <div id="duda-banheiro" data-composition-id="duda-banheiro" data-composition-src="compositions/duda-banheiro.html"
+        data-start="58" data-duration="12" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 15-22 -->
+      <div id="duda-cafe" data-composition-id="duda-cafe" data-composition-src="compositions/duda-cafe.html"
+        data-start="70" data-duration="30" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 23-26 -->
+      <div id="duda-tv" data-composition-id="duda-tv" data-composition-src="compositions/duda-tv.html"
+        data-start="100" data-duration="25.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 27-33 -->
+      <div id="duda-despedida" data-composition-id="duda-despedida" data-composition-src="compositions/duda-despedida.html"
+        data-start="125.5" data-duration="29.5" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 34-37 -->
+      <div id="duda-almoco" data-composition-id="duda-almoco" data-composition-src="compositions/duda-almoco.html"
+        data-start="155" data-duration="17" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 38-45 -->
+      <div id="duda-vizinho" data-composition-id="duda-vizinho" data-composition-src="compositions/duda-vizinho.html"
+        data-start="172" data-duration="33" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 46-47 -->
+      <div id="duda-tarefa" data-composition-id="duda-tarefa" data-composition-src="compositions/duda-tarefa.html"
+        data-start="205" data-duration="10" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 48-50 -->
+      <div id="duda-caminho" data-composition-id="duda-caminho" data-composition-src="compositions/duda-caminho.html"
+        data-start="215" data-duration="15" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 51-57 -->
+      <div id="duda-portao" data-composition-id="duda-portao" data-composition-src="compositions/duda-portao.html"
+        data-start="230" data-duration="25" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 58-61 -->
+      <div id="duda-volta" data-composition-id="duda-volta" data-composition-src="compositions/duda-volta.html"
+        data-start="255" data-duration="15" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 62-67 -->
+      <div id="duda-sirene" data-composition-id="duda-sirene" data-composition-src="compositions/duda-sirene.html"
+        data-start="270" data-duration="24" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 68-74 -->
+      <div id="duda-levam" data-composition-id="duda-levam" data-composition-src="compositions/duda-levam.html"
+        data-start="294" data-duration="23" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 75 -->
+      <div id="duda-fim" data-composition-id="duda-fim" data-composition-src="compositions/duda-fim.html"
+        data-start="317" data-duration="4" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- planos 76-77 -->
+      <div id="duda-van" data-composition-id="duda-van" data-composition-src="compositions/duda-van.html"
+        data-start="321" data-duration="8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <!-- falas (assets/ep2/falas.js), efeitos (assets/sfx, créditos em assets/sfx/CREDITOS.md), ambiente e música -->
+      <audio id="fala-narrador-n01" class="clip" src="voz/audio/ep1/narrador-n01.wav" data-start="0.8" data-duration="4.99" data-track-index="200" data-volume="1"></audio> <!-- narrador · abertura -->
+      <audio id="fala-narrador-n02" class="clip" src="voz/audio/ep1/narrador-n02.wav" data-start="7.7" data-duration="7.24" data-track-index="201" data-volume="1"></audio> <!-- narrador · abertura -->
+      <audio id="fala-ep2-narrador-n01" class="clip" src="voz/audio/ep2/ep2-narrador-n01.wav" data-start="27.5" data-duration="5.48" data-track-index="202" data-volume="1"></audio> <!-- narrador · duda-acorda -->
+      <audio id="fala-ep2-duda-01" class="clip" src="voz/audio/ep2/ep2-duda-01.wav" data-start="39.2" data-duration="3.24" data-track-index="203" data-volume="1"></audio> <!-- duda · duda-quarto -->
+      <audio id="fala-ep2-narrador-n02" class="clip" src="voz/audio/ep2/ep2-narrador-n02.wav" data-start="48" data-duration="4.18" data-track-index="204" data-volume="1"></audio> <!-- narrador · duda-quarto -->
+      <audio id="fala-ep2-maeduda-01" class="clip" src="voz/audio/ep2/ep2-maeduda-01.wav" data-start="70.4" data-duration="2.11" data-track-index="205" data-volume="0.75" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:2500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- maeduda · duda-cafe -->
+      <audio id="fala-ep2-maeduda-02" class="clip" src="voz/audio/ep2/ep2-maeduda-02.wav" data-start="77.3" data-duration="4.19" data-track-index="206" data-volume="1"></audio> <!-- maeduda · duda-cafe -->
+      <audio id="fala-ep2-duda-02" class="clip" src="voz/audio/ep2/ep2-duda-02.wav" data-start="85.3" data-duration="1.47" data-track-index="207" data-volume="1"></audio> <!-- duda · duda-cafe -->
+      <audio id="fala-ep2-maeduda-03" class="clip" src="voz/audio/ep2/ep2-maeduda-03.wav" data-start="88.3" data-duration="2.36" data-track-index="208" data-volume="1"></audio> <!-- maeduda · duda-cafe -->
+      <audio id="fala-c04-reporter-01" class="clip" src="voz/audio/ep1/c04-reporter-01.wav" data-start="100.4" data-duration="6.73" data-track-index="209" data-volume="0.85" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;highpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:300},&quot;id&quot;:&quot;n0&quot;},{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:3400},&quot;id&quot;:&quot;n1&quot;}]}"></audio> <!-- reporter · duda-tv -->
+      <audio id="fala-c04-reporter-02" class="clip" src="voz/audio/ep1/c04-reporter-02.wav" data-start="107.8" data-duration="5.9" data-track-index="210" data-volume="0.85" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;highpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:300},&quot;id&quot;:&quot;n0&quot;},{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:3400},&quot;id&quot;:&quot;n1&quot;}]}"></audio> <!-- reporter · duda-tv -->
+      <audio id="fala-ep2-reporter-03" class="clip" src="voz/audio/ep2/ep2-reporter-03.wav" data-start="114.3" data-duration="5.35" data-track-index="211" data-volume="0.85" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;highpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:300},&quot;id&quot;:&quot;n0&quot;},{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:3400},&quot;id&quot;:&quot;n1&quot;}]}"></audio> <!-- reporter · duda-tv -->
+      <audio id="fala-ep2-maeduda-04" class="clip" src="voz/audio/ep2/ep2-maeduda-04.wav" data-start="133.3" data-duration="6.27" data-track-index="212" data-volume="1"></audio> <!-- maeduda · duda-despedida -->
+      <audio id="fala-ep2-duda-03" class="clip" src="voz/audio/ep2/ep2-duda-03.wav" data-start="140.8" data-duration="2.24" data-track-index="213" data-volume="1"></audio> <!-- duda · duda-despedida -->
+      <audio id="fala-c05-radio-01" class="clip" src="voz/audio/ep1/c05-radio-01.wav" data-start="180.5" data-duration="3.79" data-track-index="214" data-volume="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;highpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:450},&quot;id&quot;:&quot;n0&quot;},{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:2400},&quot;id&quot;:&quot;n1&quot;}]}"></audio> <!-- radio · duda-vizinho -->
+      <audio id="fala-ep2-duda-04" class="clip" src="voz/audio/ep2/ep2-duda-04.wav" data-start="194.3" data-duration="5.56" data-track-index="215" data-volume="1"></audio> <!-- duda · duda-vizinho -->
+      <audio id="fala-ep2-duda-05" class="clip" src="voz/audio/ep2/ep2-duda-05.wav" data-start="200.4" data-duration="3.58" data-track-index="216" data-volume="1"></audio> <!-- duda · duda-vizinho -->
+      <audio id="fala-ep2-duda-06" class="clip" src="voz/audio/ep2/ep2-duda-06.wav" data-start="212.5" data-duration="1" data-track-index="217" data-volume="1"></audio> <!-- duda · duda-tarefa -->
+      <audio id="fala-ep2-narrador-n03" class="clip" src="voz/audio/ep2/ep2-narrador-n03.wav" data-start="224" data-duration="3.83" data-track-index="218" data-volume="1"></audio> <!-- narrador · duda-caminho -->
+      <audio id="fala-c09-duda-01" class="clip" src="voz/audio/ep1/c09-duda-01.wav" data-start="236.4" data-duration="4.11" data-track-index="219" data-volume="1"></audio> <!-- duda · duda-portao -->
+      <audio id="fala-c09-mae-03" class="clip" src="voz/audio/ep1/c09-mae-03.wav" data-start="243.8" data-duration="5.32" data-track-index="220" data-volume="0.8" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:3500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- mae · duda-portao -->
+      <audio id="fala-ep2-duda-07" class="clip" src="voz/audio/ep2/ep2-duda-07.wav" data-start="263" data-duration="1.95" data-track-index="221" data-volume="1"></audio> <!-- duda · duda-volta -->
+      <audio id="fala-narrador-n13" class="clip" src="voz/audio/ep1/narrador-n13.wav" data-start="270.3" data-duration="6.53" data-track-index="222" data-volume="1"></audio> <!-- narrador · duda-sirene -->
+      <audio id="fala-c10-agente-01" class="clip" src="voz/audio/ep1/c10-agente-01.wav" data-start="288.3" data-duration="3.4" data-track-index="223" data-volume="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1800},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- agente · duda-sirene -->
+      <audio id="fala-c10-pai-01" class="clip" src="voz/audio/ep1/c10-pai-01.wav" data-start="291.9" data-duration="1.96" data-track-index="224" data-volume="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1800},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- pai · duda-sirene -->
+      <audio id="fala-c10-mae-04" class="clip" src="voz/audio/ep1/c10-mae-04.wav" data-start="295" data-duration="2.71" data-track-index="225" data-volume="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1800},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- mae · duda-levam -->
+      <audio id="fala-c10-gabi-05" class="clip" src="voz/audio/ep1/c10-gabi-05.wav" data-start="298.2" data-duration="2.57" data-track-index="226" data-volume="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1800},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- gabi · duda-levam -->
+      <audio id="fala-c10-mae-05a" class="clip" src="voz/audio/ep1/c10-mae-05.wav" data-start="311.5" data-duration="2.55" data-track-index="227" data-volume="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1800},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- mae · duda-levam -->
+      <audio id="fala-c10-mae-05b" class="clip" src="voz/audio/ep1/c10-mae-05.wav" data-start="314.6" data-duration="2.55" data-track-index="228" data-volume="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1200},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- mae · duda-levam -->
+      <audio id="fala-c10-mae-05c" class="clip" src="voz/audio/ep1/c10-mae-05.wav" data-start="317.2" data-duration="2.55" data-track-index="229" data-volume="0.35" data-fade-out="1.8" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1200},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- mae · duda-fim -->
+      <audio id="sfx-00" class="clip" src="assets/sfx/cidade-noite.mp3" data-start="0" data-duration="8.3" data-track-index="10" data-volume="0.35" data-media-start="0.34" data-fade-in="0.8" data-fade-out="0.25"></audio> <!-- cidade à noite -->
+      <audio id="sfx-01" class="clip" src="assets/sfx/zumbido-grave.mp3" data-start="4.5" data-duration="3.5" data-track-index="11" data-volume="0.5" data-fade-in="2" data-fade-out="0.05"></audio> <!-- zumbido grave subliminar; some no FLASH -->
+      <audio id="sfx-02" class="clip" src="assets/sfx/boom.mp3" data-start="8.3" data-duration="6" data-track-index="12" data-volume="0.6" data-media-start="0.12" data-fade-out="2"></audio> <!-- BOOM — a onda -->
+      <audio id="sfx-03" class="clip" src="assets/sfx/energia-cai.mp3" data-start="8.6" data-duration="4.39" data-track-index="13" data-volume="0.3" data-fade-out="0.8"></audio> <!-- energia sugada -->
+      <audio id="sfx-04" class="clip" src="assets/sfx/vento-alto.mp3" data-start="11" data-duration="4" data-track-index="14" data-volume="0.3" data-fade-in="1" data-fade-out="1"></audio> <!-- vento de altitude -->
+      <audio id="sfx-05" class="clip" src="assets/sfx/respiracao.mp3" data-start="15.4" data-duration="4.2" data-track-index="15" data-volume="0.18" data-fade-in="0.8" data-fade-out="0.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:3000},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- preto: respiração pouco marcada (2) -->
+      <audio id="sfx-06" class="clip" src="assets/sfx/lencol.mp3" data-start="17.6" data-duration="2.2" data-track-index="16" data-volume="0.35" data-media-start="0.47" data-fade-in="0.2" data-fade-out="0.6"></audio> <!-- lençol no preto (2) -->
+      <audio id="sfx-07" class="clip" src="assets/sfx/passarinhos.mp3" data-start="20.6" data-duration="2.72" data-track-index="17" data-volume="0.4" data-fade-in="0.1" data-fade-out="0.4"></audio> <!-- a virada: passarinho, manhã (3) -->
+      <audio id="sfx-08" class="clip" src="assets/sfx/passarinhos.mp3" data-start="25.4" data-duration="2.72" data-track-index="18" data-volume="0.25" data-fade-in="0.2" data-fade-out="0.4"></audio> <!-- passarinho lá fora (4) -->
+      <audio id="sfx-09" class="clip" src="assets/sfx/lencol.mp3" data-start="27.3" data-duration="2.5" data-track-index="19" data-volume="0.45" data-media-start="0.47" data-fade-in="0.1" data-fade-out="0.6"></audio> <!-- senta na cama (5) -->
+      <audio id="sfx-10" class="clip" src="assets/sfx/passarinhos.mp3" data-start="31.2" data-duration="2.72" data-track-index="20" data-volume="0.2" data-fade-in="0.2" data-fade-out="0.4"></audio> <!-- passarinho (5) -->
+      <audio id="sfx-11" class="clip" src="assets/sfx/despertador.mp3" data-start="35.3" data-duration="0.5" data-track-index="21" data-volume="0.22" data-fade-out="0.1"></audio> <!-- bipe fraco do despertador 00:00 (6) -->
+      <audio id="sfx-12" class="clip" src="assets/sfx/despertador.mp3" data-start="36.5" data-duration="0.5" data-track-index="22" data-volume="0.22" data-fade-out="0.1"></audio> <!-- bipe -->
+      <audio id="sfx-13" class="clip" src="assets/sfx/despertador.mp3" data-start="37.7" data-duration="0.5" data-track-index="23" data-volume="0.22" data-fade-out="0.1"></audio> <!-- bipe -->
+      <audio id="sfx-14" class="clip" src="assets/sfx/cortina.mp3" data-start="44.6" data-duration="2.6" data-track-index="24" data-volume="0.5" data-fade-out="0.6"></audio> <!-- abre a cortina rosa (8) -->
+      <audio id="sfx-15" class="clip" src="assets/sfx/passarinhos.mp3" data-start="47.6" data-duration="2.72" data-track-index="25" data-volume="0.35" data-fade-in="0.2" data-fade-out="0.4"></audio> <!-- rua de manhã (9) -->
+      <audio id="sfx-16" class="clip" src="assets/sfx/passarinhos.mp3" data-start="50.8" data-duration="2.72" data-track-index="26" data-volume="0.25" data-fade-in="0.2" data-fade-out="0.4"></audio> <!-- rua de manhã (9) -->
+      <audio id="sfx-17" class="clip" src="assets/sfx/agua-pia.mp3" data-start="59.2" data-duration="7.8" data-track-index="27" data-volume="0.4" data-media-start="0.71" data-fade-in="0.15" data-fade-out="0.8"></audio> <!-- a torneira aberta: escova, enxágue, mãos (11-13) -->
+      <audio id="sfx-18" class="clip" src="assets/sfx/tecido.mp3" data-start="67.3" data-duration="2.4" data-track-index="28" data-volume="0.5" data-media-start="1.6" data-fade-in="0.1" data-fade-out="0.5"></audio> <!-- a toalha no rosto (14) -->
+      <audio id="sfx-19" class="clip" src="assets/sfx/passos-casa.mp3" data-start="73.3" data-duration="2.2" data-track-index="29" data-volume="0.45" data-fade-in="0.2" data-fade-out="0.4"></audio> <!-- a Duda chega na cozinha (16) -->
+      <audio id="sfx-20" class="clip" src="assets/sfx/louca.mp3" data-start="74.4" data-duration="2.25" data-track-index="30" data-volume="0.3" data-fade-out="0.4"></audio> <!-- louça na mesa (16) -->
+      <audio id="sfx-21" class="clip" src="assets/sfx/cadeira.mp3" data-start="75.8" data-duration="1.3" data-track-index="31" data-volume="0.3" data-media-start="1.19" data-fade-out="0.4"></audio> <!-- senta (16) -->
+      <audio id="sfx-22" class="clip" src="assets/sfx/troca-canal.mp3" data-start="92.2" data-duration="0.5" data-track-index="32" data-volume="0.5" data-fade-out="0.1"></audio> <!-- clique do controle (21) -->
+      <audio id="sfx-23" class="clip" src="assets/sfx/tv-liga.mp3" data-start="92.4" data-duration="0.8" data-track-index="33" data-volume="0.3" data-media-start="1.13" data-fade-out="0.3"></audio> <!-- chiado da TV ligando -->
+      <audio id="sfx-24" class="clip" src="assets/sfx/troca-canal.mp3" data-start="93.6" data-duration="0.5" data-track-index="34" data-volume="0.5" data-fade-out="0.1"></audio> <!-- segundo clique: troca de canal -->
+      <audio id="sfx-25" class="clip" src="assets/sfx/tv-liga.mp3" data-start="93.8" data-duration="0.6" data-track-index="35" data-volume="0.25" data-media-start="1.13" data-fade-out="0.3"></audio> <!-- chiado de canal -->
+      <audio id="sfx-26" class="clip" src="assets/sfx/batimento.mp3" data-start="121.6" data-duration="4" data-track-index="36" data-volume="0.25" data-fade-in="0.8" data-fade-out="0.8"></audio> <!-- o choque, ~4 s sem fala (26) -->
+      <audio id="sfx-27" class="clip" src="assets/sfx/cadeira.mp3" data-start="130.1" data-duration="1.6" data-track-index="37" data-volume="0.35" data-media-start="1.19" data-fade-out="0.4"></audio> <!-- a mãe levanta (28) -->
+      <audio id="sfx-28" class="clip" src="assets/sfx/passos-casa.mp3" data-start="144.1" data-duration="2.8" data-track-index="38" data-volume="0.45" data-fade-in="0.2" data-fade-out="0.4"></audio> <!-- a mãe vai até a porta (31) -->
+      <audio id="sfx-29" class="clip" src="assets/sfx/porta-fecha.mp3" data-start="147.3" data-duration="1.68" data-track-index="39" data-volume="0.6" data-fade-out="0.3"></audio> <!-- a porta da frente fecha (32) -->
+      <audio id="sfx-30" class="clip" src="assets/sfx/chave-porta.mp3" data-start="148.3" data-duration="1.6" data-track-index="40" data-volume="0.35" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:2000},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- a chave do lado de fora (32) -->
+      <audio id="sfx-31" class="clip" src="assets/sfx/lencol.mp3" data-start="155.4" data-duration="3" data-track-index="41" data-volume="0.45" data-media-start="0.47" data-fade-in="0.1" data-fade-out="0.6"></audio> <!-- arruma a cama (34) -->
+      <audio id="sfx-32" class="clip" src="assets/sfx/microondas.mp3" data-start="160" data-duration="0.33" data-track-index="42" data-volume="0.45"></audio> <!-- micro-ondas apita (35) -->
+      <audio id="sfx-33" class="clip" src="assets/sfx/microondas.mp3" data-start="160.4" data-duration="0.33" data-track-index="43" data-volume="0.45"></audio> <!-- apita -->
+      <audio id="sfx-34" class="clip" src="assets/sfx/microondas.mp3" data-start="160.8" data-duration="0.33" data-track-index="44" data-volume="0.45"></audio> <!-- apita -->
+      <audio id="sfx-35" class="clip" src="assets/sfx/talher.mp3" data-start="164.8" data-duration="0.65" data-track-index="45" data-volume="0.35" data-fade-out="0.1"></audio> <!-- talher no prato (36) -->
+      <audio id="sfx-36" class="clip" src="assets/sfx/talher.mp3" data-start="166.3" data-duration="0.65" data-track-index="46" data-volume="0.3" data-fade-out="0.1"></audio> <!-- talher -->
+      <audio id="sfx-37" class="clip" src="assets/sfx/talher.mp3" data-start="167.6" data-duration="0.65" data-track-index="47" data-volume="0.3" data-fade-out="0.1"></audio> <!-- talher -->
+      <audio id="sfx-38" class="clip" src="assets/sfx/agua-pia.mp3" data-start="168.7" data-duration="3.3" data-track-index="48" data-volume="0.35" data-media-start="0.71" data-fade-in="0.2" data-fade-out="0.4"></audio> <!-- lava a louça (37) -->
+      <audio id="sfx-39" class="clip" src="assets/sfx/louca.mp3" data-start="169.6" data-duration="2.25" data-track-index="49" data-volume="0.3" data-fade-out="0.4"></audio> <!-- louça (37) -->
+      <audio id="sfx-40" class="clip" src="assets/sfx/agua-pia.mp3" data-start="172" data-duration="1.2" data-track-index="50" data-volume="0.35" data-media-start="0.71" data-fade-out="0.5"></audio> <!-- fecha a torneira (38) -->
+      <audio id="sfx-41" class="clip" src="assets/sfx/sirene.mp3" data-start="172.6" data-duration="12.94" data-track-index="51" data-volume="0.35" data-media-start="0.32" data-fade-in="2" data-fade-out="2" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:2500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- a sirene chegando (38) -->
+      <audio id="sfx-42" class="clip" src="assets/sfx/cortina.mp3" data-start="175.3" data-duration="1.6" data-track-index="52" data-volume="0.45" data-fade-out="0.4"></audio> <!-- abre a cortina (39) -->
+      <audio id="sfx-43" class="clip" src="assets/sfx/janela-abre.mp3" data-start="176.8" data-duration="1.4" data-track-index="53" data-volume="0.5" data-fade-out="0.2"></audio> <!-- abre a janela (39) -->
+      <audio id="sfx-44" class="clip" src="assets/sfx/motor.mp3" data-start="178.5" data-duration="6.5" data-track-index="54" data-volume="0.3" data-fade-in="0.5" data-fade-out="0.5" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- a van parada (40) -->
+      <audio id="sfx-45" class="clip" src="assets/sfx/passos-pesados.mp3" data-start="179.6" data-duration="2.73" data-track-index="55" data-volume="0.3" data-fade-in="0.1" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1400},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- agentes levando o vizinho (40) -->
+      <audio id="sfx-46" class="clip" src="assets/sfx/radio-chiado.mp3" data-start="180.4" data-duration="4" data-track-index="56" data-volume="0.12" data-fade-in="0.3" data-fade-out="0.5" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1800},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- chiado por baixo do rádio (40) -->
+      <audio id="sfx-47" class="clip" src="assets/sfx/porta-carro.mp3" data-start="184.2" data-duration="0.31" data-track-index="57" data-volume="0.5" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1600},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- portas da van batem, de longe (40) -->
+      <audio id="sfx-48" class="clip" src="assets/sfx/baque.mp3" data-start="184.2" data-duration="1" data-track-index="58" data-volume="0.3" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1600},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- corpo da batida -->
+      <audio id="sfx-49" class="clip" src="assets/sfx/motor.mp3" data-start="189" data-duration="3.2" data-track-index="59" data-volume="0.3" data-fade-in="0.2" data-fade-out="1.6" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1200},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- a van vai embora (42) -->
+      <audio id="sfx-50" class="clip" src="assets/sfx/sirene.mp3" data-start="189.2" data-duration="6" data-track-index="60" data-volume="0.25" data-media-start="0.32" data-fade-in="0.3" data-fade-out="3" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- sirene se afastando (42) -->
+      <audio id="sfx-51" class="clip" src="assets/sfx/respiracao.mp3" data-start="192.9" data-duration="1.6" data-track-index="61" data-volume="0.3" data-fade-in="0.3" data-fade-out="0.4"></audio> <!-- respiro: a respiração curta voltando (43) -->
+      <audio id="sfx-52" class="clip" src="assets/sfx/lapis.mp3" data-start="205.8" data-duration="1.07" data-track-index="62" data-volume="0.45" data-fade-out="0.1"></audio> <!-- lápis no caderno (46) -->
+      <audio id="sfx-53" class="clip" src="assets/sfx/lapis.mp3" data-start="207.2" data-duration="1.07" data-track-index="63" data-volume="0.4" data-fade-out="0.1"></audio> <!-- lápis -->
+      <audio id="sfx-54" class="clip" src="assets/sfx/lapis.mp3" data-start="208.6" data-duration="1.07" data-track-index="64" data-volume="0.4" data-fade-out="0.1"></audio> <!-- lápis -->
+      <audio id="sfx-55" class="clip" src="assets/sfx/caderno.mp3" data-start="210.8" data-duration="2.45" data-track-index="65" data-volume="0.5" data-fade-out="0.3"></audio> <!-- fecha o caderno (47) -->
+      <audio id="sfx-56" class="clip" src="assets/sfx/portaozinho.mp3" data-start="215.8" data-duration="1.58" data-track-index="66" data-volume="0.5" data-fade-out="0.2"></audio> <!-- o portãozinho dela (48) -->
+      <audio id="sfx-57" class="clip" src="assets/sfx/passos-tenis.mp3" data-start="216.6" data-duration="3.3" data-track-index="67" data-volume="0.35" data-fade-in="0.2" data-fade-out="0.4"></audio> <!-- passos (48-49) -->
+      <audio id="sfx-58" class="clip" src="assets/sfx/passos-tenis.mp3" data-start="220" data-duration="3" data-track-index="68" data-volume="0.3" data-fade-in="0.2" data-fade-out="0.6"></audio> <!-- passos, continua (49) -->
+      <audio id="sfx-59" class="clip" src="assets/sfx/portao-batida.mp3" data-start="234.4" data-duration="1.3" data-track-index="69" data-volume="0.6" data-media-start="0.12" data-fade-out="0.2"></audio> <!-- bate no portão de ferro (52) -->
+      <audio id="sfx-60" class="clip" src="assets/sfx/porta-quarto.mp3" data-start="241.6" data-duration="1.5" data-track-index="70" data-volume="0.35" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:2500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- a porta abre uma fresta (54) -->
+      <audio id="sfx-61" class="clip" src="assets/sfx/passos-tenis.mp3" data-start="255.4" data-duration="3.4" data-track-index="71" data-volume="0.28" data-fade-in="0.3" data-fade-out="0.6"></audio> <!-- passos se afastando, devagar (58) -->
+      <audio id="sfx-62" class="clip" src="assets/sfx/portaozinho.mp3" data-start="268" data-duration="1.58" data-track-index="72" data-volume="0.5" data-fade-out="0.2"></audio> <!-- fecha o portãozinho dela (61) -->
+      <audio id="sfx-63" class="clip" src="assets/sfx/sirene.mp3" data-start="278" data-duration="12.94" data-track-index="73" data-volume="0.45" data-media-start="0.32" data-fade-in="0.8" data-fade-out="2" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:2500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- a sirene; luz azul e vermelha (63) -->
+      <audio id="sfx-64" class="clip" src="assets/sfx/motor.mp3" data-start="281" data-duration="4" data-track-index="74" data-volume="0.3" data-fade-in="0.4" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- a van para (64) -->
+      <audio id="sfx-65" class="clip" src="assets/sfx/porta-carro.mp3" data-start="283.2" data-duration="0.31" data-track-index="75" data-volume="0.45" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1600},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- os agentes descem (64) -->
+      <audio id="sfx-66" class="clip" src="assets/sfx/passos-pesados.mp3" data-start="283.5" data-duration="2.73" data-track-index="76" data-volume="0.3" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1400},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- passos dos agentes (64) -->
+      <audio id="sfx-67" class="clip" src="assets/sfx/baque.mp3" data-start="285.9" data-duration="0.9" data-track-index="77" data-volume="0.6" data-fade-out="0.3" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1000},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- TUM, de longe (65) -->
+      <audio id="sfx-68" class="clip" src="assets/sfx/baque.mp3" data-start="286.3" data-duration="0.9" data-track-index="78" data-volume="0.6" data-fade-out="0.3" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1000},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- TUM -->
+      <audio id="sfx-69" class="clip" src="assets/sfx/baque.mp3" data-start="286.7" data-duration="1.2" data-track-index="79" data-volume="0.6" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1000},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- TUM -->
+      <audio id="sfx-70" class="clip" src="assets/sfx/respiracao.mp3" data-start="287" data-duration="1.3" data-track-index="80" data-volume="0.25" data-fade-in="0.1" data-fade-out="0.4"></audio> <!-- respiração suspensa (66) -->
+      <audio id="sfx-71" class="clip" src="assets/sfx/motor.mp3" data-start="294" data-duration="3.5" data-track-index="81" data-volume="0.25" data-fade-in="0.2" data-fade-out="0.4" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;lowpass&quot;,&quot;params&quot;:{&quot;frequency&quot;:1500},&quot;id&quot;:&quot;n0&quot;}]}"></audio> <!-- a van na frente da casa do Gabi (68) -->
+      <audio id="sfx-72" class="clip" src="assets/sfx/respiracao.mp3" data-start="297.6" data-duration="0.9" data-track-index="82" data-volume="0.5" data-fade-out="0.3"></audio> <!-- puxa o ar, curto (69) -->
+      <audio id="sfx-73" class="clip" src="assets/sfx/passos-correndo.mp3" data-start="301" data-duration="4" data-track-index="83" data-volume="0.6" data-fade-out="0.3"></audio> <!-- ela sai correndo (70) -->
+      <audio id="sfx-74" class="clip" src="assets/sfx/porta-quarto.mp3" data-start="302.9" data-duration="0.8" data-track-index="84" data-volume="0.4" data-fade-out="0.3"></audio> <!-- a porta da frente (70) -->
+      <audio id="sfx-75" class="clip" src="assets/sfx/porta-carro.mp3" data-start="305.5" data-duration="0.31" data-track-index="85" data-volume="0.9"></audio> <!-- o clangor da porta da van (71) -->
+      <audio id="sfx-76" class="clip" src="assets/sfx/baque.mp3" data-start="305.5" data-duration="1.6" data-track-index="86" data-volume="0.7" data-fade-out="0.6"></audio> <!-- clangor metálico -->
+      <audio id="sfx-77" class="clip" src="assets/sfx/motor.mp3" data-start="308" data-duration="3.5" data-track-index="87" data-volume="0.5" data-fade-in="0.2" data-fade-out="1.5"></audio> <!-- a van arranca (72) -->
+      <audio id="sfx-78" class="clip" src="assets/sfx/sirene.mp3" data-start="308" data-duration="6" data-track-index="88" data-volume="0.4" data-media-start="0.32" data-fade-in="0.3" data-fade-out="3"></audio> <!-- passa na frente dela e some (72) -->
+      <audio id="sfx-79" class="clip" src="assets/sfx/motor-desliga.mp3" data-start="321" data-duration="3.75" data-track-index="89" data-volume="0.5" data-fade-out="0.2"></audio> <!-- motor desligando (76) -->
+      <audio id="sfx-80" class="clip" src="assets/sfx/travas-van.mp3" data-start="322.4" data-duration="0.96" data-track-index="90" data-volume="0.7" data-media-start="0.15"></audio> <!-- travas (76) -->
+      <audio id="sfx-81" class="clip" src="assets/sfx/porta-carro.mp3" data-start="323" data-duration="0.31" data-track-index="91" data-volume="0.9"></audio> <!-- as portas se abrem de uma vez (77) -->
+      <audio id="sfx-82" class="clip" src="assets/sfx/baque.mp3" data-start="323" data-duration="1.4" data-track-index="92" data-volume="0.6" data-fade-out="0.5"></audio> <!-- clangor -->
+      <audio id="sfx-83" class="clip" src="assets/sfx/respiracao.mp3" data-start="324" data-duration="4.2" data-track-index="93" data-volume="0.4" data-fade-in="0.4" data-fade-out="0.6"></audio> <!-- a respiração dele (77) -->
+      <audio id="amb-casa-00" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="15" data-duration="20" data-track-index="120" data-volume="0.6" data-media-start="15" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-acorda -->
+      <audio id="amb-casa-01" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="35" data-duration="23" data-track-index="121" data-volume="0.6" data-media-start="35" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-quarto -->
+      <audio id="amb-casa-02" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="58" data-duration="12" data-track-index="122" data-volume="0.6" data-media-start="58" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-banheiro -->
+      <audio id="amb-casa-03" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="70" data-duration="30" data-track-index="123" data-volume="0.6" data-media-start="70" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-cafe -->
+      <audio id="amb-casa-04" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="100" data-duration="25.5" data-track-index="124" data-volume="0.6" data-media-start="100" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-tv -->
+      <audio id="amb-casa-05" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="125.5" data-duration="29.5" data-track-index="125" data-volume="0.6" data-media-start="20.4" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-despedida -->
+      <audio id="amb-casa-06" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="155" data-duration="17" data-track-index="126" data-volume="0.6" data-media-start="37.4" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-almoco -->
+      <audio id="amb-casa-07" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="172" data-duration="33" data-track-index="127" data-volume="0.6" data-media-start="70.4" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-vizinho -->
+      <audio id="amb-casa-08" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="205" data-duration="10" data-track-index="128" data-volume="0.6" data-media-start="80.4" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-tarefa -->
+      <audio id="amb-casa-09" class="clip" src="assets/sfx/ambiente-casa.mp3" data-start="270" data-duration="24" data-track-index="129" data-volume="0.6" data-media-start="48.8" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- ambiente da casa: duda-sirene -->
+      <audio id="amb-rua-00" class="clip" src="assets/sfx/cidade-noite.mp3" data-start="215" data-duration="15" data-track-index="140" data-volume="0.18" data-media-start="8.54" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- a rua, fim de tarde: duda-caminho -->
+      <audio id="amb-rua-01" class="clip" src="assets/sfx/cidade-noite.mp3" data-start="230" data-duration="25" data-track-index="141" data-volume="0.18" data-media-start="21.84" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- a rua, fim de tarde: duda-portao -->
+      <audio id="amb-rua-02" class="clip" src="assets/sfx/cidade-noite.mp3" data-start="255" data-duration="15" data-track-index="142" data-volume="0.18" data-media-start="48.54" data-fade-in="0.3" data-fade-out="0.3"></audio> <!-- a rua, fim de tarde: duda-volta -->
+      <audio id="amb-noite-00" class="clip" src="assets/sfx/grilos.mp3" data-start="270" data-duration="14" data-track-index="150" data-volume="0.2" data-media-start="0.5" data-fade-in="0.6" data-fade-out="0.6"></audio> <!-- grilos, anoitecer -->
+      <audio id="amb-noite-01" class="clip" src="assets/sfx/grilos.mp3" data-start="283.4" data-duration="14" data-track-index="151" data-volume="0.2" data-media-start="0.5" data-fade-in="0.6" data-fade-out="0.6"></audio> <!-- grilos, anoitecer -->
+      <audio id="amb-noite-02" class="clip" src="assets/sfx/grilos.mp3" data-start="296.8" data-duration="14" data-track-index="152" data-volume="0.2" data-media-start="0.5" data-fade-in="0.6" data-fade-out="0.6"></audio> <!-- grilos, anoitecer -->
+      <audio id="amb-noite-03" class="clip" src="assets/sfx/grilos.mp3" data-start="310.2" data-duration="8.8" data-track-index="153" data-volume="0.2" data-media-start="0.5" data-fade-in="0.6" data-fade-out="1.5"></audio> <!-- grilos, anoitecer -->
+      <audio id="musica" class="clip" src="assets/musica/musica-fundo.mp3" data-start="0" data-duration="321" data-track-index="99" data-volume="0.12" data-fade-in="3" data-fade-out="3"></audio> <!-- música de fundo -->
+      <audio id="musica-final" class="clip" src="assets/musica/musica-fundo.mp3" data-start="330" data-duration="10" data-track-index="98" data-volume="0.15" data-media-start="20" data-fade-in="1.5" data-fade-out="2"></audio> <!-- música da tela final -->
+      <div id="selo-dia" class="clip selo" data-start="96" data-duration="233" data-track-index="5">DIA 1</div>
+      <div id="selo-4h" class="clip selo selo-tempo" data-start="159" data-duration="4" data-track-index="6">+4 HORAS</div>
+      <div id="selo-2h" class="clip selo selo-tempo" data-start="205.2" data-duration="4" data-track-index="7">+2 HORAS</div>
+      <div id="transicao" class="clip" data-start="0" data-duration="340" data-track-index="9"></div>
+      <div id="tela-final" class="clip" data-start="330" data-duration="10" data-track-index="8">
+        <img id="tf-fundo" src="assets/ep2/tela-final.png" alt="" />
+        <div id="tf-texto">INSCREVA-SE</div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      gsap.set(["#transicao", "#selo-dia", ".selo-tempo", "#tela-final"], { opacity: 0 });
+      tl.fromTo("#selo-dia", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 96);
+      tl.fromTo("#selo-4h", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 159);
+      tl.to("#selo-4h", { opacity: 0, duration: 0.5 }, 162.4);
+      tl.fromTo("#selo-2h", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 205.2);
+      tl.to("#selo-2h", { opacity: 0, duration: 0.5 }, 208.6);
+      tl.to("#transicao", { opacity: 1, duration: 0.5, ease: "power1.in" }, 154.5);
+      tl.to("#transicao", { opacity: 0, duration: 0.6, ease: "power1.out" }, 155);
+      tl.to("#transicao", { opacity: 1, duration: 0.5, ease: "power1.in" }, 158.5);
+      tl.to("#transicao", { opacity: 0, duration: 0.6, ease: "power1.out" }, 159);
+      tl.to("#transicao", { opacity: 1, duration: 0.5, ease: "power1.in" }, 204.5);
+      tl.to("#transicao", { opacity: 0, duration: 0.6, ease: "power1.out" }, 205);
+      tl.to("#transicao", { opacity: 1, duration: 0.5, ease: "power1.in" }, 269.5);
+      tl.to("#transicao", { opacity: 0, duration: 0.6, ease: "power1.out" }, 270);
+      tl.fromTo("#tela-final", { opacity: 0 }, { opacity: 1, duration: 0.8 }, 330);
+      tl.fromTo("#tf-fundo", { scale: 1.0 }, { scale: 1.06, duration: 10, ease: "none" }, 330);
+      tl.fromTo("#tf-texto", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 330.6);
+      window.__timelines["ep2"] = tl;
+    </script>
+  </body>
+</html>
