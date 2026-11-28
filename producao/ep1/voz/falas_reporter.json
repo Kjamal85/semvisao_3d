@@ -10,5 +10,11 @@
     "voz": "Lumi",
     "estilo": "com voz de repórter de plantão de telejornal, mulher adulta, firme, rápida, controlada, com urgência",
     "texto": "Plantão urgente. Um apagão global atingiu o planeta nesta madrugada. Em várias cidades, pessoas acordaram sem enxergar."
+  },
+  {
+    "id": "ep2-reporter-03",
+    "voz": "Lumi",
+    "estilo": "com voz de repórter de plantão de telejornal, mulher adulta, firme, um tom abaixo, grave, ênfase em quarentena e em não revelada",
+    "texto": "Equipes já estão recolhendo os afetados. Os cegos serão levados para uma área de quarentena ainda não revelada."
   }
 ]

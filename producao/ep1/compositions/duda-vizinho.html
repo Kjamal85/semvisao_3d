@@ -45,8 +45,8 @@
         { t0: 17, t1: 19, pos: M(-1.55, 2.2, 0.25), alvo: V(3.0, 1.2, 3.2), fov: 44 },
         { t0: 19, t1: 21, pos: M(-1.5, 2.1, -1.9), alvo: V(0, 1.4, -6.5), fov: 38 },
         { t0: 21, t1: 22.2, pos: M(-1.75, 2.2, 1.8), alvo: M(-2.0, 2.05, -0.55), fov: 34 },
-        { t0: 22.2, t1: 27.6, pos: M(-1.85, 2.15, 1.45), alvo: M(-2.0, 2.05, -0.55), fov: 30 },
-        { t0: 27.6, t1: 33, pos: M(-1.95, 2.12, 1.1), alvo: M(-2.0, 2.06, -0.55), fov: 30 },
+        { t0: 22.2, t1: 27.9, pos: M(-1.85, 2.15, 1.45), alvo: M(-2.0, 2.05, -0.55), fov: 30 },
+        { t0: 27.9, t1: 33, pos: M(-1.95, 2.12, 1.1), alvo: M(-2.0, 2.06, -0.55), fov: 30 },
       ];
       const estado = { t: 0 };
       function render() {
@@ -95,8 +95,8 @@
           // olhar: na van (para a direita dela); depois a casa do Gabi; depois baixa os olhos, pensando
           Elenco.cabeca(duda, t >= 22.2 ? 0.08 : 0, t < 19 ? -0.55 : t < 22.2 ? 0.3 : 0.1, 0);
         }
-        EP2.expr(duda, t < 13 ? "neutro" : t < 22.2 ? "medo" : t < 27.6 ? "triste" : "firme");
-        Elenco.vida(duda, t, { ritmo: t < 13 ? "calmo" : t < 27.6 ? "medo" : "calmo" });
+        EP2.expr(duda, t < 13 ? "neutro" : t < 22.2 ? "medo" : t < 27.9 ? "triste" : "firme");
+        Elenco.vida(duda, t, { ritmo: t < 13 ? "calmo" : t < 27.9 ? "medo" : "calmo" });
         EP2.boca(duda, t, ["ep2-duda-04", "ep2-duda-05"], CENA);
         EP2.camera(cam, p, t);
         pal.render(scene, cam, t);

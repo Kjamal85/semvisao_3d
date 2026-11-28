@@ -82,5 +82,23 @@
     "voz": "ESCOLHER",
     "estilo": "narrador de suspense, lento, pausa longa antes do fim",
     "texto": "E esse... foi só o primeiro dia."
+  },
+  {
+    "id": "ep2-narrador-n01",
+    "voz": "Narrador",
+    "estilo": "narrador de suspense, voz grave e calma, ritmo lento, pausa longa antes de \"e viu\"",
+    "texto": "A Duda tinha dezesseis anos. Naquela manhã, ela abriu os olhos... e viu."
+  },
+  {
+    "id": "ep2-narrador-n02",
+    "voz": "Narrador",
+    "estilo": "narrador de suspense, seco, sem drama, calmo",
+    "texto": "Lá fora, o bairro já sabia que alguma coisa tinha mudado."
+  },
+  {
+    "id": "ep2-narrador-n03",
+    "voz": "Narrador",
+    "estilo": "narrador de suspense, baixo, quase íntimo, calmo e lento",
+    "texto": "Na casa do Gabi, a janela do quarto continuava fechada."
   }
 ]

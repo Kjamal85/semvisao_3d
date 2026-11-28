@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ep2-maeduda-01",
+    "voz": "Mãe da Duda",
+    "estilo": "mulher adulta, chamando de longe, rotina de manhã, leve pressa",
+    "texto": "Duda, tá pronta? Vem tomar café!"
+  },
+  {
+    "id": "ep2-maeduda-02",
+    "voz": "Mãe da Duda",
+    "estilo": "mulher adulta, tranquila, calma, comentário de café da manhã",
+    "texto": "Acho que acabou a luz de noite. O rádio-relógio tava com a hora errada."
+  },
+  {
+    "id": "ep2-maeduda-03",
+    "voz": "Mãe da Duda",
+    "estilo": "mulher adulta, prática, já pegando o controle da TV",
+    "texto": "Vou ligar a TV pra saber o que aconteceu."
+  },
+  {
+    "id": "ep2-maeduda-04",
+    "voz": "Mãe da Duda",
+    "estilo": "mulher adulta, tentando soar normal, com pressa e preocupação por baixo",
+    "texto": "Filha, eu tenho que sair pra trabalhar. Tem comida na geladeira pro seu almoço, é só esquentar no micro-ondas."
+  }
+]
