@@ -8,43 +8,43 @@
   {
     "id": "ep2-duda-01",
     "voz": "Duda",
-    "estilo": "com voz de menina, sonolenta, mais curiosa que assustada, falando sozinha",
-    "texto": "Ué... o que aconteceu? Tá com a hora errada."
+    "estilo": "com voz de menina, sonolenta, curiosa, falando sozinha, natural",
+    "texto": "Nossa, o que aconteceu? Tá com a hora errada."
   },
   {
     "id": "ep2-duda-02",
     "voz": "Duda",
-    "estilo": "com voz de menina, leve, concordando, tranquila",
+    "estilo": "com voz de menina, leve, concordando, tranquila, natural",
     "texto": "O do meu quarto também."
   },
   {
     "id": "ep2-duda-03",
     "voz": "Duda",
-    "estilo": "com voz de menina, pequeno, carinhoso, ainda abalada",
-    "texto": "Tá bom, mãe. Bom trabalho."
+    "estilo": "com voz de menina, calma, carinhosa, tranquila, natural",
+    "texto": "Então tá bom, mãe, bom trabalho."
   },
   {
     "id": "ep2-duda-04",
     "voz": "Duda",
-    "estilo": "com voz de menina, baixo, pensando alto, preocupada",
-    "texto": "Será que o Gabi e a família dele tão bem? Não vi movimento na casa dele..."
+    "estilo": "com voz de menina, baixo, pensando alto, preocupada, natural",
+    "texto": "Será que o Gabi e a família dele estão bem? ... Não vi movimento na casa dele..."
   },
   {
     "id": "ep2-duda-05",
     "voz": "Duda",
-    "estilo": "com voz de menina, decidindo, com um suspiro, para se convencer",
-    "texto": "Depois vou lá ver. Antes tenho que fazer a tarefa da escola."
+    "estilo": "com voz de menina, decidindo, com um suspiro, natural",
+    "texto": "Depois vou lá ver. Antes... tenho que fazer a tarefa da escola."
   },
   {
     "id": "ep2-duda-06",
     "voz": "Duda",
-    "estilo": "com voz de menina, decidida, com um fio de nervoso",
+    "estilo": "com voz de menina, decidida, firme, calma, natural",
     "texto": "Vou ver o Gabi."
   },
   {
     "id": "ep2-duda-07",
     "voz": "Duda",
-    "estilo": "com voz de menina, sussurro, quase sem voz, falando para si, triste",
+    "estilo": "com voz de menina, sussurro, baixinho, falando para si, triste",
     "texto": "O que será que eu fiz pra ele?"
   }
 ]

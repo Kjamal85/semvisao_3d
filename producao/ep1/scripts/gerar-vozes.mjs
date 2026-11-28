@@ -75,6 +75,7 @@ function lerLotes() {
         id: item.id,
         texto: item.texto,
         estilo: item.estilo || "",
+        velocidade: item.velocidade || null, // speed do VoiceStudio (1 = normal; 0,8 = mais devagar)
         instruct: item.instruct || null, // só etiquetas do motor (ex.: "whisper"); o estilo livre vai em emo_text
         profile_id: profileId || null,
         personagem: chave,
@@ -112,6 +113,7 @@ async function gerarFala(item) {
     language: "pt",
     wav_bits: "24",
     effect_preset: "broadcast",
+    speed: item.velocidade ? String(item.velocidade) : undefined,
   };
 
   // Tenta com emoção primeiro; se o engine não suportar, tenta sem.
