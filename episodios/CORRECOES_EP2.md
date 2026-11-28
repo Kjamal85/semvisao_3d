@@ -42,6 +42,12 @@ snapshot e mostrar.
 
 ### Bloco 2 — café, TV, despedida (1:10 → 2:35)
 
+> **CONFIRMADO pelo usuário (2026-11-28), fazer assim:** 1) mãe sentada na frente da mesa, sem entrar nela; 2) a mãe pega o
+> controle na mesa, aponta e liga (controle visível na mão); 3) TV: primeiro um canal de bichos, depois troca (cliques e
+> chiado) até a repórter; 4) a repórter já FALA no primeiro plano em que aparece; 5) depois da reportagem: a mãe pega a
+> xícara e a Duda um pedaço de pão (nada de braço cruzado); 6) a mãe falando da comida olha para a Duda e põe a mão no
+> ombro dela; 7) a mãe abre a porta com a mão; 8) Duda sozinha → narrador ep2-narrador-n04 (4,08 s).
+
 - [ ] **Café (planos 16–17):** a mãe está com o corpo **dentro da mesa** — afastar a cadeira/corpo.
 - [ ] **Planos 20–21 — o controle:** mostrar a mãe com o controle na mão apontando e ligando a TV.
 - [ ] **TV ligando:** primeiro um canal de **bichos** (documentário de animais) e depois troca de canal até o
