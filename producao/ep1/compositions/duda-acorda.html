@@ -24,9 +24,9 @@
       const corpo = Elenco.build("duda", Object.assign({ expr: "neutro" }, R));
       corpo.rotation.order = "YXZ"; casa.add(corpo);
       const rc = corpo.userData.rig, ALT = 0.92, QUADRIL = 1.075 * ALT;
-      // o edredom por cima dela (do peito aos pés), num grupo preso na beira da parede (-x) e no colchão: ao ser
-      // empurrado ele encolhe para o lado da parede e embola para cima, saindo de cima das pernas
-      const kc = Cena.kit(casa, 5), EDR = 0xd8cde8, BORDA = Q.BX - Q.BW / 2 - 0.06;
+      // o edredom por cima dela (do peito aos pés), num grupo preso na beira do lado do quarto (+x) e no colchão: ao ser
+      // empurrado ele encolhe para o lado do quarto e embola para cima, saindo de cima das pernas
+      const kc = Cena.kit(casa, 5), EDR = 0xd8cde8, BORDA = Q.BX + Q.BW / 2 + 0.06;   // o edredom dobra para o lado do quarto (+x): ela sai pelo lado da mesinha
       const edr = new THREE.Group(); edr.position.set(BORDA, Q.MT, 0); casa.add(edr);
       const ek = Cena.kit(edr, 5), dx = (x) => x - BORDA;
       // um edredom só, liso (sem as bolas de volume, que viravam "bolas roxas" quando ela levantava)
@@ -37,8 +37,8 @@
       const M = W.M, V = EP2.V;
       // o quadril é o pivô de tudo: deitada no meio da cama → sentada na beira (pés no chão)
       const H0 = V(Q.BX, Q.MT + 0.16, -1.85 - QUADRIL);
-      const H1 = V(Q.BX + Q.BW / 2 + 0.08, Q.MT + 0.1, -2.72);
-      const YAW1 = 0.9;
+      const H1 = V(Q.BX - Q.BW / 2 - 0.08, Q.MT + 0.1, -3.5);   // beira do lado da parede, perto da cabeceira e da mesinha (o despertador)
+      const YAW1 = -1.2;
       // sentada numa cama alta: coxa inclinada para baixo e canela na vertical, sola no chão (0,88 - 0,35 - 0,50 ≈ 0,03)
       const COXA = -(Math.PI / 2 - 0.813);
       const planos = [
@@ -48,7 +48,7 @@
           alvo: (t) => { const u = S((t - 5.9) / 0.9); return M(Q.BX + 0.35 - 0.3 * u, 3.9 - 2.85 * u, -3.3 - 0.62 * u); }, fov: 46, push: 0.004 },
         { t0: 8.0, t1: 12.0, pos: M(Q.BX + 0.85, 2.05, -3.15), alvo: M(Q.BX - 0.02, 1.02, -3.9), fov: 40 },
         // aberto, do lado do quarto (3/4 pela esquerda dela): a cama inteira, o corpo levantando e os pés no chão
-        { t0: 12.0, t1: 20, pos: M(-0.3, 2.45, -0.45), alvo: M(-0.95, 0.95, -2.6), fov: 60 },   // no vão entre o guarda-roupa e a escrivaninha
+        { t0: 12.0, t1: 20, pos: M(-3.3, 2.15, -1.1), alvo: M(-1.95, 0.95, -3.1), fov: 62 },   // do vão entre a cama e a parede, de frente para onde ela senta
       ];
       // braços sentada (mãos no colo) — a base do espreguiçar
       const BASE = { L: [-0.35, 0, 0.1, -0.9], R: [-0.35, 0, -0.1, -0.9] };
@@ -64,9 +64,9 @@
         corpo.position.copy(H).addScaledVector(up, -QUADRIL);
         const hip = -Math.PI / 2 * sobe + (Math.PI / 2 + COXA) * desce;
         for (const l of [rc.pL, rc.pR]) { l.hip.rotation.set(hip, 0, 0); l.knee.rotation.set(-COXA * desce, 0, 0); }
-        // o edredom: a mão esquerda (lado do quarto) empurra ele para a parede entre 13,7 e 14,6
+        // o edredom: a mão esquerda puxa ele para o lado do quarto entre 13,7 e 14,6
         const emp = S((t - 13.7) / 0.9);
-        edr.scale.set(1 - 0.58 * emp, 1 + 0.6 * emp, 1);   // dobrado para o lado da parede
+        edr.scale.set(1 - 0.58 * emp, 1 + 0.6 * emp, 1);   // dobrado para o lado do quarto
         return { sobe, gira, desce, H, yaw, emp };
       }
       function render() {
@@ -89,7 +89,7 @@
           let esq = apoio(1);
           if (P.emp > 0 && P.emp < 1) {
             // a mão vai até a beira do edredom e acompanha enquanto ele vai para a parede
-            const beira = V(BORDA + (Q.BX + Q.BW / 2 + 0.06 - BORDA) * edr.scale.x, Q.MT + 0.25, -2.4);
+            const beira = V(P.H.x + 0.3 + 0.45 * P.emp, Q.MT + 0.32, P.H.z + 0.45);   // a mão esquerda puxa o edredom para o lado dela
             esq = esq.lerp(beira, Math.sin(Math.PI * P.emp));
           }
           Elenco.duasMaos(corpo, M(esq.x, esq.y, esq.z), M(...apoio(-1).toArray()));

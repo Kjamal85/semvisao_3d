@@ -9,67 +9,121 @@
   </div>
   <script>
     (function () {
-      // planos 6-10: 0-3,5 o despertador 00:00 · 3,5-8,5 o relógio na mão (ep2-duda-01) · 8,5-12,5 vai à janela e abre a
-      // cortina · 12,5-18 POV da janela (ep2-narrador-n02) · 18-23 o rosto dela na janela, visto de fora
-      const DUR = 23, CENA = "duda-quarto", S = EP2.S;
+      // planos 6-10: 0-3,5 o despertador 00:00 na mesinha da cabeceira; a mão direita dela entra e pega · 3,5-8,5 sentada
+      // na beira da cama, do lado da mesinha, o relógio nas mãos (ep2-duda-01) · 8,5-12,5 devolve o relógio, levanta,
+      // contorna a cama até a janela e abre a cortina · 12,5-18 POV da janela (ep2-narrador-n02) · 18-23 o rosto dela na
+      // janela, visto de fora. UMA Duda só (a mesma posição em que a cena duda-acorda termina): nada troca de boneco.
+      const DUR = 23, CENA = "duda-quarto", S = EP2.S, V = EP2.V;
       const W = EP2.mundo({ hora: "manha", dentro: true });
       const { scene, casa, Q, M } = W;
       Q.luzinhas(false);
       Q.cad.position.set(Q.EX - 0.5, 0, Q.EZ + 0.1); Q.cad.rotation.y = -Math.PI / 2;
       const R = { refinado: true, material: "pbr" };
-      const sentada = Elenco.build("duda", Object.assign({ expr: "neutro", pose: "sentado" }, R));
-      sentada.position.set(Q.BX + Q.BW / 2 + 0.05, Q.MT + 0.1 - 1.075 * 0.92, -1.75); sentada.rotation.y = Math.PI / 4; casa.add(sentada);
-      const pe = Elenco.build("duda", Object.assign({ expr: "neutro" }, R)); casa.add(pe);
-      // o despertador na mão dela (o mesmo modelo): uma caixinha com o visor piscando
-      const kc = Cena.kit(casa, 9), relogio = new THREE.Group(); casa.add(relogio);
+      const duda = Elenco.build("duda", Object.assign({ expr: "neutro" }, R));
+      duda.rotation.order = "YXZ"; casa.add(duda);
+      const rd = duda.userData.rig, ALT = 0.92, QUADRIL = 1.075 * ALT;
+      // sentada (igual ao fim de duda-acorda): coxa inclinada, canela na vertical, sola no chão
+      const H1 = V(Q.BX - Q.BW / 2 - 0.08, Q.MT + 0.1, -3.5), YAW = -1.2, COXA = -(Math.PI / 2 - 0.813);
+      const FR = V(Math.sin(YAW), 0, Math.cos(YAW));
+      const PE = H1.clone().addScaledVector(FR, 0.34).setY(QUADRIL);          // em pé, o quadril sobre os pés
+      // o despertador do cenário (na mesinha): as peças perto dele somem enquanto ele está na mão dela
+      const DP = V(Q.NX + 0.1, 0.875, Q.NZ + 0.05);
+      casa.updateMatrixWorld(true);
+      const pecasRelogio = [];
+      casa.traverse((o) => {
+        if (!o.isMesh || o === Q.visor) return;
+        const l = casa.worldToLocal(o.getWorldPosition(V(0, 0, 0)));
+        if (l.distanceTo(DP) < 0.09) pecasRelogio.push(o);
+      });
+      // o relógio que vai na mão: o mesmo modelo, com o visor piscando
+      const kc = Cena.kit(casa, 9), relogio = new THREE.Group(); relogio.rotation.order = "YXZ"; casa.add(relogio);
       kc.box(0.3, 0.15, 0.12, 0x1f2126, 0, 0, 0, { pai: relogio });
       const vis = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.075), Q.visor.material); vis.position.set(0, 0.01, 0.065); relogio.add(vis);
-      const rs = sentada.userData.rig;
       const pal = EP2.palco("dq-stage");
       Elenco.ambiente(pal.renderer, scene, { forca: 0.3 });
       const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 120);
-      const JAN = M(-2.0, 2.05, -0.55);
       const planos = [
-        { t0: 0, t1: 3.5, pos: M(Q.NX + 0.55, 1.25, Q.NZ + 0.55), alvo: M(Q.NX + 0.1, 0.88, Q.NZ + 0.05), fov: 30 },
-        { t0: 3.5, t1: 8.5, pos: M(0.35, 1.9, -0.2), alvo: M(-0.7, 1.55, -1.85), fov: 52 },
-        { t0: 8.5, t1: 12.5, pos: M(0.3, 2.3, -2.6), alvo: M(-1.9, 1.5, -0.4), fov: 56 },
-        { t0: 12.5, t1: 18, pos: M(-1.5, 2.1, -1.9), alvo: EP2.V(0, 1.4, -6.5), fov: 38 },
+        // o despertador de perto, visto do lado da parede: ela fica à direita do quadro, a mão entra e pega
+        { t0: 0, t1: 3.5, pos: M(Q.NX - 0.15, 1.45, Q.NZ + 0.95), alvo: M(Q.NX + 0.15, 0.9, Q.NZ + 0.05), fov: 34 },
+        // sentada na cama com o relógio nas mãos, de frente (do vão entre a cama e a parede)
+        { t0: 3.5, t1: 9.9, pos: M(-3.2, 2.05, -1.65), alvo: M(-2.45, 1.6, -3.35), fov: 56, push: 0.006 },   // depois da porta (aberta para dentro): devolve o relógio e levanta
+        // o quarto aberto, do canto do guarda-roupa: ela contorna a cama e abre a cortina
+        { t0: 9.9, t1: 12.5, pos: M(0.3, 2.3, -2.6), alvo: M(-2.1, 1.3, -1.85), fov: 60 },
+        { t0: 12.5, t1: 18, pos: M(-1.5, 2.1, -1.9), alvo: V(0, 1.4, -6.5), fov: 38 },
         { t0: 18, t1: 23, pos: M(-1.75, 2.2, 1.8), alvo: M(-2.0, 2.08, -0.55), fov: 30 },
       ];
+      // o caminho até a janela, por fora da cama (lado da parede), sem atravessar a cama nem a mesinha
+      const TRILHA = [PE.clone().setY(0), V(-2.72, 0, -2.4), V(-2.6, 0, -1.15), V(-2.0, 0, -0.62)];
+      const seg = TRILHA.slice(1).map((b, i) => b.distanceTo(TRILHA[i])), TOT = seg.reduce((a, b) => a + b, 0);
+      function naTrilha(u) {
+        let d = u * TOT;
+        for (let i = 0; i < seg.length; i++) {
+          if (d <= seg[i] || i === seg.length - 1) {
+            const f = Math.min(1, d / seg[i]), a = TRILHA[i], b = TRILHA[i + 1];
+            return { p: a.clone().lerp(b, f), yaw: Math.atan2(b.x - a.x, b.z - a.z) };
+          }
+          d -= seg[i];
+        }
+      }
       const estado = { t: 0 };
       function render() {
         const t = estado.t, p = EP2.plano(planos, t);
-        // o visor pisca 00:00 (1 Hz), na mesinha e na mão dela
-        Q.visor.visible = (t % 1) < 0.6;
-        const naMao = t >= 3.5 && t < 8.5;
-        sentada.visible = naMao; relogio.visible = naMao;
-        pe.visible = t >= 8.5 && !(t >= 12.5 && t < 18);   // no POV a câmera é o olhar dela
-        for (const f of Q.folhas) f.visible = t < 18;          // de fora: sem as folhas, a cruz do caixilho não corta o rosto (boca à mostra)
-        if (naMao) {
-          EP2.expr(sentada, t < 5.5 ? "neutro" : "firme");     // franze a testa olhando o relógio
-          casa.updateMatrixWorld(true);
-          const mao = sentada.localToWorld(EP2.V(0.0, 1.32, 0.45));
-          Elenco.duasMaos(sentada, mao, sentada.localToWorld(EP2.V(-0.05, 1.28, 0.44)));   // cada alvo na mão do seu lado
-          relogio.position.copy(casa.worldToLocal(sentada.localToWorld(EP2.V(-0.02, 1.36, 0.5)))); relogio.rotation.set(-0.5, Math.PI / 4, 0);
-          Elenco.cabeca(sentada, 0.18, 0, 0.05);
-          Elenco.vida(sentada, t, { ritmo: "calmo", olhar: false });
-          EP2.boca(sentada, t, ["ep2-duda-01"], CENA);
+        for (const f of Q.folhas) f.visible = t < 18;
+        duda.visible = !(t >= 12.5 && t < 18);                 // no POV a câmera é o olhar dela
+        const levanta = S((t - 9.2) / 0.7), anda = S((t - 9.9) / 1.5);
+        // ----- corpo: sentada → em pé → andando -----
+        let yaw = YAW;
+        if (anda <= 0) {
+          const H = H1.clone().lerp(PE, levanta);
+          duda.position.copy(H).add(V(0, -QUADRIL, 0));
+          for (const l of [rd.pL, rd.pR]) { l.hip.rotation.set(COXA * (1 - levanta), 0, 0); l.knee.rotation.set(-COXA * (1 - levanta), 0, 0); }
+        } else {
+          const q = naTrilha(anda);
+          duda.position.copy(q.p);
+          // vira para o rumo do passo (saindo devagar do ângulo em que estava) e, no fim, de frente para a janela (+z)
+          yaw = anda < 0.9 ? q.yaw : q.yaw * (1 - S((anda - 0.9) / 0.1));
+          if (anda < 0.12) yaw = YAW + (yaw - YAW) * S(anda / 0.12);
+          for (const l of [rd.pL, rd.pR]) { l.hip.rotation.set(0, 0, 0); l.knee.rotation.set(0, 0, 0); }
+          EP2.anda(duda, t, anda < 0.97 ? 1 : 0, 1.5);
         }
-        if (t >= 8.5) {
-          // anda até a janela (8,6-10,4) e abre a cortina (10,6-12)
-          const u = S((t - 8.6) / 1.8), a = EP2.V(-0.6, 0, -1.6), b = EP2.V(-2.0, 0, -0.62);
-          pe.position.lerpVectors(a, b, u);
-          pe.rotation.y = u < 0.85 ? Math.atan2(b.x - a.x, b.z - a.z) : Math.atan2(b.x - a.x, b.z - a.z) * (1 - S((u - 0.85) / 0.15));
-          EP2.anda(pe, t, t > 8.6 && t < 10.3 ? 1 : 0, 1.5);
-          const abre = S((t - 10.6) / 1.4);
-          Q.cortina(1 - abre);
-          if (t > 10.3 && t < 12.3) {
-            casa.updateMatrixWorld(true);
-            Elenco.duasMaos(pe, M(-2.55 + 0.4 * (1 - abre), 2.0, -0.28), M(-1.45 - 0.4 * (1 - abre), 2.0, -0.28));   // cada alvo na mão do seu lado
+        duda.rotation.set(0, yaw, 0);
+        casa.updateMatrixWorld(true);
+        // ----- o relógio e as mãos -----
+        const pega = S((t - 1.8) / 1.1), traz = S((t - 2.9) / 0.6), devolve = S((t - 8.5) / 0.7);
+        const naMao = pega >= 1 && devolve < 1;
+        relogio.visible = naMao; for (const o of pecasRelogio) o.visible = !naMao;
+        Q.visor.visible = !naMao && (t % 1) < 0.6;            // pisca 00:00 (1 Hz); some da mesinha quando o relógio está na mão
+        const relMesa = M(DP.x, DP.y, DP.z), relPeito = duda.localToWorld(V(-0.02, 1.36, 0.5));
+        const colo = (dx) => duda.localToWorld(V(dx, 1.12, 0.36));
+        const noPeito = (dx) => duda.localToWorld(V(dx, 1.3, 0.45));
+        if (t < 9.2) {
+          // a mão direita (lado da mesinha) vai buscar e devolver; com o relógio no peito, as duas seguram
+          const ida = Math.min(1, pega * (1 - traz) + devolve);    // 1 = o relógio (e a mão) na mesinha
+          const r = relPeito.clone().lerp(relMesa, ida);
+          if (naMao) {
+            relogio.position.copy(casa.worldToLocal(r.clone()));
+            relogio.rotation.set(-0.5 * (1 - ida), yaw + 0.35 * ida, 0);
           }
-          Elenco.vida(pe, t, { ritmo: "calmo", fase: 2, corpo: t > 12 });
-          EP2.boca(pe, t, [], CENA);
-        } else Q.cortina(1);
+          let dir;
+          if (pega <= 0) dir = colo(-0.15);
+          else if (pega < 1) dir = colo(-0.15).lerp(relMesa.clone().add(V(0, -0.04, 0)), pega);
+          else dir = r.clone().add(V(0, -0.04, 0));
+          if (devolve >= 1) dir = relMesa.clone().lerp(colo(-0.15), S((t - 9.2) / 0.4));
+          const esq = (traz > 0.6 && devolve < 0.4) ? noPeito(0.12) : colo(0.15);
+          Elenco.duasMaos(duda, esq, dir);
+        } else if (t > 11.4 && t < 12.5) {
+          const abre = S((t - 11.5) / 1.0);
+          Elenco.duasMaos(duda, M(-2.55 + 0.4 * (1 - abre), 2.0, -0.28), M(-1.45 - 0.4 * (1 - abre), 2.0, -0.28));
+        } else if (anda <= 0) {
+          for (const [b, s] of [[rd.aL, -1], [rd.aR, 1]]) { b.sh.rotation.set(-0.1 * (1 - levanta), 0, s * 0.08); b.el.rotation.set(-0.5 * (1 - levanta) - 0.1, 0, 0); }
+        }
+        Q.cortina(1 - S((t - 11.5) / 1.0));
+        // ----- rosto -----
+        EP2.expr(duda, t > 5.5 && t < 8.8 ? "firme" : "neutro");     // franze a testa olhando o relógio
+        const virando = pega > 0 && pega < 1 ? -0.35 * Math.sin(Math.PI * pega) : 0;    // olha para a mesinha ao pegar
+        Elenco.cabeca(duda, naMao && t > 3.0 ? 0.18 : 0, virando, 0.04);
+        Elenco.vida(duda, t, { ritmo: "calmo", olhar: !naMao, corpo: anda >= 1 });
+        EP2.boca(duda, t, ["ep2-duda-01"], CENA);
         EP2.camera(cam, p, t);
         pal.render(scene, cam, t);
       }
