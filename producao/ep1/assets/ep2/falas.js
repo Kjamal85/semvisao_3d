@@ -20,7 +20,7 @@ window.EP2_FALAS = {
   "c05-radio-01"     : {"cena": "duda-vizinho", "t": 8.5, "dur": 3.79, "arq": "ep1/c05-radio-01.wav", "quem": "radio", "fx": "radio-longe"},
   "ep2-duda-04"      : {"cena": "duda-vizinho", "t": 22.3, "dur": 5.56, "arq": "ep2/ep2-duda-04.wav", "quem": "duda"},
   "ep2-duda-05"      : {"cena": "duda-vizinho", "t": 28.4, "dur": 3.58, "arq": "ep2/ep2-duda-05.wav", "quem": "duda"},
-  "ep2-duda-06"      : {"cena": "duda-tarefa", "t": 7.5, "dur": 1.1, "arq": "ep2/ep2-duda-06.wav", "quem": "duda"},
+  "ep2-duda-06"      : {"cena": "duda-tarefa", "t": 7.5, "dur": 1.0, "arq": "ep2/ep2-duda-06.wav", "quem": "duda"},
   "ep2-narrador-n03" : {"cena": "duda-caminho", "t": 9, "dur": 3.83, "arq": "ep2/ep2-narrador-n03.wav", "quem": "narrador"},
   "c09-duda-01"      : {"cena": "duda-portao", "t": 6.4, "dur": 4.11, "arq": "ep1/c09-duda-01.wav", "quem": "duda"},
   "c09-mae-03"       : {"cena": "duda-portao", "t": 13.8, "dur": 5.32, "arq": "ep1/c09-mae-03.wav", "quem": "mae", "fx": "distancia"},
