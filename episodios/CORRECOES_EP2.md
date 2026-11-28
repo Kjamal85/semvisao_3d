@@ -6,7 +6,7 @@ snapshot e mostrar.
 
 ## Regras que valem para o episódio inteiro (e para os próximos)
 
-- [ ] **ERRO CRÍTICO — antebraço cruzado.** Tudo o que a Duda faz sai com os antebraços cruzados na frente do corpo
+- [x] **ERRO CRÍTICO — antebraço cruzado.** Tudo o que a Duda faz sai com os antebraços cruzados na frente do corpo
       (lavar louça, tarefa, andar, café). Isso não existe "em lugar nenhum, nem em desenho". Corrigir no rig
       (`assets/rig/ep2.js` / poses do `Elenco`): cada mão alcança o objeto **do seu lado**, cotovelo para fora, nunca
       um braço passando por cima do outro. Andar = cabeça baixa e **braços em posição natural** (soltos, balançando).
@@ -27,13 +27,14 @@ snapshot e mostrar.
 
 ### Bloco 1 — acorda, quarto, banheiro (0:15 → 1:10)
 
-- [ ] **Plano 5 (duda-acorda, 0:27–0:35) — levantar da cama.** Deitada → levanta o tronco com as pernas ainda na
+- [x] **Plano 5 (duda-acorda, 0:27–0:35) — levantar da cama.** Deitada → levanta o tronco com as pernas ainda na
       cama → gira o corpo → fica sentada na beira com os pés no chão. Hoje o rig troca de "deitada" para "sentada" de
       uma vez (`duda-acorda.html`, `deitado = t < 12`). Referência: o "poder DIFERENTE" tem Gui acordando e sentando
       (`leitura.md` 02:38 q9494 e 05:10 q18624) e levantando (00:16 q975, 02:45 q9904) — usar como modelo do tempo.
-- [ ] **Planos 6–7 (duda-quarto, 0:35–0:43,5).** Depois de pegar o relógio ela **continua na cama** e diz a fala
-      dela ali (`ep2-duda-01`).
-- [ ] **Banheiro (planos 11–14, 0:58–1:10)** — ações de verdade:
+- [x] **Planos 6–7 (duda-quarto, 0:35–0:43,5).** Depois de pegar o relógio ela **continua na cama** e diz a fala
+      dela ali (`ep2-duda-01`). *Feito com lógica: ela levanta pelo lado da mesinha (o despertador fica na cabeceira),
+      pega o relógio, fala sentada, devolve e contorna a cama até a janela.*
+- [x] **Banheiro (planos 11–14, 0:58–1:10)** — ações de verdade:
       - escovar os dentes (a escova na boca, mexendo);
       - lavar as mãos **debaixo da água** da torneira;
       - secar o rosto: a toalha **passa pelo rosto e cobre**, como na vida real (hoje fica na testa com os olhos
